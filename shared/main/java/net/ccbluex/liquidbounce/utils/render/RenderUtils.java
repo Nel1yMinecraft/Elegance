@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
+import me.nelly.Verify;
 import net.ccbluex.liquidbounce.api.enums.WDefaultVertexFormats;
 import net.ccbluex.liquidbounce.api.minecraft.client.block.IBlock;
 import net.ccbluex.liquidbounce.api.minecraft.client.entity.IEntity;
@@ -303,6 +304,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void quickDrawRect(final float x, final float y, final float x2, final float y2) {
+        Verify.lililili1li();
         glBegin(GL_QUADS);
 
         glVertex2d(x2, y);
@@ -314,6 +316,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawRect(final float x, final float y, final float x2, final float y2, final int color) {
+        Verify.lililili1li();
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -334,6 +337,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawRect(final int x, final int y, final int x2, final int y2, final int color) {
+        Verify.lililili1li();
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -357,6 +361,7 @@ public final class RenderUtils extends MinecraftInstance {
      * Like {@link #drawRect(float, float, float, float, int)}, but without setup
      */
     public static void quickDrawRect(final float x, final float y, final float x2, final float y2, final int color) {
+        Verify.lililili1li();
         glColor(color);
         glBegin(GL_QUADS);
 
@@ -369,11 +374,13 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawRect(final float x, final float y, final float x2, final float y2, final Color color) {
+        Verify.lililili1li();
         drawRect(x, y, x2, y2, color.getRGB());
     }
 
     public static void drawBorderedRect(final float x, final float y, final float x2, final float y2, final float width,
                                         final int color1, final int color2) {
+        Verify.lililili1li();
         drawRect(x, y, x2, y2, color2);
         drawBorder(x, y, x2, y2, width, color1);
     }
@@ -402,6 +409,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void quickDrawBorderedRect(final float x, final float y, final float x2, final float y2, final float width, final int color1, final int color2) {
+        Verify.lililili1li();
         quickDrawRect(x, y, x2, y2, color2);
 
         glColor(color1);

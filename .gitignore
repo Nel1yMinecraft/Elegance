@@ -31,3 +31,7 @@ build/
 gradle/
 .gradle/
 .idea/
+.idea/modules/
+.idea/modules.xml
+.idea/*.xml
+

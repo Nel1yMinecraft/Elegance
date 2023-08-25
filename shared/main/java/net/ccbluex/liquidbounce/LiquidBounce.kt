@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import me.nelly.Verify
 import net.ccbluex.liquidbounce.api.Wrapper
 import net.ccbluex.liquidbounce.api.minecraft.util.IResourceLocation
 import net.ccbluex.liquidbounce.cape.CapeAPI.registerCapeService
@@ -77,109 +78,10 @@ object LiquidBounce {
      * Execute if client will be started
      */
     fun startClient() {
+        Verify.asfnioasnoasfonfsanofsanoi()
+        Verify.lilililili()
         isStarting = true
-
-        ClientUtils.getLogger().info("Starting $CLIENT_NAME b$CLIENT_VERSION, by $CLIENT_CREATOR")
-
-        // Create file manager
-        fileManager = FileManager()
-
-        // Crate event manager
-        eventManager = EventManager()
-
-        // Register listeners
-        eventManager.registerListener(RotationUtils())
-        eventManager.registerListener(AntiForge())
-        eventManager.registerListener(BungeeCordSpoof())
-        eventManager.registerListener(DonatorCape())
-        eventManager.registerListener(InventoryUtils())
-
-        // Init Discord RPC
-        clientRichPresence = ClientRichPresence()
-
-        // Create command manager
-        commandManager = CommandManager()
-
-        // Load client fonts
-        Fonts.loadFonts()
-
-        // Setup module manager and register modules
-        moduleManager = ModuleManager()
-        moduleManager.registerModules()
-
-        try {
-            // Remapper
-            loadSrg()
-
-            // ScriptManager
-            scriptManager = ScriptManager()
-            scriptManager.loadScripts()
-            scriptManager.enableScripts()
-        } catch (throwable: Throwable) {
-            ClientUtils.getLogger().error("Failed to load scripts.", throwable)
-        }
-
-        // Register commands
-        commandManager.registerCommands()
-
-        // Load configs
-        fileManager.loadConfigs(fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,
-                fileManager.friendsConfig, fileManager.xrayConfig, fileManager.shortcutsConfig)
-
-        // ClickGUI
-        clickGui = ClickGui()
-        fileManager.loadConfig(fileManager.clickGuiConfig)
-
-        // Tabs (Only for Forge!)
-        if (hasForge()) {
-            BlocksTab()
-            ExploitsTab()
-            HeadsTab()
-        }
-
-        // Register capes service
-        try {
-            registerCapeService()
-        } catch (throwable: Throwable) {
-            ClientUtils.getLogger().error("Failed to register cape service", throwable)
-        }
-
-        // Set HUD
-        hud = createDefault()
-        fileManager.loadConfig(fileManager.hudConfig)
-
-        // Disable optifine fastrender
-        ClientUtils.disableFastRender()
-
-        try {
-            // Read versions json from cloud
-            val jsonObj = JsonParser()
-                    .parse(HttpUtils.get("$CLIENT_CLOUD/versions.json"))
-
-            // Check json is valid object and has current minecraft version
-            if (jsonObj is JsonObject && jsonObj.has(MINECRAFT_VERSION)) {
-                // Get official latest client version
-                latestVersion = jsonObj[MINECRAFT_VERSION].asInt
-            }
-        } catch (exception: Throwable) { // Print throwable to console
-            ClientUtils.getLogger().error("Failed to check for updates.", exception)
-        }
-
-        // Load generators
-        GuiAltManager.loadGenerators()
-
-        // Setup Discord RPC
-        if (clientRichPresence.showRichPresenceValue) {
-            thread {
-                try {
-                    clientRichPresence.setup()
-                } catch (throwable: Throwable) {
-                    ClientUtils.getLogger().error("Failed to setup Discord RPC.", throwable)
-                }
-            }
-        }
-
-        // Set is starting status
+        Verify.ilililililililililil()
         isStarting = false
     }
 

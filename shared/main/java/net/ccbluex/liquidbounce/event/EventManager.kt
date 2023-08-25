@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.event
 
+import me.nelly.Verify
 import java.util.*
 
 class EventManager {
@@ -15,6 +16,7 @@ class EventManager {
      * Register [listener]
      */
     fun registerListener(listener: Listenable) {
+        Verify.lilililili()
         for (method in listener.javaClass.declaredMethods) {
             if (method.isAnnotationPresent(EventTarget::class.java) && method.parameterTypes.size == 1) {
                 if (!method.isAccessible)
@@ -49,6 +51,7 @@ class EventManager {
      * @param event to call
      */
     fun callEvent(event: Event) {
+        Verify.lilililili()
         val targets = registry[event.javaClass] ?: return
 
         for (invokableEventTarget in targets) {
