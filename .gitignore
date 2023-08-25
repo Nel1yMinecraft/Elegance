@@ -23,10 +23,10 @@
 hs_err_pid*
 replay_pid*
 
+# LiquidBounce
 1.12.2-Forge/run/
 1.12.2-Forge/build/
 1.12.2-Forge/.gradle/
 build/
 gradle/
 .gradle/
-.idea/
