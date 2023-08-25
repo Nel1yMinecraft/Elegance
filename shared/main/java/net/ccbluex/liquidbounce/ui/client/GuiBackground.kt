@@ -56,7 +56,7 @@ class GuiBackground(val prevGui: IGuiScreen) : WrappedGuiScreen() {
                     Files.copy(file.toPath(), FileOutputStream(LiquidBounce.fileManager.backgroundFile))
 
                     val image = ImageIO.read(FileInputStream(LiquidBounce.fileManager.backgroundFile))
-                    val location = classProvider.createResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/background.png")
+                    val location = classProvider.createResourceLocation("liquidbounce/background.png")
 
                     LiquidBounce.background = location
 
