@@ -41,7 +41,7 @@ import kotlin.concurrent.thread
 object LiquidBounce {
 
     // Client information
-    const val CLIENT_NAME = "LiquidBounce"
+    const val CLIENT_NAME = "Elegance"
     const val CLIENT_VERSION = 1.0
     const val IN_DEV = true
     const val CLIENT_CREATOR = "CCBlueX"

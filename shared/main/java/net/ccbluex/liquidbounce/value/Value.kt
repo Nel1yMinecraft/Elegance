@@ -14,7 +14,24 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
 
-abstract class Value<T>(val name: String, protected var value: T) {
+abstract class Value<T>(val name: String, var value: T) {
+    val default = value
+    var textHovered: Boolean = false
+
+    private var displayableFunc: () -> Boolean = { true }
+
+    fun displayable(func: () -> Boolean): Value<T> {
+        displayableFunc = func
+        return this
+    }
+
+    val displayable: Boolean
+        get() = displayableFunc()
+
+    val displayableFunction: () -> Boolean
+        get() = displayableFunc
+
+
 
     var isSupported = true
 
@@ -56,17 +73,28 @@ open class BoolValue(name: String, value: Boolean) : Value<Boolean>(name, value)
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
-        if (element.isJsonPrimitive)
+        if (element.isJsonPrimitive) {
             value = element.asBoolean || element.asString.equals("true", ignoreCase = true)
+        }
+    }
+    open fun toggle(){
+        this.value = !this.value
     }
 
 }
 
+
 /**
  * Integer value represents a value with a integer
  */
-open class IntegerValue(name: String, value: Int, val minimum: Int = 0, val maximum: Int = Integer.MAX_VALUE)
+open class IntegerValue(name: String, value: Int, val minimum: Int = 0, val maximum: Int = Integer.MAX_VALUE, val suffix: String, displayable: () -> Boolean)
     : Value<Int>(name, value) {
+
+    constructor(name: String, value: Int, minimum: Int, maximum: Int, displayable: () -> Boolean): this(name, value, minimum, maximum, "", displayable)
+    constructor(name: String, value: Int, minimum: Int, maximum: Int, suffix: String): this(name, value, minimum, maximum, suffix, { true } )
+    constructor(name: String, value: Int, minimum: Int, maximum: Int): this(name, value, minimum, maximum, { true } )
+
+
 
     fun set(newValue: Number) {
         set(newValue.toInt())
@@ -75,10 +103,10 @@ open class IntegerValue(name: String, value: Int, val minimum: Int = 0, val maxi
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
-        if (element.isJsonPrimitive)
+        if (element.isJsonPrimitive) {
             value = element.asInt
+        }
     }
-
 }
 
 /**
@@ -104,13 +132,20 @@ open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val m
  * Text value represents a value with a string
  */
 open class TextValue(name: String, value: String) : Value<String>(name, value) {
-
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
-        if (element.isJsonPrimitive)
+        if (element.isJsonPrimitive) {
             value = element.asString
+        }
+
     }
+
+    fun append(o: Any): TextValue {
+        set(get() + o)
+        return this
+    }
+
 }
 
 /**
@@ -118,8 +153,8 @@ open class TextValue(name: String, value: String) : Value<String>(name, value) {
  */
 class FontValue(valueName: String, value: IFontRenderer) : Value<IFontRenderer>(valueName, value) {
 
-    override fun toJson(): JsonElement? {
-        val fontDetails = Fonts.getFontDetails(value) ?: return null
+    override fun toJson(): JsonElement {
+        val fontDetails = Fonts.getFontDetails(value)
         val valueObject = JsonObject()
         valueObject.addProperty("fontName", fontDetails.name)
         valueObject.addProperty("fontSize", fontDetails.fontSize)
@@ -130,6 +165,18 @@ class FontValue(valueName: String, value: IFontRenderer) : Value<IFontRenderer>(
         if (!element.isJsonObject) return
         val valueObject = element.asJsonObject
         value = Fonts.getFontRenderer(valueObject["fontName"].asString, valueObject["fontSize"].asInt)
+    }
+
+    fun set(name: String): Boolean {
+        if (name.equals("Minecraft", true)) {
+            set(Fonts.minecraftFont)
+            return true
+        } else if (name.contains(" - ")) {
+            val spiced = name.split(" - ")
+            set(Fonts.getFontRenderer(spiced[0], spiced[1].toInt()) ?: return false)
+            return true
+        }
+        return false
     }
 }
 
@@ -142,9 +189,11 @@ class BlockValue(name: String, value: Int) : IntegerValue(name, value, 1, 197)
  * List value represents a selectable list of values
  */
 open class ListValue(name: String, val values: Array<String>, value: String) : Value<String>(name, value) {
-
     @JvmField
     var openList = false
+
+    @JvmField
+    var open=true;
 
     init {
         this.value = value
@@ -163,11 +212,17 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
         }
     }
 
+
+    fun indexOf(mode: String): Int {
+        for (i in values.indices) {
+            if (values[i].equals(mode, true)) return i
+        }
+        return 0
+    }
+
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive) changeValue(element.asString)
     }
-
-
 }
