@@ -14,12 +14,15 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.injection.backend.unwrap
 import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.network.play.server.SPacketConfirmTransaction
+import net.minecraft.network.play.server.SPacketEntityVelocity
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -31,7 +34,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Grim-Packet","AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch"), "Simple")
 
     // Reverse
@@ -64,6 +67,19 @@ class Velocity : Module() {
         mc.thePlayer?.speedInAir = 0.02F
     }
 
+    //Grim-Packet
+    var cancelPacket = 6
+    var resetPersec = 8
+    var grimTCancel = 0
+    var updates = 0
+
+    override fun onEnable() {
+        when(modeValue.get().toLowerCase()) {
+            "grim-packet" -> {
+                grimTCancel = 0
+            }
+        }
+    }
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
@@ -79,6 +95,18 @@ class Velocity : Module() {
 
                 thePlayer.motionX -= sin(yaw) * 0.2
                 thePlayer.motionZ += cos(yaw) * 0.2
+            }
+            "grim-packet" -> {
+                updates++
+
+                if (resetPersec > 0) {
+                    if (updates >= 0 || updates >= resetPersec) {
+                        updates = 0
+                        if (grimTCancel > 0){
+                            grimTCancel--
+                        }
+                    }
+                }
             }
 
             "glitch" -> {
@@ -174,6 +202,7 @@ class Velocity : Module() {
         val thePlayer = mc.thePlayer ?: return
 
         val packet = event.packet
+        val packet2 =event.packet.unwrap()
 
         if (classProvider.isSPacketEntityVelocity(packet)) {
             val packetEntityVelocity = packet.asSPacketEntityVelocity()
@@ -195,6 +224,16 @@ class Velocity : Module() {
                     packetEntityVelocity.motionX = (packetEntityVelocity.motionX * horizontal).toInt()
                     packetEntityVelocity.motionY = (packetEntityVelocity.motionY * vertical).toInt()
                     packetEntityVelocity.motionZ = (packetEntityVelocity.motionZ * horizontal).toInt()
+                }
+                "grim-packet" -> {
+                    if (packet2 is SPacketEntityVelocity && packet2.entityID == mc.thePlayer!!.entityId) {
+                        event.cancelEvent()
+                        grimTCancel = cancelPacket
+                    }
+                    if (packet2 is SPacketConfirmTransaction && grimTCancel > 0) {
+                        event.cancelEvent()
+                        grimTCancel--
+                    }
                 }
 
                 "aac", "reverse", "smoothreverse", "aaczero" -> velocityInput = true

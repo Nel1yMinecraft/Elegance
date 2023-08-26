@@ -82,7 +82,6 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
         return vecRotation;
     }
-
     /**
      * Face target with bow
      *
@@ -198,7 +197,92 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
         return vecRotation;
     }
+    public static Rotation OtherRotation(final IAxisAlignedBB bb,final WVec3 vec, final boolean predict,final boolean throughWalls, final float distance) {
+        final WVec3 eyesPos = new WVec3(mc.getThePlayer().getPosX(), mc.getThePlayer().getEntityBoundingBox().getMinY() +
+                mc.getThePlayer().getEyeHeight(), mc.getThePlayer().getPosZ());
+        final WVec3 eyes = mc.getThePlayer().getPositionEyes(1F);
+        VecRotation vecRotation = null;
+        for(double xSearch = 0.15D; xSearch < 0.85D; xSearch += 0.1D) {
+            for (double ySearch = 0.15D; ySearch < 1D; ySearch += 0.1D) {
+                for (double zSearch = 0.15D; zSearch < 0.85D; zSearch += 0.1D) {
+                    final WVec3 vec3 = new WVec3(bb.getMinX() + (bb.getMaxX() - bb.getMinX()) * xSearch,
+                            bb.getMinY() + (bb.getMaxY() - bb.getMinY()) * ySearch, bb.getMinZ() + (bb.getMaxZ() - bb.getMinZ()) * zSearch);
+                    final Rotation rotation = toRotation(vec3, predict);
+                    final double vecDist = eyes.distanceTo(vec3);
 
+                    if (vecDist > distance)
+                        continue;
+
+                    if(throughWalls || isVisible(vec3)) {
+                        final VecRotation currentVec = new VecRotation(vec3, rotation);
+
+                        if (vecRotation == null)
+                            vecRotation = currentVec;
+                    }
+                }
+            }
+        }
+
+        if(predict) eyesPos.addVector(mc.getThePlayer().getMotionX(), mc.getThePlayer().getMotionY(), mc.getThePlayer().getMotionZ());
+
+        final double diffX = vec.getXCoord() - eyesPos.getXCoord();
+        final double diffY = vec.getYCoord() - eyesPos.getYCoord();
+        final double diffZ = vec.getZCoord() - eyesPos.getZCoord();
+
+        return new Rotation(WMathHelper.wrapAngleTo180_float(
+                (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F
+        ), WMathHelper.wrapAngleTo180_float(
+                (float) (-Math.toDegrees(Math.atan2(diffY, Math.sqrt(diffX * diffX + diffZ * diffZ))))
+        ));
+    }
+    public static VecRotation lockView(final IAxisAlignedBB bb, final boolean outborder, final boolean random,
+                                       final boolean predict, final boolean throughWalls, final float distance) {
+        if (outborder) {
+            final WVec3 vec3 = new WVec3(bb.getMinX() + (bb.getMaxX() - bb.getMinX()) * (x * 0.3 + 1.0), bb.getMinY() + (bb.getMaxY() - bb.getMinY()) * (y * 0.3 + 1.0), bb.getMinZ() + (bb.getMaxZ() - bb.getMinZ()) * (z * 0.3 + 1.0));
+            return new VecRotation(vec3, toRotation(vec3, predict));
+        }
+
+        final WVec3 randomVec = new WVec3(bb.getMinX() + (bb.getMaxX() - bb.getMinX()) * x * 0.8, bb.getMinY() + (bb.getMaxY() - bb.getMinY()) * y * 0.8, bb.getMinZ() + (bb.getMaxZ() - bb.getMinZ()) * z * 0.8);
+        final Rotation randomRotation = toRotation(randomVec, predict);
+
+        final WVec3 eyes = mc.getThePlayer().getPositionEyes(1F);
+
+        double xMin = 0.0D;
+        double yMin = 0.0D;
+        double zMin = 0.0D;
+        double xMax = 0.0D;
+        double yMax = 0.0D;
+        double zMax = 0.0D;
+        double xDist = 0.0D;
+        double yDist = 0.0D;
+        double zDist = 0.0D;
+        VecRotation vecRotation = null;
+        xMin = 0.45D; xMax = 0.55D; xDist = 0.0125D;
+        yMin = 0.65D; yMax = 0.75D; yDist = 0.0125D;
+        zMin = 0.45D; zMax = 0.55D; zDist = 0.0125D;
+        for(double xSearch = xMin; xSearch < xMax; xSearch += xDist) {
+            for (double ySearch = yMin; ySearch < yMax; ySearch += yDist) {
+                for (double zSearch = zMin; zSearch < zMax; zSearch += zDist) {
+                    final WVec3 vec3 = new WVec3(bb.getMinX() + (bb.getMaxX() - bb.getMinX()) * xSearch, bb.getMinY() + (bb.getMaxY() - bb.getMinY()) * ySearch, bb.getMinZ() + (bb.getMaxZ() - bb.getMinZ()) * zSearch);
+
+                    final Rotation rotation = toRotation(vec3, predict);
+                    final double vecDist = eyes.distanceTo(vec3);
+
+                    if (vecDist > distance)
+                        continue;
+
+                    if (throughWalls || isVisible(vec3)) {
+                        final VecRotation currentVec = new VecRotation(vec3, rotation);
+
+                        if (vecRotation == null || (random ? getRotationDifference(currentVec.getRotation(), randomRotation) < getRotationDifference(vecRotation.getRotation(), randomRotation) : getRotationDifference(currentVec.getRotation()) < getRotationDifference(vecRotation.getRotation())))
+                            vecRotation = currentVec;
+                    }
+                }
+            }
+        }
+
+        return vecRotation;
+    }
     /**
      * Calculate difference between the client rotation and your entity
      *
