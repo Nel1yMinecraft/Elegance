@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.Math.*;
+import static net.minecraft.client.renderer.GlStateManager.disableBlend;
+import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
 import static org.lwjgl.opengl.GL11.*;
 
 public final class RenderUtils extends MinecraftInstance {
@@ -360,6 +362,134 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glEnable(2848);
         GL11.glHint(3154, 4354);
         GL11.glHint(3155, 4354);
+    }
+    public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius, int color) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_TEXTURE_2D);
+        final boolean hasCull = glIsEnabled(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
+
+        glColor(color);
+        drawRoundedCornerRect(x, y, x1, y1, radius);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        setGlState(GL_CULL_FACE, hasCull);
+    }
+    private static void quickPolygonCircle(float x, float y, float xRadius, float yRadius, int start, int end, int split) {
+        for (int i = end; i >= start; i -= split) {
+            glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * xRadius, y + Math.cos(i * Math.PI / 180.0D) * yRadius);
+        }
+    }
+    public static void drawGradientSidewaysH(double left, double top, double right, double bottom, int col1, int col2) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        quickDrawGradientSidewaysH(left, top, right, bottom, col1, col2);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+    }
+
+    public static void quickDrawGradientSidewaysH(double left, double top, double right, double bottom, int col1, int col2) {
+        glBegin(GL_QUADS);
+
+        glColor(col1);
+        glVertex2d(left, top);
+        glVertex2d(left, bottom);
+        glColor(col2);
+        glVertex2d(right, bottom);
+        glVertex2d(right, top);
+
+        glEnd();
+    }
+
+    public static void drawRoundedRect2(float left, float top, float right, float bottom, float radius, int points, int color) {
+        float f3 = (float) (color >> 24 & 255) / 255.0F;
+        float f = (float) (color >> 16 & 255) / 255.0F;
+        float f1 = (float) (color >> 8 & 255) / 255.0F;
+        float f2 = (float) (color & 255) / 255.0F;
+
+        if (left < right) left = left + right - (right = left);
+        if (top < bottom) top = top + bottom - (bottom = top);
+
+        float[][] corners = {
+                {right + radius, top - radius, 270},
+                {left - radius, top - radius, 360},
+                {left - radius, bottom + radius, 90},
+                {right + radius, bottom + radius, 180}};
+
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.alphaFunc(516, 0.003921569F);
+        GlStateManager.color(f, f1, f2, f3);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder renderer = tessellator.getBuffer();
+        renderer.begin(GL_POLYGON, DefaultVertexFormats.POSITION);
+        for (float[] c : corners) {
+            for (int i = 0; i <= points; i++) {
+                double anglerad = (Math.PI * (c[2] + i * 90.0F / points) / 180.0f);
+                renderer.pos(c[0] + (Math.sin(anglerad) * radius), c[1] + (Math.cos(anglerad) * radius), 0).endVertex();
+            }
+        }
+
+        tessellator.draw();
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+    }
+    public static void drawRoundedRect2(float left, float top, float right, float bottom, float radius, int color) {
+        float f3 = (float) (color >> 24 & 255) / 255.0F;
+        float f = (float) (color >> 16 & 255) / 255.0F;
+        float f1 = (float) (color >> 8 & 255) / 255.0F;
+        float f2 = (float) (color & 255) / 255.0F;
+
+        if (left < right) left = left + right - (right = left);
+        if (top < bottom) top = top + bottom - (bottom = top);
+
+        float[][] corners = {
+                {right + radius, top - radius, 270},
+                {left - radius, top - radius, 360},
+                {left - radius, bottom + radius, 90},
+                {right + radius, bottom + radius, 180}};
+
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.alphaFunc(516, 0.003921569F);
+        GlStateManager.color(f, f1, f2, f3);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder renderer = tessellator.getBuffer();
+        renderer.begin(GL_POLYGON, DefaultVertexFormats.POSITION);
+        for (float[] c : corners) {
+            for (int i = 0; i <= color; i++) {
+                double anglerad = (Math.PI * (c[2] + i * 90.0F / color) / 180.0f);
+                renderer.pos(c[0] + (Math.sin(anglerad) * radius), c[1] + (Math.cos(anglerad) * radius), 0).endVertex();
+            }
+        }
+
+        tessellator.draw();
+        disableBlend();
+        enableTexture2D();
+    }
+
+    public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
+        glBegin(GL_POLYGON);
+
+        float xRadius = (float) Math.min((x1 - x) * 0.5, radius);
+        float yRadius = (float) Math.min((y1 - y) * 0.5, radius);
+        quickPolygonCircle(x + xRadius, y + yRadius, xRadius, yRadius, 180, 270, 4);
+        quickPolygonCircle(x1 - xRadius, y + yRadius, xRadius, yRadius, 90, 180, 4);
+        quickPolygonCircle(x1 - xRadius, y1 - yRadius, xRadius, yRadius, 0, 90, 4);
+        quickPolygonCircle(x + xRadius, y1 - yRadius, xRadius, yRadius, 270, 360, 4);
+
+        glEnd();
     }
     public static void quickDrawRect(final float x, final float y, final float x2, final float y2) {
         glBegin(GL_QUADS);

@@ -38,6 +38,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import net.ccbluex.liquidbounce.utils.sound.TipSoundManager
 import kotlin.concurrent.thread
 
 object LiquidBounce {
@@ -58,6 +59,7 @@ object LiquidBounce {
     lateinit var eventManager: EventManager
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
+    lateinit var tipSoundManager: TipSoundManager
 
     // HUD & ClickGUI
     lateinit var hud: HUD

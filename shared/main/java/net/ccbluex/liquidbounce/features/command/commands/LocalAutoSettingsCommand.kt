@@ -32,7 +32,7 @@ class LocalAutoSettingsCommand : Command("localautosettings", "localsetting", "l
                                 chat("§9Set settings...")
                                 SettingsUtils.executeScript(settings)
                                 chat("§6Settings applied successfully.")
-                                LiquidBounce.hud.addNotification(Notification("Updated Settings"))
+                                chat("Updated Settings")
                                 playEdit()
                             } catch (e: IOException) {
                                 e.printStackTrace()

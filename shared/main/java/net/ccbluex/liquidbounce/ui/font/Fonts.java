@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.api.minecraft.client.gui.IFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils;
+import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.io.*;
@@ -33,7 +34,16 @@ public class Fonts extends MinecraftInstance {
     public static IFontRenderer font40;
     @FontDetails(fontName = "Roboto Bold", fontSize = 180)
     public static IFontRenderer fontBold180;
-
+    @FontDetails(fontName = "Mojangles", fontSize = 30)
+    public static IFontRenderer M30;
+    @FontDetails(fontName = "comfortaaRegular", fontSize = 27)
+    public static IFontRenderer C27;
+    @FontDetails(fontName = "comfortaaRegular", fontSize = 32)
+    public static IFontRenderer C32;
+    @FontDetails(fontName = "SF UI Display", fontSize = 35)
+    public static IFontRenderer SF_35;
+    @FontDetails(fontName = "Wqy MicroHei Wqy", fontSize = 30)
+    public static IFontRenderer wqy30;
     public static void loadFonts() {
         long l = System.currentTimeMillis();
 
@@ -45,6 +55,12 @@ public class Fonts extends MinecraftInstance {
         font35 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 35)));
         font40 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 40)));
         fontBold180 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Bold.ttf", 180)));
+        M30 = getFont2("mojangles",30);
+        C27 = getFont2("regular.ttf",27);
+        C32 = getFont2("regular.ttf",32);
+        M30 = getFont2("mojangles",30);
+        SF_35 = getFont2("sfuidisplay.ttf", 35);
+        wqy30 = getFont2("wqy_microhei.ttf", 30);
 
         try {
             CUSTOM_FONT_RENDERERS.clear();
@@ -177,7 +193,26 @@ public class Fonts extends MinecraftInstance {
             return new Font("default", Font.PLAIN, size);
         }
     }
+    private static IFontRenderer getFont2(final String fontName, final int size) {
+        Font font;
+        try {
+            InputStream inputStream;
+            if (fontName.endsWith(".ttf") || fontName.endsWith(".otf")) {
+                inputStream = mc2.getResourceManager().getResource(new ResourceLocation("liquidbounce/font/" + fontName)).getInputStream();
+            } else {
+                inputStream = mc2.getResourceManager().getResource(new ResourceLocation("liquidbounce/font/" + fontName + ".ttf")).getInputStream();
+            }
+            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
+            inputStream.close();
+            font = awtClientFont;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            font = new Font("default", Font.PLAIN, size);
+        }
 
+        return classProvider.wrapFontRenderer(new GameFontRenderer(font));
+    }
     private static void extractZip(final String zipFile, final String outputFolder) {
         final byte[] buffer = new byte[1024];
 

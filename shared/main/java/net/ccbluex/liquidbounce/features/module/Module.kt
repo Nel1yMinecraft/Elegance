@@ -6,9 +6,12 @@
 package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.LiquidBounce.moduleManager
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.injection.backend.Backend
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClientUtils2
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.Value
@@ -63,8 +66,31 @@ open class Module : MinecraftInstance(), Listenable {
 
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
-                mc.soundHandler.playSound("random.click", 1F)
-                LiquidBounce.hud.addNotification(Notification("${if (value) "Enabled " else "Disabled "}$name"))
+                when (moduleManager.toggleSoundMode) {
+                    1 -> (if (value) mc.soundHandler.playSound("block.stone_pressureplate.click_on", 1F) else mc.soundHandler.playSound("block.stone_pressureplate.click_off",1F))
+                    2 -> (if (value) LiquidBounce.tipSoundManager.enableSound else LiquidBounce.tipSoundManager.disableSound).asyncPlay()
+                    3 -> (if (value) LiquidBounce.tipSoundManager.sigmaenableSound else LiquidBounce.tipSoundManager.sigmadisableSound).asyncPlay()
+                    4 -> (if (value) LiquidBounce.tipSoundManager.sinkaenableSound else LiquidBounce.tipSoundManager.sinkadisableSound).asyncPlay()
+                    5 -> (if (value) LiquidBounce.tipSoundManager.fallenenableSound else LiquidBounce.tipSoundManager.fallendisableSound).asyncPlay()
+                    6 -> (if (value) LiquidBounce.tipSoundManager.prideenableSound else LiquidBounce.tipSoundManager.pridedisableSound).asyncPlay()
+                    7 -> (if (value) LiquidBounce.tipSoundManager.lbplusenableSound else LiquidBounce.tipSoundManager.lbplusdisableSound).asyncPlay()
+                }
+
+                when (moduleManager.toggleMessageMode) {
+                    1 -> when (moduleManager.toggleChatMode) {
+                        1 -> ClientUtils2.displayChatMessage(true,"${if (value) "§aEnabled" else "§cDisabled"} §r${name}.")
+                        2 -> ClientUtils2.displayChatMessage(true,"§r${name} was ${if (value) "§aEnabled" else "§cDisabled"}.")
+                    }
+                    2 -> LiquidBounce.hud.addNotification(
+                        Notification(
+                            "Module", "${
+                                if (value) "Enabled "
+                                else "Disabled "
+                            }$name", if (value) NotifyType.SUCCESS
+                            else NotifyType.ERROR
+                        )
+                    )
+                }
             }
 
             // Call on enabled or disabled

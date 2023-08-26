@@ -68,6 +68,7 @@ class HUD : Module() {
         val shadowValue = ListValue("ShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Custom"), "Outline")
         @JvmField
         val shadowstrenge = FloatValue("ShadowStrengh", 0.1f, 0.1f, 1f)
+        val blurRadius = IntegerValue("BlurRadius", 10, 1, 50)
     }
     init {
         state = true
