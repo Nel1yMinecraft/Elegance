@@ -28,7 +28,7 @@ public class BlurUtil {
     private static ShaderGroup shaderGroup;
     private static Framebuffer frbuffer;
 
-    private static Framebuffer framebuffer, frameBuffer;
+    private static Framebuffer framebuffer;
 
     private static int lastFactor;
     private static int lastWidth;
@@ -41,7 +41,6 @@ public class BlurUtil {
 
     private static float lastStrength = 5F;
 
-    //private static ResourceLocation blurShader = new ResourceLocation("liquidbounce+/mahiro.json");
     private static ResourceLocation blurShader = new ResourceLocation("paradise/blurarea.json");
 
     public static void init() {

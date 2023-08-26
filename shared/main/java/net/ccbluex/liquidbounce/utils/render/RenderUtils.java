@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -540,6 +541,22 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glHint(3154, 4352);
         GL11.glHint(3155, 4352);
     }
+    public static Framebuffer createFrameBuffer(Framebuffer framebuffer) {
+        if (framebuffer == null || framebuffer.framebufferWidth != mc.getDisplayWidth() || framebuffer.framebufferHeight != mc.getDisplayHeight()) {
+            if (framebuffer != null) {
+                framebuffer.deleteFramebuffer();
+            }
+            return new Framebuffer(mc.getDisplayWidth(), mc.getDisplayHeight(), true);
+        }
+        return framebuffer;
+    }
+    public static void bindTexture(int texture) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+    }
+    public static void resetColor() {
+        GlStateManager.color(1, 1, 1, 1);
+    }
+
     public static Color getGradientOffset(Color color1, Color color2, double offset) {
         double inverse_percent;
         int redPart;
