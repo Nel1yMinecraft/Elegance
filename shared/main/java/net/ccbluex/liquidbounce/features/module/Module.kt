@@ -78,8 +78,8 @@ open class Module : MinecraftInstance(), Listenable {
 
                 when (moduleManager.toggleMessageMode) {
                     1 -> when (moduleManager.toggleChatMode) {
-                        1 -> ClientUtils2.displayChatMessage(true,"${if (value) "§aEnabled" else "§cDisabled"} §r${name}.")
-                        2 -> ClientUtils2.displayChatMessage(true,"§r${name} was ${if (value) "§aEnabled" else "§cDisabled"}.")
+                        1 -> LiquidBounce.hud.addNotification(Notification("Notification","${if (value) "§aEnabled" else "§cDisabled"} §r${name}.",NotifyType.INFO))
+                        2 -> LiquidBounce.hud.addNotification(Notification("Notification","§r${name} was ${if (value) "§aEnabled" else "§cDisabled"}.",NotifyType.INFO))
                     }
                     2 -> LiquidBounce.hud.addNotification(
                         Notification(

@@ -43,7 +43,6 @@ class Notifications(
 
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
     private val titleShadow = BoolValue("TitleShadow", false)
-    private val motionBlur = BoolValue("Motionblur", false)
     private val contentShadow = BoolValue("ContentShadow", true)
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
@@ -76,7 +75,6 @@ class Notifications(
                     scale,
                     contentShadow.get(),
                     titleShadow.get(),
-                    motionBlur.get(),
                     whiteText.get(),
                     modeColored.get(),
                     Companion
@@ -140,7 +138,6 @@ class Notification(
         index: Int, font: IFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,
         contentShadow: Boolean,
         titleShadow: Boolean,
-        motionBlur: Boolean,
         whiteText: Boolean,
         modeColored: Boolean,
         parent: Notifications.Companion
@@ -258,29 +255,9 @@ class Notification(
 
             val colors = Color(colorRed, colorGreen, colorBlue, alpha / 3)
 
-            if (motionBlur) {
-                when (fadeState) {
-                    IN -> {
-                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-                    }
-
-                    STAY -> {
-                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-                    }
-
-                    OUT -> {
-                        RenderUtils.drawRoundedCornerRect(4F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-                        RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-                    }
-
-                    END -> return false
-                }
-            } else {
                 RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
                 RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-            }
+
             RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
             ShadowRenderUtils.drawShadowWithCustomAlpha(3f, 0F, width.toFloat() - 3f, 27f - 5f, 240f)
             RenderUtils.drawRoundedCornerRect(
@@ -310,7 +287,6 @@ class Notification(
 
             val colors = Color(0, 0, 0, alpha / 4)
 
-            if (motionBlur) {
                 when (fadeState) {
                     IN -> {
                         RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
@@ -329,10 +305,8 @@ class Notification(
 
                     END -> return false
                 }
-            } else {
                 RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
                 RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
-            }
             RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
             ShadowRenderUtils.drawShadowWithCustomAlpha(3f, 0F, width.toFloat() - 3f, 27f - 5f, 240f)
             RenderUtils.drawRoundedCornerRect(
