@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.font
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.util.IWrappedFontRenderer
 import net.ccbluex.liquidbounce.event.TextEvent
+import net.ccbluex.liquidbounce.features.module.modules.render.HUD
 import net.ccbluex.liquidbounce.injection.backend.WrapperImpl.classProvider
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -56,9 +57,24 @@ class GameFontRenderer(font: Font) : IWrappedFontRenderer {
         val rainbow = RainbowFontShader.isInUse
 
         if (shadow) {
-            glUseProgram(0)
-
-            drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+            if (HUD.shadowValue.get().equals("LiquidBounce")) {
+                drawText(currentText, x + 1.0f, currY + 1.0f, Color(0, 0, 0, 150).rgb, true)
+            } else if (HUD.shadowValue.get().equals("Default")) {
+                drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+            } else if (HUD.shadowValue.get().equals("Custom")) {
+                drawText(
+                    currentText,
+                    x + HUD.shadowstrenge.get(),
+                    currY + HUD.shadowstrenge.get(),
+                    Color(20, 20, 20, 200).rgb,
+                    true
+                )
+            } else if (HUD.shadowValue.get().equals("Outline")) {
+                drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+            }
         }
 
         return drawText(currentText, x, currY, color, false, rainbow)

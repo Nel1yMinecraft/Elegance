@@ -158,7 +158,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      */
     @Overwrite
     public void onUpdateWalkingPlayer() {
-        LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.PRE));
+        LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.PRE,true));
 
         final InventoryMove inventoryMove = (InventoryMove) LiquidBounce.moduleManager.getModule(InventoryMove.class);
         final Sneak sneak = (Sneak) LiquidBounce.moduleManager.getModule(Sneak.class);
@@ -247,7 +247,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.autoJumpEnabled = this.mc.gameSettings.autoJump;
         }
 
-        LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.POST));
+        LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.POST,true));
     }
 
     @Inject(method = "swingArm", at = @At("HEAD"), cancellable = true)

@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
 import net.ccbluex.liquidbounce.features.module.modules.movement.LiquidWalk;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
+import net.ccbluex.liquidbounce.features.module.modules.player.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Objects;
+
+import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc2;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends MixinEntity {
@@ -113,7 +116,19 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoJumpDelay.class)).getState())
             jumpTicks = 0;
     }
+    /**
+     * @author Liuli
+     * @reason 123231
+     */
+    @Overwrite
+    private int getArmSwingAnimationEnd() {
+        int speed = this.isPotionActive(MobEffects.HASTE) ? 6 - (1 + this.getActivePotionEffect(MobEffects.HASTE).getAmplifier()) : (this.isPotionActive(MobEffects.MINING_FATIGUE) ? 6 + (1 + this.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6);
+        if (this.equals(mc2.player)) {
+            speed = (int) (speed * Animations.INSTANCE.getSpeedSwing().get());
+        }
+        return speed;
 
+    }
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
         if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(AirJump.class)).getState() && isJumping && this.jumpTicks == 0) {

@@ -22,7 +22,7 @@ object Animations : Module() {
         ), "WindMill"
     )
 
-    private val onlySword = BoolValue("EverythingBlock", true)
+    private val onlySword = BoolValue("EverythingBlock", false)
     private val tabShowPlayerSkinValue = BoolValue("TabShowPlayerSkin", true)
     val rightClickBlocking = BoolValue("RightClickBlocking", true)
     val blockValue = BoolValue("Blocking", true)

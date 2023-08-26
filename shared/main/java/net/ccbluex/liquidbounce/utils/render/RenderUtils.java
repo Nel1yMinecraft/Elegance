@@ -20,6 +20,10 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -303,7 +307,60 @@ public final class RenderUtils extends MinecraftInstance {
         worldRenderer.pos(axisAlignedBB.getMaxX(), axisAlignedBB.getMinY(), axisAlignedBB.getMaxZ()).endVertex();
         tessellator.draw();
     }
+    public static void drawRoundedRect(float x, float y, float x1, float y1, int borderC, int insideC) {
+        enableGL2D();
+        GL11.glScalef(0.5F, 0.5F, 0.5F);
+        drawVLine(x *= 2.0f, (y *= 2.0f) + 1.0f, (y1 *= 2.0f) - 2.0f, borderC);
+        drawVLine((x1 *= 2.0f) - 1.0f, y + 1.0f, y1 - 2.0f, borderC);
+        drawHLine(x + 2.0f, x1 - 3.0f, y, borderC);
+        drawHLine(x + 2.0f, x1 - 3.0f, y1 - 1.0f, borderC);
+        drawHLine(x + 1.0f, x + 1.0f, y + 1.0f, borderC);
+        drawHLine(x1 - 2.0f, x1 - 2.0f, y + 1.0f, borderC);
+        drawHLine(x1 - 2.0f, x1 - 2.0f, y1 - 2.0f, borderC);
+        drawHLine(x + 1.0f, x + 1.0f, y1 - 2.0f, borderC);
+        drawRect(x + 1.0f, y + 1.0f, x1 - 1.0f, y1 - 1.0f, insideC);
+        GL11.glScalef(2.0f, 2.0f, 2.0f);
+        disableGL2D();
+        Gui.drawRect(0, 0, 0, 0, 0);
+    }
 
+    public static void disableGL2D() {
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glEnable(2929);
+        GL11.glDisable(2848);
+        GL11.glHint(3154, 4352);
+        GL11.glHint(3155, 4352);
+    }
+
+    public static void drawHLine(float par1, float par2, float par3, int par4) {
+        if (par2 < par1) {
+            float var5 = par1;
+            par1 = par2;
+            par2 = var5;
+        }
+        drawRect(par1, par3, par2 + 1.0f, par3 + 1.0f, par4);
+    }
+
+    public static void drawVLine(float x, float y, float x1, int y1) {
+        if (x1 < y) {
+            float var5 = y;
+            y = x1;
+            x1 = var5;
+        }
+        drawRect(x, y + 1.0f, x + 1.0f, x1, y1);
+    }
+
+    public static void enableGL2D() {
+        GL11.glDisable(2929);
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glDepthMask(true);
+        GL11.glEnable(2848);
+        GL11.glHint(3154, 4354);
+        GL11.glHint(3155, 4354);
+    }
     public static void quickDrawRect(final float x, final float y, final float x2, final float y2) {
         glBegin(GL_QUADS);
 
@@ -402,157 +459,7 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
     }
-    public static void drawRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {
-        drawRoundedRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true);
-    }
 
-    public static void drawRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color, boolean popPush) {
-        float alpha = (color >> 24 & 0xFF) / 255.0F;
-        float red = (color >> 16 & 0xFF) / 255.0F;
-        float green = (color >> 8 & 0xFF) / 255.0F;
-        float blue = (color & 0xFF) / 255.0F;
-
-        float z = 0;
-        if (paramXStart > paramXEnd) {
-            z = paramXStart;
-            paramXStart = paramXEnd;
-            paramXEnd = z;
-        }
-
-        if (paramYStart > paramYEnd) {
-            z = paramYStart;
-            paramYStart = paramYEnd;
-            paramYEnd = z;
-        }
-
-        double x1 = paramXStart + radius;
-        double y1 = paramYStart + radius;
-        double x2 = paramXEnd - radius;
-        double y2 = paramYEnd - radius;
-
-        if (popPush) glPushMatrix();
-        glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glLineWidth(1);
-
-        glColor4f(red, green, blue, alpha);
-        glBegin(GL_POLYGON);
-
-        double degree = Math.PI / 180;
-        for (double i = 0; i <= 90; i += 1)
-            glVertex2d(x2 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
-        for (double i = 90; i <= 180; i += 1)
-            glVertex2d(x2 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
-        for (double i = 180; i <= 270; i += 1)
-            glVertex2d(x1 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
-        for (double i = 270; i <= 360; i += 1)
-            glVertex2d(x1 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
-        glEnd();
-
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-        if (popPush) glPopMatrix();
-    }
-
-    public static void drawRoundedRect(float x, float y, float x1, float y1, int borderC, int insideC) {
-        enableGL2D();
-        GL11.glScalef(0.5F, 0.5F, 0.5F);
-        drawVLine(x *= 2.0f, (y *= 2.0f) + 1.0f, (y1 *= 2.0f) - 2.0f, borderC);
-        drawVLine((x1 *= 2.0f) - 1.0f, y + 1.0f, y1 - 2.0f, borderC);
-        drawHLine(x + 2.0f, x1 - 3.0f, y, borderC);
-        drawHLine(x + 2.0f, x1 - 3.0f, y1 - 1.0f, borderC);
-        drawHLine(x + 1.0f, x + 1.0f, y + 1.0f, borderC);
-        drawHLine(x1 - 2.0f, x1 - 2.0f, y + 1.0f, borderC);
-        drawHLine(x1 - 2.0f, x1 - 2.0f, y1 - 2.0f, borderC);
-        drawHLine(x + 1.0f, x + 1.0f, y1 - 2.0f, borderC);
-        drawRect(x + 1.0f, y + 1.0f, x1 - 1.0f, y1 - 1.0f, insideC);
-        GL11.glScalef(2.0f, 2.0f, 2.0f);
-        disableGL2D();
-        Gui.drawRect(0, 0, 0, 0, 0);
-    }
-    public static void disableGL2D() {
-        GL11.glEnable(3553);
-        GL11.glDisable(3042);
-        GL11.glEnable(2929);
-        GL11.glDisable(2848);
-        GL11.glHint(3154, 4352);
-        GL11.glHint(3155, 4352);
-    }
-
-    public static void drawHLine(float par1, float par2, float par3, int par4) {
-        if (par2 < par1) {
-            float var5 = par1;
-            par1 = par2;
-            par2 = var5;
-        }
-        drawRect(par1, par3, par2 + 1.0f, par3 + 1.0f, par4);
-    }
-
-    public static void drawVLine(float x, float y, float x1, int y1) {
-        if (x1 < y) {
-            float var5 = y;
-            y = x1;
-            x1 = var5;
-        }
-        drawRect(x, y + 1.0f, x + 1.0f, x1, y1);
-    }
-
-    public static void enableGL2D() {
-        GL11.glDisable(2929);
-        GL11.glEnable(3042);
-        GL11.glDisable(3553);
-        GL11.glBlendFunc(770, 771);
-        GL11.glDepthMask(true);
-        GL11.glEnable(2848);
-        GL11.glHint(3154, 4354);
-        GL11.glHint(3155, 4354);
-    }
-    public static void enableSmoothLine(float width) {
-        GL11.glDisable(3008);
-        GL11.glEnable(3042);
-        GL11.glBlendFunc(770, 771);
-        GL11.glDisable(3553);
-        GL11.glDisable(2929);
-        GL11.glDepthMask(false);
-        GL11.glEnable(2884);
-        GL11.glEnable(2848);
-        GL11.glHint(3154, 4354);
-        GL11.glHint(3155, 4354);
-        GL11.glLineWidth(width);
-    }
-
-    public static void disableSmoothLine() {
-        GL11.glEnable(3553);
-        GL11.glEnable(2929);
-        GL11.glDisable(3042);
-        GL11.glEnable(3008);
-        GL11.glDepthMask(true);
-        GL11.glCullFace(1029);
-        GL11.glDisable(2848);
-        GL11.glHint(3154, 4352);
-        GL11.glHint(3155, 4352);
-    }
-    public static Color getGradientOffset(Color color1, Color color2, double offset) {
-        double inverse_percent;
-        int redPart;
-        if (offset > 1.0D) {
-            inverse_percent = offset % 1.0D;
-            redPart = (int) offset;
-            offset = redPart % 2 == 0 ? inverse_percent : 1.0D - inverse_percent;
-        }
-        inverse_percent = 1.0D - offset;
-        redPart = (int) ((double) color1.getRed() * inverse_percent + (double) color2.getRed() * offset);
-        int greenPart = (int) ((double) color1.getGreen() * inverse_percent + (double) color2.getGreen() * offset);
-        int bluePart = (int) ((double) color1.getBlue() * inverse_percent + (double) color2.getBlue() * offset);
-        return new Color(redPart, greenPart, bluePart);
-    }
-    public static Color skyRainbow(int var2, float st, float bright) {
-        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109L)) / 5;
-        return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
-    }
     public static void quickDrawBorderedRect(final float x, final float y, final float x2, final float y2, final float width, final int color1, final int color2) {
         quickDrawRect(x, y, x2, y2, color2);
 
