@@ -479,6 +479,85 @@ public final class RenderUtils extends MinecraftInstance {
         enableTexture2D();
     }
 
+    public static void fastRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius) {
+        float z = 0;
+        if (paramXStart > paramXEnd) {
+            z = paramXStart;
+            paramXStart = paramXEnd;
+            paramXEnd = z;
+        }
+
+        if (paramYStart > paramYEnd) {
+            z = paramYStart;
+            paramYStart = paramYEnd;
+            paramYEnd = z;
+        }
+
+        double x1 = paramXStart + radius;
+        double y1 = paramYStart + radius;
+        double x2 = paramXEnd - radius;
+        double y2 = paramYEnd - radius;
+
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+
+        glBegin(GL_POLYGON);
+
+        double degree = Math.PI / 180;
+        for (double i = 0; i <= 90; i += 1)
+            glVertex2d(x2 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
+        for (double i = 90; i <= 180; i += 1)
+            glVertex2d(x2 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
+        for (double i = 180; i <= 270; i += 1)
+            glVertex2d(x1 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
+        for (double i = 270; i <= 360; i += 1)
+            glVertex2d(x1 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
+        glEnd();
+        glDisable(GL_LINE_SMOOTH);
+    }
+    public static void enableSmoothLine(float width) {
+        GL11.glDisable(3008);
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glDisable(3553);
+        GL11.glDisable(2929);
+        GL11.glDepthMask(false);
+        GL11.glEnable(2884);
+        GL11.glEnable(2848);
+        GL11.glHint(3154, 4354);
+        GL11.glHint(3155, 4354);
+        GL11.glLineWidth(width);
+    }
+
+    public static void disableSmoothLine() {
+        GL11.glEnable(3553);
+        GL11.glEnable(2929);
+        GL11.glDisable(3042);
+        GL11.glEnable(3008);
+        GL11.glDepthMask(true);
+        GL11.glCullFace(1029);
+        GL11.glDisable(2848);
+        GL11.glHint(3154, 4352);
+        GL11.glHint(3155, 4352);
+    }
+    public static Color getGradientOffset(Color color1, Color color2, double offset) {
+        double inverse_percent;
+        int redPart;
+        if (offset > 1.0D) {
+            inverse_percent = offset % 1.0D;
+            redPart = (int) offset;
+            offset = redPart % 2 == 0 ? inverse_percent : 1.0D - inverse_percent;
+        }
+        inverse_percent = 1.0D - offset;
+        redPart = (int) ((double) color1.getRed() * inverse_percent + (double) color2.getRed() * offset);
+        int greenPart = (int) ((double) color1.getGreen() * inverse_percent + (double) color2.getGreen() * offset);
+        int bluePart = (int) ((double) color1.getBlue() * inverse_percent + (double) color2.getBlue() * offset);
+        return new Color(redPart, greenPart, bluePart);
+    }
+    public static Color skyRainbow(int var2, float st, float bright) {
+        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109L)) / 5;
+        return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
+    }
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
         glBegin(GL_POLYGON);
 

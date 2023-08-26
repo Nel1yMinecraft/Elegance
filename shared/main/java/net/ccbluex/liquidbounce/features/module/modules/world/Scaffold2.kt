@@ -21,7 +21,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.ClientUtils2.Companion.notificationsTransform
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils.findAutoBlockBlock
 import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
@@ -232,11 +234,11 @@ open class Scaffold2 : Module() {
     fun onUpdate(event: UpdateEvent?) {
         if (noBlockDisablerValue.get()) {
             if (blocksAmount == 0) {
-                LiquidBounce.hud.addNotification( Notification("Blocks < 0"))
+                notificationsTransform(this.name, "Blocks < 0", NotifyType.ERROR)
                 state = false
                 mc.timer.timerSpeed = 1F
                 if (moduleManager.getModule(GroundTelly::class.java).state) {
-                    LiquidBounce.hud.addNotification( Notification("AutoDisabled GroundTelly"))
+                    notificationsTransform(this.name, "AutoDisabled GroundTelly", NotifyType.ERROR)
                     moduleManager.getModule(GroundTelly::class.java).state = false
                 }
             }
