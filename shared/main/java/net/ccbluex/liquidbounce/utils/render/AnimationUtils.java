@@ -36,7 +36,17 @@ public class AnimationUtils {
 
         return current;
     }
+    public static float changer(float current, float add, float min, float max) {
+        current += add;
+        if (current > max) {
+            current = max;
+        }
+        if (current < min) {
+            current = min;
+        }
 
+        return current;
+    }
     /**
      * In-out-easing function
      * https://github.com/jesusgollonet/processing-penner-easing

@@ -17,7 +17,9 @@ inline fun createUseItemPacket(itemStack: IItemStack?, hand: WEnumHand): IPacket
         classProvider.createCPacketTryUseItem(hand)
     }
 }
-
+fun createUseItemPacket(hand: WEnumHand): IPacket {
+    return classProvider.createCPacketTryUseItem(hand)
+}
 inline fun createOpenInventoryPacket(): IPacket {
     @Suppress("ConstantConditionIf")
     return if (Backend.MINECRAFT_VERSION_MINOR == 8) {

@@ -7,7 +7,8 @@ package net.ccbluex.liquidbounce
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import me.nelly.Verify
+import me.nelly.Client
+
 import net.ccbluex.liquidbounce.api.Wrapper
 import net.ccbluex.liquidbounce.api.minecraft.util.IResourceLocation
 import net.ccbluex.liquidbounce.cape.CapeAPI.registerCapeService
@@ -78,10 +79,10 @@ object LiquidBounce {
      * Execute if client will be started
      */
     fun startClient() {
-        Verify.asfnioasnoasfonfsanofsanoi()
-        Verify.lilililili()
+    //    Verify.asfnioasnoasfonfsanofsanoi()
+     //   Verify.lilililili()
         isStarting = true
-        Verify.ilililililililililil()
+        Client.ilililililililililil()
         isStarting = false
     }
 

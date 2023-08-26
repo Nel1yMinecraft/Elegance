@@ -25,6 +25,8 @@ public class Fonts extends MinecraftInstance {
     @FontDetails(fontName = "Minecraft Font")
     public static final IFontRenderer minecraftFont = mc.getFontRendererObj();
     private static final HashMap<FontInfo, IFontRenderer> CUSTOM_FONT_RENDERERS = new HashMap<>();
+    @FontDetails(fontName = "Roboto Medium", fontSize = 25)
+    public static IFontRenderer font25;
     @FontDetails(fontName = "Roboto Medium", fontSize = 35)
     public static IFontRenderer font35;
     @FontDetails(fontName = "Roboto Medium", fontSize = 40)
@@ -39,6 +41,7 @@ public class Fonts extends MinecraftInstance {
 
         downloadFonts();
 
+        font25 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 25)));
         font35 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 35)));
         font40 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 40)));
         fontBold180 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Bold.ttf", 180)));

@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 
 @ModuleInfo(name = "HUD", description = "Toggles visibility of the HUD.", category = ModuleCategory.RENDER, array = false)
 class HUD : Module() {
@@ -44,7 +45,24 @@ class HUD : Module() {
                 !(classProvider.isGuiChat(event.guiScreen) || classProvider.isGuiHudDesigner(event.guiScreen))) mc.entityRenderer.loadShader(classProvider.createResourceLocation("liquidbounce/blur.json")) else if (mc.entityRenderer.shaderGroup != null &&
                 mc.entityRenderer.shaderGroup!!.shaderGroupName.contains("liquidbounce/blur.json")) mc.entityRenderer.stopUseShader()
     }
-
+    companion object {
+        @JvmField
+        val gidentspeed = IntegerValue("GidentSpeed", 100, 1, 1000)
+        @JvmField
+        val redValue = IntegerValue("Red", 255, 0, 255)
+        @JvmField
+        val greenValue = IntegerValue("Green", 255, 0, 255)
+        @JvmField
+        val blueValue = IntegerValue("Blue", 255, 0, 255)
+        @JvmField
+        val redValue2 = IntegerValue("Red2", 255, 0, 255)
+        @JvmField
+        val greenValue2 = IntegerValue("Green2", 255, 0, 255)
+        @JvmField
+        val blueValue2 = IntegerValue("Blue2", 255, 0, 255)
+        @JvmField
+        val rainbowSpeed = IntegerValue("Rainbow-Speed", 1500, 500, 7000)
+    }
     init {
         state = true
     }

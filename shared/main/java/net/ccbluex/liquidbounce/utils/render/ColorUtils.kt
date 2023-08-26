@@ -8,10 +8,12 @@ package net.ccbluex.liquidbounce.utils.render
 import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.math.abs
 
 object ColorUtils {
     /** Array of the special characters that are allowed in any text drawing of Minecraft.  */
-    val allowedCharactersArray = charArrayOf('/', '\n', '\r', '\t', '\u0000', '', '`', '?', '*', '\\', '<', '>', '|', '\"', ':')
+    val allowedCharactersArray =
+        charArrayOf('/', '\n', '\r', '\t', '\u0000', '', '`', '?', '*', '\\', '<', '>', '|', '\"', ':')
 
     fun isAllowedCharacter(character: Char): Boolean {
         return character.toInt() != 167 && character.toInt() >= 32 && character.toInt() != 127
@@ -33,7 +35,95 @@ object ColorUtils {
             hexColors[i] = red and 255 shl 16 or (green and 255 shl 8) or (blue and 255)
         }
     }
+    @JvmStatic
+    fun fade(color: Color, index: Int, count: Int): Color {
+        val hsb = FloatArray(3)
+        Color.RGBtoHSB(color.red, color.green, color.blue, hsb)
+        var brightness =
+            abs(((System.currentTimeMillis() % 2000L).toFloat() / 1000.0f + index.toFloat() / count.toFloat() * 2.0f) % 2.0f - 1.0f)
+        brightness = 0.5f + 0.5f * brightness
+        hsb[2] = brightness % 2.0f
+        return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
+    }
+    private val startTime=System.currentTimeMillis()
+    fun hslRainbow(index: Int,lowest: Float=0.41f,bigest: Float=0.58f,indexOffset: Int=300,timeSplit: Int=1500):Color{
+        return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, 0.7F, 1F)
+    }
+    @JvmStatic
+    fun LiquidSlowly(time: Long, count: Int, qd: Float, sq: Float): Color? {
+        val color = Color(Color.HSBtoRGB((time.toFloat() + count * -3000000f) / 2 / 1.0E9f, qd, sq))
+        return Color(color.red / 255.0f * 1, color.green / 255.0f * 1, color.blue / 255.0f * 1, color.alpha / 255.0f)
+    }
+    fun getHealthColor(health: Float, maxHealth: Float): Color {
+        val fractions = floatArrayOf(0.0f, 0.5f, 1.0f)
+        val colors = arrayOf(Color(108, 0, 0), Color(255, 51, 0), Color.GREEN)
+        val progress = health / maxHealth
+        return blendColors(fractions, colors, progress)!!.brighter()
+    }
+    fun blendColors(fractions: FloatArray, colors: Array<Color?>, progress: Float): Color? {
+        return if (fractions.size == colors.size) {
+            val indices: IntArray =
+                getFractionIndices(fractions, progress)
+            val range = floatArrayOf(fractions[indices[0]], fractions[indices[1]])
+            val colorRange =
+                arrayOf(colors[indices[0]], colors[indices[1]])
+            val max = range[1] - range[0]
+            val value = progress - range[0]
+            val weight = value / max
+            blend(
+                colorRange[0]!!,
+                colorRange[1]!!,
+                (1.0f - weight).toDouble()
+            )
+        } else {
+            throw IllegalArgumentException("Fractions and colours must have equal number of elements")
+        }
+    }
+    fun getFractionIndices(fractions: FloatArray, progress: Float): IntArray {
+        val range = IntArray(2)
+        var startPoint: Int
+        startPoint = 0
+        while (startPoint < fractions.size && fractions[startPoint] <= progress) {
+            ++startPoint
+        }
+        if (startPoint >= fractions.size) {
+            startPoint = fractions.size - 1
+        }
+        range[0] = startPoint - 1
+        range[1] = startPoint
+        return range
+    }
 
+    fun blend(color1: Color, color2: Color, ratio: Double): Color? {
+        val r = ratio.toFloat()
+        val ir = 1.0f - r
+        val rgb1 = color1.getColorComponents(FloatArray(3))
+        val rgb2 = color2.getColorComponents(FloatArray(3))
+        var red = rgb1[0] * r + rgb2[0] * ir
+        var green = rgb1[1] * r + rgb2[1] * ir
+        var blue = rgb1[2] * r + rgb2[2] * ir
+        if (red < 0.0f) {
+            red = 0.0f
+        } else if (red > 255.0f) {
+            red = 255.0f
+        }
+        if (green < 0.0f) {
+            green = 0.0f
+        } else if (green > 255.0f) {
+            green = 255.0f
+        }
+        if (blue < 0.0f) {
+            blue = 0.0f
+        } else if (blue > 255.0f) {
+            blue = 255.0f
+        }
+        var color3: Color? = null
+        try {
+            color3 = Color(red, green, blue)
+        } catch (var13: java.lang.IllegalArgumentException) {
+        }
+        return color3
+    }
     @JvmStatic
     fun stripColor(input: String?): String? {
         return COLOR_PATTERN.matcher(input ?: return null).replaceAll("")

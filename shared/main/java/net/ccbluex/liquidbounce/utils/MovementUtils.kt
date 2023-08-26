@@ -21,7 +21,15 @@ object MovementUtils : MinecraftInstance() {
     fun hasMotion(): Boolean {
         return mc.thePlayer!!.motionX != 0.0 && mc.thePlayer!!.motionZ != 0.0 && mc.thePlayer!!.motionY != 0.0
     }
-
+    @JvmStatic
+    fun getScaffoldRotation(yaw: Float, strafe: Float): Float {
+        var rotationYaw = yaw
+        rotationYaw += 180f
+        val forward = -0.5f
+        if (strafe < 0f) rotationYaw -= 90f * forward
+        if (strafe > 0f) rotationYaw += 90f * forward
+        return rotationYaw
+    }
     @JvmStatic
     @JvmOverloads
     fun strafe(speed: Float = this.speed) {
