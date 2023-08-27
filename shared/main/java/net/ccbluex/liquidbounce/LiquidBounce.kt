@@ -7,10 +7,10 @@ package net.ccbluex.liquidbounce
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import me.nelly.Client
 
 import net.ccbluex.liquidbounce.api.Wrapper
 import net.ccbluex.liquidbounce.api.minecraft.util.IResourceLocation
+import net.ccbluex.liquidbounce.cape.CapeAPI
 import net.ccbluex.liquidbounce.cape.CapeAPI.registerCapeService
 
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.features.special.DonatorCape
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.injection.backend.Backend
 import net.ccbluex.liquidbounce.script.ScriptManager
+import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
 import net.ccbluex.liquidbounce.tabs.BlocksTab
 import net.ccbluex.liquidbounce.tabs.ExploitsTab
@@ -33,6 +34,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -84,7 +86,81 @@ object LiquidBounce {
     //    Verify.asfnioasnoasfonfsanofsanoi()
      //   Verify.lilililili()
         isStarting = true
-        Client.ilililililililililil()
+        ClientUtils.getLogger().info("Starting $CLIENT_NAME b$CLIENT_VERSION, by $CLIENT_CREATOR")
+
+        // Create file manager
+        fileManager = FileManager()
+
+        // Crate event manager
+        eventManager = EventManager()
+
+        // Register listeners
+        eventManager.registerListener(RotationUtils())
+        eventManager.registerListener(AntiForge())
+        eventManager.registerListener(BungeeCordSpoof())
+        eventManager.registerListener(DonatorCape())
+        eventManager.registerListener(InventoryUtils())
+
+        // Init Discord RPC
+        clientRichPresence = ClientRichPresence()
+
+        // Create command manager
+        commandManager = CommandManager()
+
+        // Load client fonts
+        Fonts.loadFonts()
+
+        // Setup module manager and register modules
+        moduleManager = ModuleManager()
+        moduleManager.registerModules()
+
+        try {
+            // Remapper
+            Remapper.loadSrg()
+
+            // ScriptManager
+            scriptManager = ScriptManager()
+            scriptManager.loadScripts()
+            scriptManager.enableScripts()
+        } catch (throwable: Throwable) {
+            ClientUtils.getLogger().error("Failed to load scripts.", throwable)
+        }
+
+        // Register commands
+        commandManager.registerCommands()
+
+        // Load configs
+        fileManager.loadConfigs(
+            fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,
+            fileManager.friendsConfig, fileManager.xrayConfig, fileManager.shortcutsConfig)
+
+        // ClickGUI
+        clickGui = ClickGui()
+        fileManager.loadConfig(fileManager.clickGuiConfig)
+
+        // Tabs (Only for Forge!)
+        if (hasForge()) {
+            BlocksTab()
+            ExploitsTab()
+            HeadsTab()
+        }
+
+        // Register capes service
+        try {
+            registerCapeService()
+        } catch (throwable: Throwable) {
+            ClientUtils.getLogger().error("Failed to register cape service", throwable)
+        }
+
+        // Set HUD
+        hud = createDefault()
+        fileManager.loadConfig(fileManager.hudConfig)
+
+        // Disable optifine fastrender
+        ClientUtils.disableFastRender()
+
+        // Load generators
+        GuiAltManager.loadGenerators()
         isStarting = false
     }
 
