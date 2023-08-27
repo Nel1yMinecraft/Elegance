@@ -146,9 +146,9 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             val xPos = -module.slide - 2
                             RenderUtils.newDrawRect(
                                 xPos - 2,
-                                module.higt,
                                 0F,
-                                module.higt + textHeight,
+                                0F,
+                                0 + textHeight,
                                 when (shadowColorMode.get().toLowerCase()) {
                                     "background" -> Color(
                                         backgroundColorRedValue.get(),

@@ -8,10 +8,10 @@ package net.ccbluex.liquidbounce.features.module
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.LiquidBounce.moduleManager
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.features.module.modules.render.HUD
 import net.ccbluex.liquidbounce.injection.backend.Backend
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClientUtils2
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.Value
@@ -19,7 +19,6 @@ import org.lwjgl.input.Keyboard
 
 open class Module : MinecraftInstance(), Listenable {
     var isSupported: Boolean
-    var higt = 0F
 
     // Module information
     // TODO: Remove ModuleInfo and change to constructor (#Kotlin)
@@ -57,7 +56,6 @@ open class Module : MinecraftInstance(), Listenable {
     }
 
     // Current state of module
-    var hud = moduleManager.getModule(HUD::class.java) as HUD
     var state = false
         set(value) {
             if (field == value)
@@ -69,11 +67,7 @@ open class Module : MinecraftInstance(), Listenable {
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
                 when (moduleManager.toggleSoundMode) {
-                    1 -> (if (value) mc.soundHandler.playSound(
-                        "block.stone_pressureplate.click_on",
-                        1F
-                    ) else mc.soundHandler.playSound("block.stone_pressureplate.click_off", 1F))
-
+                    1 -> (if (value) mc.soundHandler.playSound("block.stone_pressureplate.click_on", 1F) else mc.soundHandler.playSound("block.stone_pressureplate.click_off",1F))
                     2 -> (if (value) LiquidBounce.tipSoundManager.enableSound else LiquidBounce.tipSoundManager.disableSound).asyncPlay()
                     3 -> (if (value) LiquidBounce.tipSoundManager.sigmaenableSound else LiquidBounce.tipSoundManager.sigmadisableSound).asyncPlay()
                     4 -> (if (value) LiquidBounce.tipSoundManager.sinkaenableSound else LiquidBounce.tipSoundManager.sinkadisableSound).asyncPlay()
@@ -81,15 +75,22 @@ open class Module : MinecraftInstance(), Listenable {
                     6 -> (if (value) LiquidBounce.tipSoundManager.prideenableSound else LiquidBounce.tipSoundManager.pridedisableSound).asyncPlay()
                     7 -> (if (value) LiquidBounce.tipSoundManager.lbplusenableSound else LiquidBounce.tipSoundManager.lbplusdisableSound).asyncPlay()
                 }
-                LiquidBounce.hud.addNotification(
-                    Notification(
-                        "Module", "${
-                            if (value) "Enabled "
-                            else "Disabled "
-                        }$name", if (value) NotifyType.SUCCESS
-                        else NotifyType.ERROR
+
+                when (moduleManager.toggleMessageMode) {
+                    1 -> when (moduleManager.toggleChatMode) {
+                        1 -> LiquidBounce.hud.addNotification(Notification("Notification","${if (value) "§aEnabled" else "§cDisabled"} §r${name}.",NotifyType.INFO))
+                        2 -> LiquidBounce.hud.addNotification(Notification("Notification","§r${name} was ${if (value) "§aEnabled" else "§cDisabled"}.",NotifyType.INFO))
+                    }
+                    2 -> LiquidBounce.hud.addNotification(
+                        Notification(
+                            "Module", "${
+                                if (value) "Enabled "
+                                else "Disabled "
+                            }$name", if (value) NotifyType.SUCCESS
+                            else NotifyType.ERROR
+                        )
                     )
-                )
+                }
             }
 
             // Call on enabled or disabled

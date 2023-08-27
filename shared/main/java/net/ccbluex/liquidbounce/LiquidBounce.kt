@@ -87,12 +87,15 @@ object LiquidBounce {
      //   Verify.lilililili()
         isStarting = true
         ClientUtils.getLogger().info("Starting $CLIENT_NAME b$CLIENT_VERSION, by $CLIENT_CREATOR")
-
         // Create file manager
         fileManager = FileManager()
 
         // Crate event manager
         eventManager = EventManager()
+
+        //Crate tipsound manager
+        tipSoundManager = TipSoundManager()
+
 
         // Register listeners
         eventManager.registerListener(RotationUtils())

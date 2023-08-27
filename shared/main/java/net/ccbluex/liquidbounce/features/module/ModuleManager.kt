@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import me.nelly.FakeAim
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
@@ -27,7 +28,9 @@ class ModuleManager : Listenable {
 
     val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
-    var toggleSoundMode = 0
+    var toggleMessageMode = 1
+    var toggleSoundMode = 1
+    var toggleChatMode = 1
 
     init {
         LiquidBounce.eventManager.registerListener(this)
@@ -182,7 +185,8 @@ class ModuleManager : Listenable {
             NoSlowBreak::class.java,
             PortalMenu::class.java,
             StrafeFix::class.java,
-            GroundTelly::class.java
+            GroundTelly::class.java,
+            FakeAim::class.java
         )
 
         registerModule(NoScoreboard)
