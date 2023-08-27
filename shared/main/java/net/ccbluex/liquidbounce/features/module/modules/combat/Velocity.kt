@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.injection.backend.unwrap
-import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -34,7 +33,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "Grim-Packet","AAC", "AACPush", "AACZero", "AACv4",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "GrimPacket","AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch"), "Simple")
 
     // Reverse
@@ -75,7 +74,7 @@ class Velocity : Module() {
 
     override fun onEnable() {
         when(modeValue.get().toLowerCase()) {
-            "grim-packet" -> {
+            "grimpacket" -> {
                 grimTCancel = 0
             }
         }
@@ -96,7 +95,7 @@ class Velocity : Module() {
                 thePlayer.motionX -= sin(yaw) * 0.2
                 thePlayer.motionZ += cos(yaw) * 0.2
             }
-            "grim-packet" -> {
+            "grimpacket" -> {
                 updates++
 
                 if (resetPersec > 0) {
@@ -225,7 +224,7 @@ class Velocity : Module() {
                     packetEntityVelocity.motionY = (packetEntityVelocity.motionY * vertical).toInt()
                     packetEntityVelocity.motionZ = (packetEntityVelocity.motionZ * horizontal).toInt()
                 }
-                "grim-packet" -> {
+                "grimpacket" -> {
                     if (packet2 is SPacketEntityVelocity && packet2.entityID == mc.thePlayer!!.entityId) {
                         event.cancelEvent()
                         grimTCancel = cancelPacket

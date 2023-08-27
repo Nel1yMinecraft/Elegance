@@ -49,7 +49,7 @@ class Notifications(
     private val blurValue = FloatValue("Blur", 1F, 0.1F, 10F)
 
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "FDP", "Modern", "Tenacity", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf( "Tenacity", "Skid"), "Skid")
     }
 
     /**

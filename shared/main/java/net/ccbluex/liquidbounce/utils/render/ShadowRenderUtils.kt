@@ -37,7 +37,7 @@ object ShadowRenderUtils {
         if (!enableBlend) glEnable(GL_BLEND)
         if (!disableAlpha) glDisable(GL_ALPHA_TEST)
         GlStateManager.color(1f, 1f, 1f, alpha)
-        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("colorbyte/shadow/$image.png"))
+        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("liquidbounce/shadow/$image.png"))
         drawModalRectWithCustomSizedTexture(
             x,
             y,

@@ -155,8 +155,8 @@ class KillAura : Module() {
     private val randomCenterValue = BoolValue("RandomCenter", true)
     private val rotations = ListValue(
         "RotationMode",
-        arrayOf("None", "New", "Liquidbounce", "BackTrack", "Test1", "Test2", "HytRotation","VapuV1"),
-        "New"
+        arrayOf("None", "Liquidbounce", "BackTrack", "HytRotation"),
+        "HytRotation"
     )
     private val outborderValue = BoolValue("Outborder", false)
     private val silentRotationValue = BoolValue("SilentRotation", true)
