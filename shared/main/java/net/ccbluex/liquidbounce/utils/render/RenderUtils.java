@@ -556,7 +556,51 @@ public final class RenderUtils extends MinecraftInstance {
     public static void resetColor() {
         GlStateManager.color(1, 1, 1, 1);
     }
+    //计分板
+    public static void newDrawRect(float left, float top, float right, float bottom, int color)
+    {
+        if (left < right)
+        {
+            float i = left;
+            left = right;
+            right = i;
+        }
 
+        if (top < bottom)
+        {
+            float j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+        ITessellator tessellator = classProvider.getTessellatorInstance();
+        IWorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(f, f1, f2, f3);
+        worldrenderer.begin(7, classProvider.getVertexFormatEnum(WDefaultVertexFormats.POSITION));
+        worldrenderer.pos((double)left, (double)bottom, 0.0D).endVertex();
+        worldrenderer.pos((double)right, (double)bottom, 0.0D).endVertex();
+        worldrenderer.pos((double)right, (double)top, 0.0D).endVertex();
+        worldrenderer.pos((double)left, (double)top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+    public static int SkyRainbow(int var2, float st, float bright) {
+        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109L)) / 5;
+        return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright).getRGB();
+    }
+    public static int getRainbowOpaque(int seconds, float saturation, float brightness, int index) {
+        float hue = ((System.currentTimeMillis() + index) % (seconds * 1000)) / (float) (seconds * 1000);
+        int color = Color.HSBtoRGB(hue, saturation, brightness);
+        return color;
+    }
     public static Color getGradientOffset(Color color1, Color color2, double offset) {
         double inverse_percent;
         int redPart;

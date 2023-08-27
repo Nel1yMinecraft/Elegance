@@ -21,7 +21,14 @@ class HUD : Module() {
     val inventoryParticle = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
     val fontChatValue = BoolValue("FontChat", false)
-
+    val chatRect = BoolValue("ChatRect", true)
+    val chatAnimValue = BoolValue("ChatAnimation", true)
+        val toggleChatMode = ListValue(
+        "toggleChatMode",
+        arrayOf(
+            "Mode1", "Mode2"
+        ), "Mode2"
+    )
     @EventTarget
     fun onRender2D(event: Render2DEvent?) {
         if (classProvider.isGuiHudDesigner(mc.currentScreen))

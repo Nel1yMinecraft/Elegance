@@ -15,7 +15,9 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Horizontal
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.ShadowUtils
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
@@ -46,6 +48,19 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tags = BoolValue("Tags", true)
     private val shadow = BoolValue("ShadowText", true)
+    private val shadowShaderValue = BoolValue("Shadow", false).displayable { shadow.get() }
+    private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30).displayable { shadow.get() }
+    private val shadowColorMode =
+        ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background").displayable { shadow.get() }
+    private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255).displayable { shadow.get() }
+    private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable { shadow.get() }
+    private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255).displayable { shadow.get() }
+    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255)
+    private val skyDistanceValue = IntegerValue("Sky-Distance", 2, 0, 4)
+    private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
+    private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6)
+    private val liquidSlowlyDistanceValue = IntegerValue("LiquidSlowly-Distance", 90, 1, 90)
+    private val fadeDistanceValue = IntegerValue("Fade-Distance", 50, 1, 100)
     private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
@@ -63,6 +78,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private var y2 = 0F
 
     private var modules = emptyList<Module>()
+    val counter = intArrayOf(0)
 
     override fun drawElement(): Border? {
         val fontRenderer = fontValue.get()
@@ -120,6 +136,84 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
 
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
+                if (shadowShaderValue.get()) {
+                    GL11.glTranslated(-renderX, -renderY, 0.0)
+                    GL11.glPushMatrix()
+                    ShadowUtils.shadow(shadowStrength.get().toFloat(), {
+                        GL11.glPushMatrix()
+                        GL11.glTranslated(renderX, renderY, 0.0)
+                        modules.forEachIndexed { index, module ->
+                            val xPos = -module.slide - 2
+                            RenderUtils.newDrawRect(
+                                xPos - 2,
+                                module.higt,
+                                0F,
+                                module.higt + textHeight,
+                                when (shadowColorMode.get().toLowerCase()) {
+                                    "background" -> Color(
+                                        backgroundColorRedValue.get(),
+                                        backgroundColorGreenValue.get(),
+                                        backgroundColorBlueValue.get()
+                                    ).rgb
+
+                                    "text" -> {
+                                        val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
+
+                                        var Sky = RenderUtils.SkyRainbow(
+                                            counter[0] * (skyDistanceValue.get() * 50),
+                                            saturationValue.get(),
+                                            brightnessValue.get()
+                                        )
+                                        var CRainbow = RenderUtils.getRainbowOpaque(
+                                            cRainbowSecValue.get(),
+                                            saturationValue.get(),
+                                            brightnessValue.get(),
+                                            counter[0] * (50 * cRainbowDistValue.get())
+                                        )
+                                        var FadeColor = ColorUtils.fade(
+                                            Color(
+                                                colorRedValue.get(),
+                                                colorGreenValue.get(),
+                                                colorBlueValue.get(),
+                                                colorAlphaValue.get()
+                                            ), index * fadeDistanceValue.get(), 100
+                                        ).rgb
+                                        counter[0] = counter[0] - 1
+
+                                        val test = ColorUtils.LiquidSlowly(
+                                            System.nanoTime(),
+                                            index * liquidSlowlyDistanceValue.get(),
+                                            saturationValue.get(),
+                                            brightnessValue.get()
+                                        )?.rgb
+                                        var LiquidSlowly: Int = test!!
+
+                                        when {
+                                            colorMode.equals("Random", ignoreCase = true) -> moduleColor
+                                            colorMode.equals("Sky", ignoreCase = true) -> Sky
+                                            colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
+                                            colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
+                                            colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+
+                                            else -> customColor
+                                        }
+                                    }
+
+                                    else -> Color(
+                                        shadowColorRedValue.get(),
+                                        shadowColorGreenValue.get(),
+                                        shadowColorBlueValue.get()
+                                    ).rgb
+                                }
+                            )
+                        }
+                        GL11.glPopMatrix()
+                        counter[0] = 0
+                    }, {
+                    })
+                    GL11.glPopMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                }
                 modules.forEachIndexed { index, module ->
                     var displayString = if (!tags.get())
                         module.name

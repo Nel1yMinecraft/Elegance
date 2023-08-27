@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.utils.EaseUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -24,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+
 import java.util.List;
 
 @Mixin(GuiNewChat.class)
@@ -39,9 +42,6 @@ public abstract class MixinGuiNewChat {
     private int scrollPos;
     @Shadow
     private boolean isScrolled;
-    @Shadow
-    @Final
-    private List<ChatLine> chatLines;
 
     @Shadow
     public abstract int getLineCount();
@@ -54,12 +54,6 @@ public abstract class MixinGuiNewChat {
 
     @Shadow
     public abstract int getChatWidth();
-
-    @Shadow
-    public abstract void deleteChatLine(int p_deleteChatLine_1_);
-
-    @Shadow
-    public abstract void scroll(int p_scroll_1_);
 
     @Inject(method = "drawChat", at = @At("HEAD"), cancellable = true)
     private void drawChat(int p_drawChat_1_, final CallbackInfo callbackInfo) {
@@ -107,9 +101,23 @@ public abstract class MixinGuiNewChat {
                                 if (lvt_14_1_ > 3) {
                                     int lvt_15_1_ = 0;
                                     int lvt_16_1_ = -lvt_9_1_ * 9;
-                                    Gui.drawRect(lvt_15_1_, lvt_16_1_ - 9, lvt_15_1_ + lvt_8_1_ + 4, lvt_16_1_, lvt_14_1_ / 2 << 24);
+                                    if(hud.getChatAnimValue().get()&&!lvt_3_1_) {
+                                        if (lvt_11_1_ <= 20) {
+                                            GL11.glTranslatef((float) (-(lvt_8_1_ + 4) * EaseUtils.INSTANCE.easeInQuart(1 - ((lvt_11_1_+mc.timer.renderPartialTicks) / 20.0))), 0F, 0F);
+                                        }
+                                        if (lvt_11_1_ >= 180) {
+                                            GL11.glTranslatef((float) (-(lvt_8_1_ + 4) * EaseUtils.INSTANCE.easeInQuart(((lvt_11_1_+mc.timer.renderPartialTicks) - 180) / 20.0)), 0F, 0F);
+                                        }
+                                    }
+                                    if (hud.getChatRect().get()) {
+                                        RenderUtils.drawRect(lvt_15_1_, lvt_16_1_ - 15, lvt_15_1_ + lvt_8_1_ + 4, lvt_16_1_ - 6, lvt_14_1_ / 2 << 24);
+                                    }
+
+                                    GlStateManager.enableBlend();
+                                    GlStateManager.enableAlpha();
+
                                     String lvt_17_1_ = lvt_10_1_.getChatComponent().getFormattedText();
-                                    Fonts.font40.drawStringWithShadow(lvt_17_1_, lvt_15_1_ + 2, (lvt_16_1_ - 8), 16777215 + (lvt_14_1_ << 24));
+                                    Fonts.font35.drawStringWithShadow(lvt_17_1_, lvt_15_1_ + 2, (lvt_16_1_ - 14), 16777215 + (lvt_14_1_ << 24));
                                     GL11.glColor4f(1, 1, 1, 1);
                                     GlStateManager.resetColor();
                                 }
@@ -118,7 +126,7 @@ public abstract class MixinGuiNewChat {
                     }
 
                     if (lvt_3_1_) {
-                        lvt_9_1_ = Fonts.font40.getFontHeight();
+                        lvt_9_1_ = Fonts.font35.getFontHeight();
                         GlStateManager.translate(-3.0F, 0.0F, 0.0F);
                         int lvt_10_2_ = lvt_5_1_ * lvt_9_1_ + lvt_5_1_;
                         lvt_11_1_ = lvt_4_1_ * lvt_9_1_ + lvt_4_1_;
@@ -137,46 +145,6 @@ public abstract class MixinGuiNewChat {
             }
         }
     }
-
-    // TODO: Make real fix
-    /*@Inject(method = "setChatLine", at = @At("HEAD"), cancellable = true)
-    private void setChatLine(IChatComponent p_setChatLine_1_, int p_setChatLine_2_, int p_setChatLine_3_, boolean p_setChatLine_4_, final CallbackInfo callbackInfo) {
-        final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
-
-        if(hud.getState() && hud.fontChatValue.asBoolean()) {
-            callbackInfo.cancel();
-
-            if (p_setChatLine_2_ != 0) {
-                this.deleteChatLine(p_setChatLine_2_);
-            }
-
-            int lvt_5_1_ = MathHelper.floor_float((float)this.getChatWidth() / this.getChatScale());
-            List<IChatComponent> lvt_6_1_ = GuiUtilRenderComponents.splitText(p_setChatLine_1_, lvt_5_1_, Fonts.font40, false, false);
-            boolean lvt_7_1_ = this.getChatOpen();
-
-            IChatComponent lvt_9_1_;
-            for(Iterator lvt_8_1_ = lvt_6_1_.iterator(); lvt_8_1_.hasNext(); this.drawnChatLines.add(0, new ChatLine(p_setChatLine_3_, lvt_9_1_, p_setChatLine_2_))) {
-                lvt_9_1_ = (IChatComponent)lvt_8_1_.next();
-                if (lvt_7_1_ && this.scrollPos > 0) {
-                    this.isScrolled = true;
-                    this.scroll(1);
-                }
-            }
-
-            while(this.drawnChatLines.size() > 100) {
-                this.drawnChatLines.remove(this.drawnChatLines.size() - 1);
-            }
-
-            if (!p_setChatLine_4_) {
-                this.chatLines.add(0, new ChatLine(p_setChatLine_3_, p_setChatLine_1_, p_setChatLine_2_));
-
-                while(this.chatLines.size() > 100) {
-                    this.chatLines.remove(this.chatLines.size() - 1);
-                }
-            }
-        }
-    }*/
-
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)
     private void getChatComponent(int p_getChatComponent_1_, int p_getChatComponent_2_, final CallbackInfoReturnable<ITextComponent> callbackInfo) {
         final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
@@ -192,15 +160,15 @@ public abstract class MixinGuiNewChat {
                 lvt_7_1_ = MathHelper.floor((float) lvt_7_1_ / lvt_5_1_);
                 if (lvt_6_1_ >= 0 && lvt_7_1_ >= 0) {
                     int lvt_8_1_ = Math.min(this.getLineCount(), this.drawnChatLines.size());
-                    if (lvt_6_1_ <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && lvt_7_1_ < Fonts.font40.getFontHeight() * lvt_8_1_ + lvt_8_1_) {
-                        int lvt_9_1_ = lvt_7_1_ / Fonts.font40.getFontHeight() + this.scrollPos;
+                    if (lvt_6_1_ <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && lvt_7_1_ < Fonts.font35.getFontHeight() * lvt_8_1_ + lvt_8_1_) {
+                        int lvt_9_1_ = lvt_7_1_ / Fonts.font35.getFontHeight() + this.scrollPos;
                         if (lvt_9_1_ >= 0 && lvt_9_1_ < this.drawnChatLines.size()) {
                             ChatLine lvt_10_1_ = this.drawnChatLines.get(lvt_9_1_);
                             int lvt_11_1_ = 0;
 
                             for (ITextComponent lvt_13_1_ : lvt_10_1_.getChatComponent()) {
                                 if (lvt_13_1_ instanceof TextComponentString) {
-                                    lvt_11_1_ += Fonts.font40.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(((TextComponentString) lvt_13_1_).getText(), false));
+                                    lvt_11_1_ += Fonts.font35.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(((TextComponentString) lvt_13_1_).getText(), false));
                                     if (lvt_11_1_ > lvt_6_1_) {
                                         callbackInfo.setReturnValue(lvt_13_1_);
                                         return;

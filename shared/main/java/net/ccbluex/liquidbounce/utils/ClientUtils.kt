@@ -38,38 +38,12 @@ class ClientUtils2 {
             }
         }
 
-        fun notificationsTransform(title: String, content: String, type: NotifyType, onlyNotifications: Boolean) {
-            if (!onlyNotifications) return
-            when (moduleManager.toggleMessageMode) {
-                2 -> LiquidBounce.hud.addNotification(
-                    Notification(
-                        title, content, type
-                    )
-                )
-            }
-
-        }
-
-        fun notificationsTransform(title: String, content: String, type: NotifyType, time: Int) {
-            when (moduleManager.toggleMessageMode) {
-                1 -> ClientUtils.displayChatMessage("§b${LiquidBounce.CLIENT_NAME} §7» §b$title §7» §6$content")
-                2 -> LiquidBounce.hud.addNotification(
-                    Notification(
-                        title, content, type, time
-                    )
-                )
-            }
-        }
         fun notificationsTransform(title: String, content: String, type: NotifyType) {
-            when (moduleManager.toggleMessageMode) {
-                1 -> ClientUtils.displayChatMessage("§b${LiquidBounce.CLIENT_NAME} §7» §b$title §7» §6$content")
-                2 -> LiquidBounce.hud.addNotification(
-                    Notification(
-                        title, content, type
-                    )
+            LiquidBounce.hud.addNotification(
+                Notification(
+                    title, content, type
                 )
-
-            }
+            )
         }
     }
 }
