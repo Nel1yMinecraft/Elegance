@@ -17,6 +17,7 @@ class Teams : Module() {
     private val scoreboardValue = BoolValue("ScoreboardTeam", true)
     private val colorValue = BoolValue("Color", true)
     private val gommeSWValue = BoolValue("GommeSW", false)
+    private val armorColorValue = BoolValue("ArmorColor", false)
 
     /**
      * Check if [entity] is in your own team using scoreboard, name color or team prefix
@@ -25,10 +26,26 @@ class Teams : Module() {
         val thePlayer = mc.thePlayer ?: return false
 
         if (scoreboardValue.get() && thePlayer.team != null && entity.team != null &&
-                thePlayer.team!!.isSameTeam(entity.team!!))
+            thePlayer.team!!.isSameTeam(entity.team!!))
             return true
 
         val displayName = thePlayer.displayName
+
+        if(armorColorValue.get()){
+            val entityPlayer = entity.asEntityPlayer()
+            if(thePlayer.inventory.armorInventory[3] != null && entityPlayer.inventory.armorInventory[3] != null){
+                val myHead = thePlayer.inventory.armorInventory[3]
+                val myItemArmor = myHead!!.item!!.asItemArmor()
+
+
+                val entityHead = entityPlayer.inventory.armorInventory[3]
+                val entityItemArmor = myHead.item!!.asItemArmor()
+
+                if(myItemArmor.getColor(myHead) == entityItemArmor.getColor(entityHead!!)){
+                    return true
+                }
+            }
+        }
 
         if (gommeSWValue.get() && displayName != null && entity.displayName != null) {
             val targetName = entity.displayName!!.formattedText.replace("§r", "")

@@ -16,7 +16,8 @@ class SlotImpl(val wrapped: Slot) : ISlot {
     override val stack: IItemStack?
         get() = wrapped.stack?.wrap()
 
-
+    override val hasStack: Boolean
+        get() = wrapped.hasStack
     override fun equals(other: Any?): Boolean {
         return other is SlotImpl && other.wrapped == this.wrapped
     }

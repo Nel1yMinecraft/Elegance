@@ -13,6 +13,7 @@
     "client.MixinMinecraft",
     "client.MixinProfiler",
     "client.MixinResourcePackRepository",
+    "client.MixinKeyBinding",
     "entity.MixinAbstractClientPlayer",
     "entity.MixinEntity",
     "entity.MixinEntityLivingBase",

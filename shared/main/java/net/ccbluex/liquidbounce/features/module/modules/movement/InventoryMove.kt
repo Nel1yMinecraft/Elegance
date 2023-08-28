@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * LiquidBounce Base
+ * God SkidBounce
+ * Conding
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
@@ -22,12 +22,12 @@ class InventoryMove : Module() {
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
 
     private val affectedBindings = arrayOf(
-            mc.gameSettings.keyBindForward,
-            mc.gameSettings.keyBindBack,
-            mc.gameSettings.keyBindRight,
-            mc.gameSettings.keyBindLeft,
-            mc.gameSettings.keyBindJump,
-            mc.gameSettings.keyBindSprint
+        mc.gameSettings.keyBindForward,
+        mc.gameSettings.keyBindBack,
+        mc.gameSettings.keyBindRight,
+        mc.gameSettings.keyBindLeft,
+        mc.gameSettings.keyBindJump,
+        mc.gameSettings.keyBindSprint
     )
 
     @EventTarget
