@@ -5,7 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import me.nelly.Disabler
+import me.nelly.Title
 import me.nelly.Velocity2
+import me.rainyfall.AntiFakePlayer
 import me.rainyfall.AuraRangeHelper
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -189,7 +192,10 @@ class ModuleManager : Listenable {
             GroundTelly::class.java,
             Velocity2::class.java,
             AuraRangeHelper::class.java,
-            AutoGG::class.java
+            AutoGG::class.java,
+            Disabler::class.java,
+            AntiFakePlayer::class.java,
+            Title::class.java
         )
 
         registerModule(NoScoreboard)

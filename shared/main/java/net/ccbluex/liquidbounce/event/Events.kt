@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.event
 
 import net.ccbluex.liquidbounce.api.minecraft.client.block.IBlock
 import net.ccbluex.liquidbounce.api.minecraft.client.entity.IEntity
+import net.ccbluex.liquidbounce.api.minecraft.client.entity.IEntityLivingBase
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiScreen
 import net.ccbluex.liquidbounce.api.minecraft.client.multiplayer.IWorldClient
 import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
@@ -62,6 +63,12 @@ class JumpEvent(var motion: Float) : CancellableEvent()
  * @param key Pressed key
  */
 class KeyEvent(val key: Int) : Event()
+/**
+ * Called when player killed other entity
+ *
+ * @param targetEntity Attacked entity
+ */
+class EntityKilledEvent(val targetEntity: IEntityLivingBase?) : Event()
 
 /**
  * Called in "onUpdateWalkingPlayer"

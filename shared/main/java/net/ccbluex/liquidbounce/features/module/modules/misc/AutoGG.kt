@@ -34,7 +34,7 @@ class AutoGG : Module() {
         "@我正在使用${LiquidBounce.CLIENT_NAME}"
     ).displayable { startMsgValue.get() }
     private val ggMessageValue = TextValue("GGMessage", "[${LiquidBounce.CLIENT_NAME}]GG!")
-    val autojietu = BoolValue("AutoJieTu", true)
+    val autoscreenshots = BoolValue("AutoScreenshots", true)
 
     private var winning = false
     private var winverify1 = false
@@ -106,7 +106,7 @@ class AutoGG : Module() {
     fun onUpdate(event: UpdateEvent) {
         if (winning || (winverify1 && winverify2)) {
             gg2()
-            jietu()
+            screenshots()
         }
         if (gamestarted || (started1 && started2)) {
             total()
@@ -124,8 +124,8 @@ class AutoGG : Module() {
         stateReset()
     }
 
-    fun jietu() {
-        if (autojietu.get()) {
+    fun screenshots() {
+        if (autoscreenshots.get()) {
             val timer = MSTimer()
             val robot = Robot()
             timer.hasTimePassed(10)
