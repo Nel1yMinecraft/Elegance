@@ -5,14 +5,10 @@
  */
 package net.ccbluex.liquidbounce
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-
+import me.nelly.Verify2
 import net.ccbluex.liquidbounce.api.Wrapper
 import net.ccbluex.liquidbounce.api.minecraft.util.IResourceLocation
-import net.ccbluex.liquidbounce.cape.CapeAPI
 import net.ccbluex.liquidbounce.cape.CapeAPI.registerCapeService
-
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
@@ -24,7 +20,6 @@ import net.ccbluex.liquidbounce.features.special.DonatorCape
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.injection.backend.Backend
 import net.ccbluex.liquidbounce.script.ScriptManager
-import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
 import net.ccbluex.liquidbounce.tabs.BlocksTab
 import net.ccbluex.liquidbounce.tabs.ExploitsTab
@@ -34,22 +29,19 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.sound.TipSoundManager
-import kotlin.concurrent.thread
+import org.lwjgl.opengl.Display
 
 object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "Elegance"
     const val CLIENT_VERSION = 1.0
-    const val IN_DEV = true
-    const val CLIENT_CREATOR = "CCBlueX"
     const val MINECRAFT_VERSION = Backend.MINECRAFT_VERSION
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
 
@@ -78,15 +70,28 @@ object LiquidBounce {
     lateinit var clientRichPresence: ClientRichPresence
 
     lateinit var wrapper: Wrapper
-
+    val hitokoto: String? = try {
+        HttpUtils.get("https://v1.hitokoto.cn/?encode=text&max_length=16")
+    } catch (e: Exception) {
+        null
+    }
     /**
      * Execute if client will be started
      */
     fun startClient() {
-    //    Verify.asfnioasnoasfonfsanofsanoi()
-     //   Verify.lilililili()
+        //    Verify.asfnioasnoasfonfsanofsanoi()
+        //   Verify.lilililili()
         isStarting = true
-        ClientUtils.getLogger().info("Starting $CLIENT_NAME b$CLIENT_VERSION, by $CLIENT_CREATOR")
+        Verify2.veirfy()
+        ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION")
+        ClientUtils.getLogger().info("  ______   _                                              \n" +
+                " |  ____| | |                                             \n" +
+                " | |__    | |   ___    __ _    __ _   _ __     ___    ___ \n" +
+                " |  __|   | |  / _ \\  / _` |  / _` | | '_ \\   / __|  / _ \\\n" +
+                " | |____  | | |  __/ | (_| | | (_| | | | | | | (__  |  __/\n" +
+                " |______| |_|  \\___|  \\__, |  \\__,_| |_| |_|  \\___|  \\___|\n" +
+                "                       __/ |                              \n" +
+                "                      |___/                               ")
         // Create file manager
         fileManager = FileManager()
 
@@ -119,7 +124,7 @@ object LiquidBounce {
 
         try {
             // Remapper
-            Remapper.loadSrg()
+            loadSrg()
 
             // ScriptManager
             scriptManager = ScriptManager()
@@ -164,6 +169,8 @@ object LiquidBounce {
 
         // Load generators
         GuiAltManager.loadGenerators()
+
+        if (hitokoto != null) Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION | $hitokoto") else Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION")
         isStarting = false
     }
 

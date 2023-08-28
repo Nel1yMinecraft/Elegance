@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager.sub.altgenerator
 
-import com.thealtening.AltService
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiButton
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiTextField
 import net.ccbluex.liquidbounce.api.util.WrappedGuiScreen
@@ -68,7 +67,6 @@ class GuiMCLeaks(private val prevGui: GuiAltManager) : WrappedGuiScreen() {
                     MCLeaks.refresh(Session(redeemResponse.username, redeemResponse.token))
 
                     try {
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG)
                     } catch (e: Exception) {
                         ClientUtils.getLogger().error("Failed to change alt service to Mojang.", e)
                     }

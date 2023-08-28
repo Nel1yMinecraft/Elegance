@@ -337,8 +337,7 @@ class Notification(
             RenderUtils.customRoundedinf(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
             Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
             }  */
-
-        if (style.equals("Skid")) {
+            if (style.equals("Skid")) {
 
             val colors = Color(type.renderColor.red, type.renderColor.green, type.renderColor.blue, alpha / 3)
             ShadowRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat(), 27f - 5f, 250f) // oops

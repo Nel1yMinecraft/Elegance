@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.misc.Recorder
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -74,7 +75,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val display: String
         get() {
             val textContent = if (displayString.get().isEmpty() && !editMode)
-                "Text Element"
+                LiquidBounce.CLIENT_NAME
             else
                 displayString.get()
 
@@ -87,6 +88,9 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
         if (thePlayer != null) {
             when (str.toLowerCase()) {
+                "kills" -> return Recorder.killCounts.toString()
+                "wins" -> return Recorder.win.toString()
+                "playgames" -> return Recorder.totalPlayed.toString()
                 "x" -> return DECIMAL_FORMAT.format(thePlayer.posX)
                 "y" -> return DECIMAL_FORMAT.format(thePlayer.posY)
                 "z" -> return DECIMAL_FORMAT.format(thePlayer.posZ)

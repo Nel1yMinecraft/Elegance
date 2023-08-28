@@ -22,18 +22,19 @@ open class HUD : MinecraftInstance() {
     companion object {
 
         val elements = arrayOf(
-                Armor::class.java,
-                Arraylist::class.java,
-                Effects::class.java,
-                Image::class.java,
-                Model::class.java,
-                Notifications::class.java,
-                TabGUI::class.java,
-                Text::class.java,
-                ScoreboardElement::class.java,
-                Target::class.java,
-                Radar::class.java,
-                SpeedGraph::class.java
+            Armor::class.java,
+            Arraylist::class.java,
+            Effects::class.java,
+            Image::class.java,
+            Model::class.java,
+            Notifications::class.java,
+            TabGUI::class.java,
+            Text::class.java,
+            ScoreboardElement::class.java,
+            Target::class.java,
+            Radar::class.java,
+            SpeedGraph::class.java,
+            GameInfo::class.java
         )
 
         /**

@@ -5,7 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import me.nelly.FakeAim
+import me.nelly.Velocity2
+import me.rainyfall.AuraRangeHelper
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
@@ -186,7 +187,9 @@ class ModuleManager : Listenable {
             PortalMenu::class.java,
             StrafeFix::class.java,
             GroundTelly::class.java,
-            FakeAim::class.java
+            Velocity2::class.java,
+            AuraRangeHelper::class.java,
+            AutoGG::class.java
         )
 
         registerModule(NoScoreboard)

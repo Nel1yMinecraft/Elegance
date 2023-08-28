@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager.sub
 
-import com.thealtening.AltService
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiButton
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiTextField
 import net.ccbluex.liquidbounce.api.util.WrappedGuiScreen
@@ -94,14 +93,12 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : WrappedGuiScreen() {
 
                     status = when (loginResult) {
                         LoginUtils.LoginResult.LOGGED -> {
-                            if (GuiAltManager.altService.currentService != AltService.EnumAltService.MOJANG) {
                                 try {
-                                    GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG)
                                 } catch (e: NoSuchFieldException) {
                                     ClientUtils.getLogger().error("Something went wrong while trying to switch alt service.", e)
                                 } catch (e: IllegalAccessException) {
                                     ClientUtils.getLogger().error("Something went wrong while trying to switch alt service.", e)
-                                }
+
                             }
 
                             MCLeaks.remove()

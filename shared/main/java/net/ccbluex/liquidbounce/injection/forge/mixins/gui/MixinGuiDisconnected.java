@@ -8,9 +8,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
-import com.thealtening.AltService;
-import com.thealtening.api.TheAltening;
-import com.thealtening.api.data.AccountData;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.SessionEvent;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
@@ -72,18 +69,10 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
             case 3:
                 if (!GuiTheAltening.Companion.getApiKey().isEmpty()) {
                     final String apiKey = GuiTheAltening.Companion.getApiKey();
-                    final TheAltening theAltening = new TheAltening(apiKey);
 
                     try {
-                        final AccountData account = theAltening.getAccountData();
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.THEALTENING);
 
-                        final YggdrasilUserAuthentication yggdrasilUserAuthentication = new YggdrasilUserAuthentication(new YggdrasilAuthenticationService(Proxy.NO_PROXY, ""), Agent.MINECRAFT);
-                        yggdrasilUserAuthentication.setUsername(account.getToken());
-                        yggdrasilUserAuthentication.setPassword(LiquidBounce.CLIENT_NAME);
-                        yggdrasilUserAuthentication.logIn();
 
-                        mc.session = new Session(yggdrasilUserAuthentication.getSelectedProfile().getName(), yggdrasilUserAuthentication.getSelectedProfile().getId().toString(), yggdrasilUserAuthentication.getAuthenticatedToken(), "mojang");
                         LiquidBounce.eventManager.callEvent(new SessionEvent());
                         ServerUtils.connectToLastServer();
                         break;

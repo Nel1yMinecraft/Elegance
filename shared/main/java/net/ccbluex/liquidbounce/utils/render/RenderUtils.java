@@ -19,12 +19,16 @@ import net.ccbluex.liquidbounce.injection.backend.Backend;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
+import net.ccbluex.liquidbounce.utils.blur.ShaderUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -600,6 +604,204 @@ public final class RenderUtils extends MinecraftInstance {
         float hue = ((System.currentTimeMillis() + index) % (seconds * 1000)) / (float) (seconds * 1000);
         int color = Color.HSBtoRGB(hue, saturation, brightness);
         return color;
+    }
+    public static void drawGradientHorizontal(float x, float y, float width, float height, float radius, Color left, Color right) {
+        drawGradientRound(x, y, width, height, radius, left, left, right, right);
+    }
+    public static void drawGradientVertical(float x, float y, float width, float height, float radius, Color top, Color bottom) {
+        drawGradientRound(x, y, width, height, radius, bottom, top, bottom, top);
+    }
+
+    private static final ShaderUtil roundedGradientShader = new ShaderUtil("roundedRectGradient");
+    public static void quickRenderCircle(double x, double y, double start, double end, double w, double h) {
+        if (start > end) {
+            double temp = end;
+            end = start;
+            start = temp;
+        }
+
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+        GL11.glVertex2d(x, y);
+        for (double i = end; i >= start; i -= 4) {
+            double ldx = Math.cos(i * Math.PI / 180.0) * w;
+            double ldy = Math.sin(i * Math.PI / 180.0) * h;
+            GL11.glVertex2d(x + ldx, y + ldy);
+        }
+        GL11.glVertex2d(x, y);
+        GL11.glEnd();
+    }
+
+    public static void drawCircleRect(float x, float y, float x1, float y1, float radius, int color) {
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        glColor(color);
+
+        // 圆角
+        quickRenderCircle(x1 - radius, y1 - radius, 0, 90, radius, radius);
+        quickRenderCircle(x + radius, y1 - radius, 90, 180, radius, radius);
+        quickRenderCircle(x + radius, y + radius, 180, 270, radius, radius);
+        quickRenderCircle(x1 - radius, y + radius, 270, 360, radius, radius);
+
+        // 矩形
+        quickDrawRect(x + radius, y + radius, x1 - radius, y1 - radius);
+        quickDrawRect(x, y + radius, x + radius, y1 - radius);
+        quickDrawRect(x1 - radius, y + radius, x1, y1 - radius);
+        quickDrawRect(x + radius, y, x1 - radius, y + radius);
+        quickDrawRect(x + radius, y1 - radius, x1 - radius, y1);
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+    public static void drawScaledCustomSizeModalCircle(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {
+        float f = 1.0F / tileWidth;
+        float f1 = 1.0F / tileHeight;
+        ITessellator tessellator = classProvider.getTessellatorInstance();
+        IWorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(GL_POLYGON, classProvider.getVertexFormatEnum(WDefaultVertexFormats.POSITION_TEX));
+        float xRadius = width / 2f;
+        float yRadius = height / 2f;
+        float uRadius = (((u + (float) uWidth) * f) - (u * f)) / 2f;
+        float vRadius = (((v + (float) vHeight) * f1) - (v * f1)) / 2f;
+        for (int i = 0; i <= 360; i += 10) {
+            double xPosOffset = Math.sin(i * Math.PI / 180.0D);
+            double yPosOffset = Math.cos(i * Math.PI / 180.0D);
+            worldrenderer.pos(x + xRadius + xPosOffset * xRadius, y + yRadius + yPosOffset * yRadius, 0)
+                    .tex(u * f + uRadius + xPosOffset * uRadius, v * f1 + vRadius + yPosOffset * vRadius).endVertex();
+        }
+        tessellator.draw();
+    }
+    public static void drawShadowWithCustomAlpha(float x, float y, float width, float height, float alpha) {
+        drawTexturedRectWithCustomAlpha(x - 9, y - 9, 9, 9, "paneltopleft", alpha);
+        drawTexturedRectWithCustomAlpha(x - 9, y + height, 9, 9, "panelbottomleft", alpha);
+        drawTexturedRectWithCustomAlpha(x + width, y + height, 9, 9, "panelbottomright", alpha);
+        drawTexturedRectWithCustomAlpha(x + width, y - 9, 9, 9, "paneltopright", alpha);
+        drawTexturedRectWithCustomAlpha(x - 9, y, 9, height, "panelleft", alpha);
+        drawTexturedRectWithCustomAlpha(x + width, y, 9, height, "panelright", alpha);
+        drawTexturedRectWithCustomAlpha(x, y - 9, width, 9, "paneltop", alpha);
+        drawTexturedRectWithCustomAlpha(x, y + height, width, 9, "panelbottom", alpha);
+    }
+    public static void drawTexturedRectWithCustomAlpha(float x, float y, float width, float height, String image, float alpha) {
+        glPushMatrix();
+        final boolean enableBlend = glIsEnabled(GL_BLEND);
+        final boolean disableAlpha = !glIsEnabled(GL_ALPHA_TEST);
+        if (!enableBlend) glEnable(GL_BLEND);
+        if (!disableAlpha) glDisable(GL_ALPHA_TEST);
+        GlStateManager.color(1F, 1F, 1F, alpha);
+        mc.getTextureManager().bindTexture2(new ResourceLocation("liquidbounce/shadow/" + image + ".png"));
+        drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
+        if (!enableBlend) glDisable(GL_BLEND);
+        if (!disableAlpha) glEnable(GL_ALPHA_TEST);
+        GlStateManager.resetColor();
+        glPopMatrix();
+    }
+    public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
+        float f = (col1 >> 24 & 0xFF) / 255.0F;
+        float f1 = (col1 >> 16 & 0xFF) / 255.0F;
+        float f2 = (col1 >> 8 & 0xFF) / 255.0F;
+        float f3 = (col1 & 0xFF) / 255.0F;
+
+        float f4 = (col2 >> 24 & 0xFF) / 255.0F;
+        float f5 = (col2 >> 16 & 0xFF) / 255.0F;
+        float f6 = (col2 >> 8 & 0xFF) / 255.0F;
+        float f7 = (col2 & 0xFF) / 255.0F;
+
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        GL11.glShadeModel(7425);
+
+        GL11.glPushMatrix();
+        GL11.glBegin(7);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glVertex2d(left, top);
+        GL11.glVertex2d(left, bottom);
+
+        GL11.glColor4f(f5, f6, f7, f4);
+        GL11.glVertex2d(right, bottom);
+        GL11.glVertex2d(right, top);
+        GL11.glEnd();
+        GL11.glPopMatrix();
+
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glDisable(2848);
+        GL11.glShadeModel(7424);
+    }
+    public static void rectangleBordered(double x, double y, double x1, double y1, double width, int internalColor, int borderColor) {
+        RenderUtils.rectangle(x + width, y + width, x1 - width, y1 - width, internalColor);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderUtils.rectangle(x + width, y, x1 - width, y + width, borderColor);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderUtils.rectangle(x, y, x + width, y1, borderColor);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderUtils.rectangle(x1 - width, y, x1, y1, borderColor);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderUtils.rectangle(x + width, y1 - width, x1 - width, y1, borderColor);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    public static int reAlpha(final int n, final float n2) {
+        final Color color = new Color(n);
+        return new Color(0.003921569f * color.getRed(), 0.003921569f * color.getGreen(), 0.003921569f * color.getBlue(), n2).getRGB();
+    }
+    public static void rectangle(double left, double top, double right, double bottom, int color) {
+        double var5;
+        if (left < right) {
+            var5 = left;
+            left = right;
+            right = var5;
+        }
+        if (top < bottom) {
+            var5 = top;
+            top = bottom;
+            bottom = var5;
+        }
+        float var11 = (float) (color >> 24 & 255) / 255.0f;
+        float var6 = (float) (color >> 16 & 255) / 255.0f;
+        float var7 = (float) (color >> 8 & 255) / 255.0f;
+        float var8 = (float) (color & 255) / 255.0f;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder worldRenderer = tessellator.getBuffer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(var6, var7, var8, var11);
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldRenderer.pos(left, bottom, 0.0).endVertex();
+        worldRenderer.pos(right, bottom, 0.0).endVertex();
+        worldRenderer.pos(right, top, 0.0).endVertex();
+        worldRenderer.pos(left, top, 0.0).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    private static void setupRoundedRectUniforms(float x, float y, float width, float height, float radius, ShaderUtil roundedTexturedShader) {
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        roundedTexturedShader.setUniformf("location", x * sr.getScaleFactor(),
+                (Minecraft.getMinecraft().displayHeight - (height * sr.getScaleFactor())) - (y * sr.getScaleFactor()));
+        roundedTexturedShader.setUniformf("rectSize", width * sr.getScaleFactor(), height * sr.getScaleFactor());
+        roundedTexturedShader.setUniformf("radius", radius * sr.getScaleFactor());
+    }
+
+    public static void drawGradientRound(float x, float y, float width, float height, float radius, Color bottomLeft, Color topLeft, Color bottomRight, Color topRight) {
+        resetColor();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        roundedGradientShader.init();
+        setupRoundedRectUniforms(x, y, width, height, radius, roundedGradientShader);
+        // Bottom Left
+        roundedGradientShader.setUniformf("color1", bottomLeft.getRed() / 255f, bottomLeft.getGreen() / 255f, bottomLeft.getBlue() / 255f, bottomLeft.getAlpha() / 255f);
+        //Top left
+        roundedGradientShader.setUniformf("color2", topLeft.getRed() / 255f, topLeft.getGreen() / 255f, topLeft.getBlue() / 255f, topLeft.getAlpha() / 255f);
+        //Bottom Right
+        roundedGradientShader.setUniformf("color3", bottomRight.getRed() / 255f, bottomRight.getGreen() / 255f, bottomRight.getBlue() / 255f, bottomRight.getAlpha() / 255f);
+        //Top Right
+        roundedGradientShader.setUniformf("color4", topRight.getRed() / 255f, topRight.getGreen() / 255f, topRight.getBlue() / 255f, topRight.getAlpha() / 255f);
+        ShaderUtil.drawQuads(x - 1, y - 1, width + 2, height + 2);
+        roundedGradientShader.unload();
+        GlStateManager.disableBlend();
     }
     public static Color getGradientOffset(Color color1, Color color2, double offset) {
         double inverse_percent;

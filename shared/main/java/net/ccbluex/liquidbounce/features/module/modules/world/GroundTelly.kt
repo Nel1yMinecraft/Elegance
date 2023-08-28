@@ -43,8 +43,6 @@ class GroundTelly : Module() {
         @JvmStatic
         val noFovValue = BoolValue("NoFov", false).displayable { !moduleManager.getModule(NoFOV::class.java).state }
 
-        @JvmStatic
-        var fovValue = FloatValue("FOV", 1f, 0f, 1.5f).displayable { noFovValue.get() && !moduleManager.getModule(NoFOV::class.java).state }
     }
 
     private val autoTimerValue = BoolValue("AutoTimer", false)

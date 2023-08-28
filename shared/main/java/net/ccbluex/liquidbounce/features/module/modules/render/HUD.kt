@@ -31,6 +31,8 @@ class HUD : Module() {
     val fontChatValue = BoolValue("FontChat", false)
     val chatRect = BoolValue("ChatRect", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
+    val displayable = BoolValue("ClickGUINoValue", false)
+
     @EventTarget
     fun onRender2D(event: Render2DEvent?) {
         if (classProvider.isGuiHudDesigner(mc.currentScreen))
@@ -62,6 +64,22 @@ class HUD : Module() {
                 mc.entityRenderer.shaderGroup!!.shaderGroupName.contains("liquidbounce/blur.json")) mc.entityRenderer.stopUseShader()
     }
     companion object {
+        @JvmField
+        val r = IntegerValue("Red", 0, 0, 255)
+        @JvmField
+        val g = IntegerValue("Green", 255, 0, 255)
+        @JvmField
+        val b = IntegerValue("Blue", 255, 0, 255)
+        @JvmField
+        val r2 = IntegerValue("Red2", 255, 0, 255)
+        @JvmField
+        val g2 = IntegerValue("Green2", 255, 0, 255)
+        @JvmField
+        val b2 = IntegerValue("Blue2", 255, 0, 255)
+        @JvmField
+        val a = IntegerValue("A", 100, 0, 255)
+        @JvmField
+        val a2 = IntegerValue("A2", 100, 0, 255)
         @JvmField
         val gidentspeed = IntegerValue("GidentSpeed", 100, 1, 1000)
         @JvmField

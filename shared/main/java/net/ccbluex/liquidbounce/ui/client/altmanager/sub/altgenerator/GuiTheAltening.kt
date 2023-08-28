@@ -9,8 +9,6 @@ import com.mojang.authlib.Agent.MINECRAFT
 import com.mojang.authlib.exceptions.AuthenticationException
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
-import com.thealtening.AltService
-import com.thealtening.api.TheAltening
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiButton
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiTextField
@@ -110,104 +108,8 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : WrappedGuiScreen() {
                 generateButton.enabled = false
                 apiKey = apiKeyField.text
 
-                val altening = TheAltening(apiKey)
-                val asynchronous = TheAltening.Asynchronous(altening)
                 status = "§cGenerating account..."
-
-                asynchronous.accountData.thenAccept { account ->
-                    status = "§aGenerated account: §b§l${account.username}"
-
-                    try {
-                        status = "§cSwitching Alt Service..."
-
-                        // Change Alt Service
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.THEALTENING)
-
-                        status = "§cLogging in..."
-
-                        // Set token as username
-                        val yggdrasilUserAuthentication = YggdrasilUserAuthentication(YggdrasilAuthenticationService(NO_PROXY, ""), MINECRAFT)
-                        yggdrasilUserAuthentication.setUsername(account.token)
-                        yggdrasilUserAuthentication.setPassword(LiquidBounce.CLIENT_NAME)
-
-                        status = try {
-                            yggdrasilUserAuthentication.logIn()
-
-                            mc.session = classProvider.createSession(yggdrasilUserAuthentication.selectedProfile.name, yggdrasilUserAuthentication
-                                    .selectedProfile.id.toString(),
-                                    yggdrasilUserAuthentication.authenticatedToken, "mojang")
-                            LiquidBounce.eventManager.callEvent(SessionEvent())
-                            MCLeaks.remove()
-
-                            prevGui.status = "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
-                            mc.displayGuiScreen(prevGui.representedScreen)
-                            ""
-                        } catch (e: AuthenticationException) {
-                            GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG)
-
-                            ClientUtils.getLogger().error("Failed to login.", e)
-                            "§cFailed to login: ${e.message}"
-                        }
-                    } catch (throwable: Throwable) {
-                        status = "§cFailed to login. Unknown error."
-                        ClientUtils.getLogger().error("Failed to login.", throwable)
-                    }
-
-                    loginButton.enabled = true
-                    generateButton.enabled = true
-                }.handle { _, err ->
-                    status = "§cFailed to generate account."
-                    ClientUtils.getLogger().error("Failed to generate account.", err)
-                }.whenComplete { _, _ ->
-                    loginButton.enabled = true
-                    generateButton.enabled = true
-                }
             }
-            2 -> {
-                loginButton.enabled = false
-                generateButton.enabled = false
-
-                Thread(Runnable {
-                    try {
-                        status = "§cSwitching Alt Service..."
-
-                        // Change Alt Service
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.THEALTENING)
-                        status = "§cLogging in..."
-
-                        // Set token as username
-                        val yggdrasilUserAuthentication = YggdrasilUserAuthentication(YggdrasilAuthenticationService(NO_PROXY, ""), MINECRAFT)
-                        yggdrasilUserAuthentication.setUsername(tokenField.text)
-                        yggdrasilUserAuthentication.setPassword(LiquidBounce.CLIENT_NAME)
-
-                        status = try {
-                            yggdrasilUserAuthentication.logIn()
-
-                            mc.session = classProvider.createSession(yggdrasilUserAuthentication.selectedProfile.name, yggdrasilUserAuthentication
-                                    .selectedProfile.id.toString(),
-                                    yggdrasilUserAuthentication.authenticatedToken, "mojang")
-                            LiquidBounce.eventManager.callEvent(SessionEvent())
-                            MCLeaks.remove()
-
-                            prevGui.status = "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
-                            mc.displayGuiScreen(prevGui.representedScreen)
-                            "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
-                        } catch (e: AuthenticationException) {
-                            GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG)
-
-                            ClientUtils.getLogger().error("Failed to login.", e)
-                            "§cFailed to login: ${e.message}"
-                        }
-                    } catch (throwable: Throwable) {
-                        ClientUtils.getLogger().error("Failed to login.", throwable)
-                        status = "§cFailed to login. Unknown error."
-                    }
-
-                    loginButton.enabled = true
-                    generateButton.enabled = true
-                }).start()
-            }
-            3 -> MiscUtils.showURL("https://thealtening.com/?ref=liquidbounce")
         }
     }
 

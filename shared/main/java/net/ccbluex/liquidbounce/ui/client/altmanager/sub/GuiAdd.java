@@ -9,7 +9,6 @@ import com.mojang.authlib.Agent;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
-import com.thealtening.AltService;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiButton;
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiTextField;
@@ -168,31 +167,7 @@ public class GuiAdd extends WrappedGuiScreen {
             if (!account.isCracked()) {
                 status = "§aChecking...";
 
-                try {
-                    final AltService.EnumAltService oldService = GuiAltManager.altService.getCurrentService();
 
-                    if (oldService != AltService.EnumAltService.MOJANG) {
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG);
-                    }
-
-                    final YggdrasilUserAuthentication userAuthentication = (YggdrasilUserAuthentication)
-                            new YggdrasilAuthenticationService(Proxy.NO_PROXY, "")
-                                    .createUserAuthentication(Agent.MINECRAFT);
-
-                    userAuthentication.setUsername(account.getName());
-                    userAuthentication.setPassword(account.getPassword());
-
-                    userAuthentication.logIn();
-                    account.setAccountName(userAuthentication.getSelectedProfile().getName());
-
-                    if (oldService == AltService.EnumAltService.THEALTENING)
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.THEALTENING);
-                } catch (NullPointerException | AuthenticationException | NoSuchFieldException | IllegalAccessException e) {
-                    status = "§cThe account doesn't work.";
-                    addButton.setEnabled(true);
-                    clipboardButton.setEnabled(true);
-                    return;
-                }
             }
 
 

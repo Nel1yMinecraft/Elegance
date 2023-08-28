@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.ui.client.altmanager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.thealtening.AltService;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiButton;
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiScreen;
@@ -37,7 +36,6 @@ import java.util.*;
 
 public class GuiAltManager extends WrappedGuiScreen {
 
-    public static final AltService altService = new AltService();
     private static final Map<String, Boolean> GENERATORS = new HashMap<>();
     private final IGuiScreen prevGui;
     public String status = "§7Idle...";
@@ -72,13 +70,6 @@ public class GuiAltManager extends WrappedGuiScreen {
         if (minecraftAccount == null)
             return "";
 
-        if (altService.getCurrentService() != AltService.EnumAltService.MOJANG) {
-            try {
-                altService.switchService(AltService.EnumAltService.MOJANG);
-            } catch (final NoSuchFieldException | IllegalAccessException e) {
-                ClientUtils.getLogger().error("Something went wrong while trying to switch alt service.", e);
-            }
-        }
 
         if (minecraftAccount.isCracked()) {
             LoginUtils.loginCracked(minecraftAccount.getName());
@@ -167,7 +158,6 @@ public class GuiAltManager extends WrappedGuiScreen {
         Fonts.font35.drawCenteredString(this.searchField.getText().isEmpty() ? (LiquidBounce.fileManager.accountsConfig.getAccounts().size() + " Alts") : this.altsList.accounts.size() + " Search Results", representedScreen.getWidth() / 2.0f, 18, 0xffffff);
         Fonts.font35.drawCenteredString(status, representedScreen.getWidth() / 2.0f, 32, 0xffffff);
         Fonts.font35.drawStringWithShadow("§7User: §a" + (MCLeaks.isAltActive() ? MCLeaks.getSession().getUsername() : mc.getSession().getUsername()), 6, 6, 0xffffff);
-        Fonts.font35.drawStringWithShadow("§7Type: §a" + (altService.getCurrentService() == AltService.EnumAltService.THEALTENING ? "TheAltening" : MCLeaks.isAltActive() ? "MCLeaks" : UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "Premium" : "Cracked"), 6, 15, 0xffffff);
 
         this.searchField.drawTextBox();
 
