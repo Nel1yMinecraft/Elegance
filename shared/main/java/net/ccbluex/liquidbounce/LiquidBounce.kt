@@ -82,7 +82,7 @@ object LiquidBounce {
         //    Verify.asfnioasnoasfonfsanofsanoi()
         //   Verify.lilililili()
         isStarting = true
-        Verify2.veirfy()
+        //Verify2.veirfy()
         ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION")
         ClientUtils.getLogger().info("  ______   _                                              \n" +
                 " |  ____| | |                                             \n" +

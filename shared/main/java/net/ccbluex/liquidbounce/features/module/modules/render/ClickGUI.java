@@ -25,6 +25,8 @@ import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
+import static com.google.gson.internal.$Gson$Types.arrayOf;
+
 @ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.RENDER, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUI extends Module {
     private final ListValue styleValue = new ListValue("Style", new String[] {"LiquidBounce","Astolfo", "Null", "Slowly"}, "Astolfo") {
@@ -41,6 +43,8 @@ public class ClickGUI extends Module {
     private static final IntegerValue colorGreenValue = new IntegerValue("G", 160, 0, 255);
     private static final IntegerValue colorBlueValue = new IntegerValue("B", 255, 0, 255);
     private static final BoolValue colorRainbow = new BoolValue("Rainbow", false);
+    public static final ListValue animationValue = new ListValue("Animation", new String[] {"Azura", "Slide", "SlideBounce", "Zoom", "ZoomBounce", "None"}, "Slide");
+    public static final ListValue backgroundValue = new ListValue("Background", new String[] {"Default", "None"}, "Default");
 
     public static Color generateColor() {
         return colorRainbow.get() ? ColorUtils.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());

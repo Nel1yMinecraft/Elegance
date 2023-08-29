@@ -188,6 +188,7 @@ class ModuleManager : Listenable {
             ResourcePackSpoof::class.java,
             NoSlowBreak::class.java,
             PortalMenu::class.java,
+            Animations::class.java,
             StrafeFix::class.java,
             GroundTelly::class.java,
             Velocity2::class.java,
