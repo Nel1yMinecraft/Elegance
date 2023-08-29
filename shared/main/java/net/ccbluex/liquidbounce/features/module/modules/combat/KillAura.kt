@@ -75,7 +75,7 @@ class KillAura : Module() {
      */
 
     // CPS - Attack speed
-    val maxCPS: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
+    val maxCPS: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 30) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minCPS.get()
             if (i > newValue) set(i)
@@ -84,7 +84,7 @@ class KillAura : Module() {
         }
     }
 
-    val minCPS: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 20) {
+    val minCPS: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 30) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = maxCPS.get()
             if (i < newValue) set(i)

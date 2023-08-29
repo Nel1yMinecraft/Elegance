@@ -55,6 +55,7 @@ class CommandManager {
         registerCommand(PrivateChatCommand())
         registerCommand(ChatTokenCommand())
         registerCommand(ChatAdminCommand())
+        registerCommand(NellyAICommand())
     }
 
     /**

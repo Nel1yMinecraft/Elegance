@@ -70,11 +70,7 @@ object LiquidBounce {
     lateinit var clientRichPresence: ClientRichPresence
 
     lateinit var wrapper: Wrapper
-    val hitokoto: String? = try {
-        HttpUtils.get("https://v1.hitokoto.cn/?encode=text&max_length=16")
-    } catch (e: Exception) {
-        null
-    }
+    val yiyan: String = HttpUtils.get("https://tenapi.cn/v2/yiyan")
     /**
      * Execute if client will be started
      */
@@ -170,7 +166,7 @@ object LiquidBounce {
         // Load generators
         GuiAltManager.loadGenerators()
 
-        if (hitokoto != null) Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION | $hitokoto") else Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION")
+        if (yiyan != null) Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION | $yiyan") else Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION")
         isStarting = false
     }
 
