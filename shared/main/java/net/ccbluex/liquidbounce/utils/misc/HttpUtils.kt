@@ -7,12 +7,16 @@
 package net.ccbluex.liquidbounce.utils.misc
 
 import com.google.common.io.ByteStreams
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.texture.DynamicTexture
+import net.minecraft.util.ResourceLocation
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import javax.imageio.ImageIO
 
 /**
  * LiquidBounce Hacked Client
@@ -29,8 +33,10 @@ object HttpUtils {
         HttpURLConnection.setFollowRedirects(true)
     }
 
-    private fun make(url: String, method: String,
-                     agent: String = DEFAULT_AGENT): HttpURLConnection {
+    private fun make(
+        url: String, method: String,
+        agent: String = DEFAULT_AGENT
+    ): HttpURLConnection {
         val httpConnection = URL(url).openConnection() as HttpURLConnection
 
         httpConnection.requestMethod = method
@@ -46,16 +52,20 @@ object HttpUtils {
     }
 
     @Throws(IOException::class)
-    fun request(url: String, method: String,
-                agent: String = DEFAULT_AGENT): String {
+    fun request(
+        url: String, method: String,
+        agent: String = DEFAULT_AGENT
+    ): String {
         val connection = make(url, method, agent)
 
         return connection.inputStream.reader().readText()
     }
 
     @Throws(IOException::class)
-    fun requestStream(url: String, method: String,
-                      agent: String = DEFAULT_AGENT): InputStream? {
+    fun requestStream(
+        url: String, method: String,
+        agent: String = DEFAULT_AGENT
+    ): InputStream? {
         val connection = make(url, method, agent)
 
         return connection.inputStream
@@ -67,6 +77,6 @@ object HttpUtils {
 
     @Throws(IOException::class)
     @JvmStatic
-    fun download(url: String, file: File) = FileOutputStream(file).use { ByteStreams.copy(make(url, "GET").inputStream, it) }
-
+    fun download(url: String, file: File) =
+        FileOutputStream(file).use { ByteStreams.copy(make(url, "GET").inputStream, it) }
 }

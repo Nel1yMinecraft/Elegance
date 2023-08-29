@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.api.minecraft.client.entity.IEntityLivingBase;
 import net.ccbluex.liquidbounce.api.minecraft.client.entity.player.IEntityPlayer;
 import net.ccbluex.liquidbounce.api.minecraft.client.render.ITessellator;
 import net.ccbluex.liquidbounce.api.minecraft.client.render.IWorldRenderer;
+import net.ccbluex.liquidbounce.api.minecraft.client.render.vertex.IVertexFormat;
 import net.ccbluex.liquidbounce.api.minecraft.renderer.entity.IRenderManager;
 import net.ccbluex.liquidbounce.api.minecraft.util.*;
 import net.ccbluex.liquidbounce.injection.backend.Backend;
@@ -25,14 +26,26 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1216,5 +1229,120 @@ public final class RenderUtils extends MinecraftInstance {
         worldrenderer.pos(x + width, y, 0.0D).tex((u + (float) uWidth) * f, v * f1).endVertex();
         worldrenderer.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
         tessellator.draw();
+    }
+    public static void originalRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {
+        float alpha = (color >> 24 & 0xFF) / 255.0F;
+        float red = (color >> 16 & 0xFF) / 255.0F;
+        float green = (color >> 8 & 0xFF) / 255.0F;
+        float blue = (color & 0xFF) / 255.0F;
+
+        float z = 0;
+        if (paramXStart > paramXEnd) {
+            z = paramXStart;
+            paramXStart = paramXEnd;
+            paramXEnd = z;
+        }
+
+        if (paramYStart > paramYEnd) {
+            z = paramYStart;
+            paramYStart = paramYEnd;
+            paramYEnd = z;
+        }
+
+        double x1 = (paramXStart + radius);
+        double y1 = (paramYStart + radius);
+        double x2 = (paramXEnd - radius);
+        double y2 = (paramYEnd - radius);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        IWorldRenderer worldrenderer = (IWorldRenderer) tessellator.getBuffer();
+
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(red, green, blue, alpha);
+        worldrenderer.begin(GL_POLYGON, (IVertexFormat) DefaultVertexFormats.POSITION);
+
+        double degree = Math.PI / 180;
+        for (double i = 0; i <= 90; i += 1)
+            worldrenderer.pos(x2 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius, 0.0D).endVertex();
+        for (double i = 90; i <= 180; i += 1)
+            worldrenderer.pos(x2 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius, 0.0D).endVertex();
+        for (double i = 180; i <= 270; i += 1)
+            worldrenderer.pos(x1 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius, 0.0D).endVertex();
+        for (double i = 270; i <= 360; i += 1)
+            worldrenderer.pos(x1 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius, 0.0D).endVertex();
+
+        tessellator.draw();
+        enableTexture2D();
+        disableBlend();
+    }
+    public static void customRounded(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float rTL, float rTR, float rBR, float rBL, int color) {
+        float alpha = (color >> 24 & 0xFF) / 255.0F;
+        float red = (color >> 16 & 0xFF) / 255.0F;
+        float green = (color >> 8 & 0xFF) / 255.0F;
+        float blue = (color & 0xFF) / 255.0F;
+
+        float z = 0;
+        if (paramXStart > paramXEnd) {
+            z = paramXStart;
+            paramXStart = paramXEnd;
+            paramXEnd = z;
+        }
+
+        if (paramYStart > paramYEnd) {
+            z = paramYStart;
+            paramYStart = paramYEnd;
+            paramYEnd = z;
+        }
+
+        double xTL = paramXStart + rTL;
+        double yTL = paramYStart + rTL;
+
+        double xTR = paramXEnd - rTR;
+        double yTR = paramYStart + rTR;
+
+        double xBR = paramXEnd - rBR;
+        double yBR = paramYEnd - rBR;
+
+        double xBL = paramXStart + rBL;
+        double yBL = paramYEnd - rBL;
+
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+
+        glColor4f(red, green, blue, alpha);
+        glBegin(GL_POLYGON);
+
+        double degree = Math.PI / 180;
+        if (rBR <= 0)
+            glVertex2d(xBR, yBR);
+        else for (double i = 0; i <= 90; i += 1)
+            glVertex2d(xBR + Math.sin(i * degree) * rBR, yBR + Math.cos(i * degree) * rBR);
+
+        if (rTR <= 0)
+            glVertex2d(xTR, yTR);
+        else for (double i = 90; i <= 180; i += 1)
+            glVertex2d(xTR + Math.sin(i * degree) * rTR, yTR + Math.cos(i * degree) * rTR);
+
+        if (rTL <= 0)
+            glVertex2d(xTL, yTL);
+        else for (double i = 180; i <= 270; i += 1)
+            glVertex2d(xTL + Math.sin(i * degree) * rTL, yTL + Math.cos(i * degree) * rTL);
+
+        if (rBL <= 0)
+            glVertex2d(xBL, yBL);
+        else for (double i = 270; i <= 360; i += 1)
+            glVertex2d(xBL + Math.sin(i * degree) * rBL, yBL + Math.cos(i * degree) * rBL);
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
     }
 }

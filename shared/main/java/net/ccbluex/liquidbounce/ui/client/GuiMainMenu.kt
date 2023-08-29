@@ -11,6 +11,13 @@ import net.ccbluex.liquidbounce.api.util.WrappedGuiScreen
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.java.games.input.Component.Identifier.Button
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.texture.DynamicTexture
+import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
+import java.net.URL
+import javax.imageio.ImageIO
 
 class GuiMainMenu : WrappedGuiScreen() {
 
@@ -35,8 +42,19 @@ class GuiMainMenu : WrappedGuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         representedScreen.drawBackground(0)
-
         RenderUtils.drawRect(representedScreen.width / 2.0f - 115, representedScreen.height / 4.0f + 35, representedScreen.width / 2.0f + 115, representedScreen.height / 4.0f + 175, Integer.MIN_VALUE)
+        // drawblur
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glShadeModel(GL11.GL_SMOOTH)
+        GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.5f)
+        GL11.glBegin(GL11.GL_QUADS)
+        GL11.glVertex2f(0f, 0f)
+        GL11.glVertex2f(representedScreen.width.toFloat(), 0f)
+        GL11.glVertex2f(representedScreen.width.toFloat(), representedScreen.height.toFloat())
+        GL11.glVertex2f(0f, representedScreen.height.toFloat())
+        GL11.glEnd()
+        GL11.glDisable(GL11.GL_BLEND)
 
         Fonts.fontBold180.drawCenteredString(LiquidBounce.CLIENT_NAME, representedScreen.width / 2F, representedScreen.height / 8F, 4673984, true)
         Fonts.font35.drawCenteredString("b" + LiquidBounce.CLIENT_VERSION, representedScreen.width / 2F + 148, representedScreen.height / 8F + Fonts.font35.fontHeight, 0xffffff, true)

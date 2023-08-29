@@ -18,9 +18,14 @@ import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
+import net.ccbluex.liquidbounce.utils.misc.HttpUtils;
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,10 +34,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.Proxy;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Random;
+
+import static net.ccbluex.liquidbounce.utils.MinecraftInstance.classProvider;
+import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc2;
 
 @Mixin(GuiDisconnected.class)
 public abstract class MixinGuiDisconnected extends MixinGuiScreen {
@@ -43,19 +55,16 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
     private GuiButton reconnectButton;
     private GuiSlider autoReconnectDelaySlider;
-    private GuiButton forgeBypassButton;
     private int reconnectTimer;
 
     @Inject(method = "initGui", at = @At("RETURN"))
-    private void initGui(CallbackInfo callbackInfo) {
+    private void initGui(CallbackInfo callbackInfo) throws IOException {
         reconnectTimer = 0;
         buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + textHeight / 2 + this.fontRenderer.FONT_HEIGHT + 22, 98, 20, "Reconnect"));
 
         this.drawReconnectDelaySlider();
 
-        buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 2 + textHeight / 2 + this.fontRenderer.FONT_HEIGHT + 44, 98, 20, GuiTheAltening.Companion.getApiKey().isEmpty() ? "Random alt" : "New TheAltening alt"));
-        buttonList.add(new GuiButton(4, this.width / 2 + 2, this.height / 2 + textHeight / 2 + this.fontRenderer.FONT_HEIGHT + 44, 98, 20, "Random username"));
-        buttonList.add(forgeBypassButton = new GuiButton(5, this.width / 2 - 100, this.height / 2 + textHeight / 2 + this.fontRenderer.FONT_HEIGHT + 66, "Bypass AntiForge: " + (AntiForge.enabled ? "On" : "Off")));
+        RenderUtils.drawImage(classProvider.createResourceLocation("liquidbounce/xibao.png"), 0, 0, new ScaledResolution(mc2).getScaledWidth(), new ScaledResolution(mc2).getScaledHeight());
 
         updateSliderText();
     }
@@ -65,37 +74,6 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
         switch (button.id) {
             case 1:
                 ServerUtils.connectToLastServer();
-                break;
-            case 3:
-                if (!GuiTheAltening.Companion.getApiKey().isEmpty()) {
-                    final String apiKey = GuiTheAltening.Companion.getApiKey();
-
-                    try {
-
-
-                        LiquidBounce.eventManager.callEvent(new SessionEvent());
-                        ServerUtils.connectToLastServer();
-                        break;
-                    } catch (final Throwable throwable) {
-                        ClientUtils.getLogger().error("Failed to login into random account from TheAltening.", throwable);
-                    }
-                }
-
-                final List<MinecraftAccount> accounts = LiquidBounce.fileManager.accountsConfig.getAccounts();
-                if (accounts.isEmpty()) break;
-
-                final MinecraftAccount minecraftAccount = accounts.get(new Random().nextInt(accounts.size()));
-                GuiAltManager.login(minecraftAccount);
-                ServerUtils.connectToLastServer();
-                break;
-            case 4:
-                LoginUtils.loginCracked(RandomUtils.randomString(RandomUtils.nextInt(5, 16)));
-                ServerUtils.connectToLastServer();
-                break;
-            case 5:
-                AntiForge.enabled = !AntiForge.enabled;
-                forgeBypassButton.displayString = "Bypass AntiForge: " + (AntiForge.enabled ? "On" : "Off");
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig);
                 break;
         }
     }
