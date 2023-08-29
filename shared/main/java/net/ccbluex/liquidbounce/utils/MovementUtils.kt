@@ -31,6 +31,13 @@ object MovementUtils : MinecraftInstance() {
         if (strafe > 0f) rotationYaw += 90f * forward
         return rotationYaw
     }
+    fun onGround(height: Double): Boolean {
+        return if (!mc.theWorld!!.getCollidingBoundingBoxes(mc.thePlayer!!, mc.thePlayer!!.entityBoundingBox.offset(0.0, -height, 0.0)).isEmpty()) {
+            true
+        } else {
+            false
+        }
+    }
     @JvmStatic
     @JvmOverloads
     fun strafe(speed: Float = this.speed) {

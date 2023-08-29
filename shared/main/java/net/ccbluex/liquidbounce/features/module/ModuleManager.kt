@@ -5,7 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import me.caijiplayer.AutoSkyWars
+import me.caijiplayer.HytAntiVoid
 import me.nelly.Disabler
+import me.nelly.HytFly
 import me.nelly.Title
 import me.nelly.Velocity2
 import me.rainyfall.AntiFakePlayer
@@ -196,7 +199,10 @@ class ModuleManager : Listenable {
             AutoGG::class.java,
             Disabler::class.java,
             AntiFakePlayer::class.java,
-            Title::class.java
+            Title::class.java,
+            HytFly::class.java,
+            AutoSkyWars::class.java,
+            HytAntiVoid::class.java
         )
 
         registerModule(NoScoreboard)
