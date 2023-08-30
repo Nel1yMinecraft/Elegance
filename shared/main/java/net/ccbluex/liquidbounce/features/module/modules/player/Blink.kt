@@ -71,8 +71,9 @@ class Blink : Module() {
             mc.theWorld?.removeEntityFromWorld(faker.entityId)
             fakePlayer = null
         }
+        val breadcrumbs = LiquidBounce.moduleManager.getModule(Breadcrumbs::class.java) as Breadcrumbs?
+        breadcrumbs!!.state = false
     }
-
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet: IPacket = event.packet
@@ -101,34 +102,8 @@ class Blink : Module() {
             blink()
             pulseTimer.reset()
         }
-    }
-
-    @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
         val breadcrumbs = LiquidBounce.moduleManager.getModule(Breadcrumbs::class.java) as Breadcrumbs?
-        val color = if (breadcrumbs!!.colorRainbow.get()) rainbow() else Color(breadcrumbs.colorRedValue.get(), breadcrumbs.colorGreenValue.get(), breadcrumbs.colorBlueValue.get())
-        synchronized(positions) {
-            GL11.glPushMatrix()
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            GL11.glEnable(GL11.GL_LINE_SMOOTH)
-            GL11.glEnable(GL11.GL_BLEND)
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
-            mc.entityRenderer.disableLightmap()
-            GL11.glBegin(GL11.GL_LINE_STRIP)
-            RenderUtils.glColor(color)
-            val renderPosX: Double = mc.renderManager.viewerPosX
-            val renderPosY: Double = mc.renderManager.viewerPosY
-            val renderPosZ: Double = mc.renderManager.viewerPosZ
-            for (pos in positions) GL11.glVertex3d(pos[0] - renderPosX, pos[1] - renderPosY, pos[2] - renderPosZ)
-            GL11.glColor4d(1.0, 1.0, 1.0, 1.0)
-            GL11.glEnd()
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GL11.glDisable(GL11.GL_LINE_SMOOTH)
-            GL11.glDisable(GL11.GL_BLEND)
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            GL11.glPopMatrix()
-        }
+        breadcrumbs!!.state = true
     }
 
     override val tag: String

@@ -113,8 +113,8 @@ class NoSlow : Module() {
                         this.sendPacket(event, false, true, false, 0, false)
                     }
                 }
-            }
 
+            }
             "aac" -> {
                 if (mc.thePlayer!!.ticksExisted % 3 == 0) {
                     sendPacket(event, true, false, false, 0, false)
@@ -149,10 +149,9 @@ class NoSlow : Module() {
             }
 
             "grimpacket" -> {
-                blocking =
-                    event.eventState == EventState.PRE && !mc.thePlayer!!.isBlocking && !classProvider.isItemPotion(mc.thePlayer!!.heldItem!!.item) && !classProvider.isItemFood(
-                        mc.thePlayer!!.heldItem!!.item
-                    )
+                if(mc.thePlayer!!.isBlocking || isBlock() || blocking) {
+                    mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, WBlockPos.ORIGIN, classProvider.getEnumFacing(EnumFacingType.DOWN)))
+                }
                 if (event.eventState == EventState.PRE && mc.thePlayer!!.itemInUse != null && mc.thePlayer!!.itemInUse!!.item != null) {
                     if (mc.thePlayer!!.isUsingItem && mc.thePlayer!!.itemInUseCount >= 1) {
                         mc2.connection!!.sendPacket(CPacketHeldItemChange((mc2.player.inventory.currentItem + 1) % 9))
@@ -160,16 +159,6 @@ class NoSlow : Module() {
                     }
                 }
             }
-        }
-    }
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-        if (modeValue.get() == "GrimPacket" && blocking &&
-            packet is CPacketPlayerDigging ||
-            packet is CPacketPlayerTryUseItem ||
-            packet is CPacketPlayerTryUseItemOnBlock){
-            event.cancelEvent()
         }
     }
     @EventTarget

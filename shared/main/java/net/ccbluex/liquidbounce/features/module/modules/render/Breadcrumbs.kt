@@ -73,8 +73,8 @@ class Breadcrumbs : Module() {
 
         synchronized(positions) {
             positions.add(doubleArrayOf(thePlayer.posX,
-                    thePlayer.entityBoundingBox.minY + thePlayer.eyeHeight * 0.5f,
-                    thePlayer.posZ))
+                thePlayer.entityBoundingBox.minY + thePlayer.eyeHeight * 0.5f,
+                thePlayer.posZ))
 
             positions.add(doubleArrayOf(thePlayer.posX, thePlayer.entityBoundingBox.minY, thePlayer.posZ))
         }

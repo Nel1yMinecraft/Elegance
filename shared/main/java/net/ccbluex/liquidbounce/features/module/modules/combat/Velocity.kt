@@ -33,7 +33,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "GrimPacket","AAC", "AACPush", "AACZero", "AACv4",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "GrimPacket","GrimVoid","AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch"), "Simple")
 
     // Reverse
@@ -232,6 +232,19 @@ class Velocity : Module() {
                     if (packet2 is SPacketConfirmTransaction && grimTCancel > 0) {
                         event.cancelEvent()
                         grimTCancel--
+                    }
+                }
+                "grimvoid" -> {
+                    if (packet2 is SPacketEntityVelocity && packet2.entityID == mc.thePlayer!!.entityId && thePlayer.hurtTime > 0 && MovementUtils.isMoving) {
+                        mc2.player.lastTickPosZ = 0.0
+                        thePlayer.motionZ = 0.0
+                        mc2.player.lastTickPosY = 0.0
+                        thePlayer.motionY = 0.0
+                        mc2.player.lastTickPosX = 0.0
+                        thePlayer.motionX = 0.0
+                    }
+                    if (packet2 is SPacketConfirmTransaction) {
+                        event.cancelEvent()
                     }
                 }
 

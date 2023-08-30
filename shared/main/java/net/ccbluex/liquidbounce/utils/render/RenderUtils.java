@@ -1055,7 +1055,24 @@ public final class RenderUtils extends MinecraftInstance {
     private static void glColor(final int hex) {
         glColor(hex >> 16 & 0xFF, hex >> 8 & 0xFF, hex & 0xFF, hex >> 24 & 0xFF);
     }
+    public static void glColor(final Color color, final Float alpha) {
+        glColor(color, alpha/255F);
+    }
+    public static void glColor(final int hex, final int alpha) {
+        final float red = (hex >> 16 & 0xFF) / 255F;
+        final float green = (hex >> 8 & 0xFF) / 255F;
+        final float blue = (hex & 0xFF) / 255F;
 
+        GlStateManager.color(red, green, blue, alpha / 255F);
+    }
+
+    public static void glColor(final int hex, final float alpha) {
+        final float red = (hex >> 16 & 0xFF) / 255F;
+        final float green = (hex >> 8 & 0xFF) / 255F;
+        final float blue = (hex & 0xFF) / 255F;
+
+        GlStateManager.color(red, green, blue, alpha);
+    }
     public static void draw2D(final IEntityLivingBase entity, final double posX, final double posY, final double posZ, final int color, final int backgroundColor) {
         GL11.glPushMatrix();
         GL11.glTranslated(posX, posY, posZ);

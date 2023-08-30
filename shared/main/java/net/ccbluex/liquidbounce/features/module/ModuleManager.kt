@@ -7,10 +7,7 @@ package net.ccbluex.liquidbounce.features.module
 
 import me.caijiplayer.AutoSkyWars
 import me.caijiplayer.HytAntiVoid
-import me.nelly.Disabler
-import me.nelly.HytFly
-import me.nelly.Title
-import me.nelly.Velocity2
+import me.nelly.*
 import me.rainyfall.AntiFakePlayer
 import me.rainyfall.AuraRangeHelper
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -202,7 +199,8 @@ class ModuleManager : Listenable {
             Title::class.java,
             HytFly::class.java,
             AutoSkyWars::class.java,
-            HytAntiVoid::class.java
+            HytAntiVoid::class.java,
+            HytPlugin::class.java
         )
 
         registerModule(NoScoreboard)
