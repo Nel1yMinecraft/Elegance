@@ -36,7 +36,7 @@ object Remapper {
             HttpUtils.download("${LiquidBounce.CLIENT_CLOUD}/srgs/mcp-$srgName.srg", srgFile)
             ClientUtils.getLogger().info("[Remapper] Downloaded $srgName.")
         }
-
+        
         // Load srg
         ClientUtils.getLogger().info("[Remapper] Loading srg...")
         parseSrg()

@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.CPacketConfirmTransaction
 import net.minecraft.network.play.client.CPacketPlayer
 
 
-@ModuleInfo(name = "Disabler", description = "Disable AntiCheat", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "Disabler", description = "Disable AntiCheat", category = ModuleCategory.EXPLOIT)
 class Disabler : Module() {
     private val modeValue = ListValue("Mode", arrayOf("GrimPost", ""), "GrimPost")
     val time = MSTimer()

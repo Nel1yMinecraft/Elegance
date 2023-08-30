@@ -55,6 +55,33 @@ class HytFly : Module() {
             }
             @EventTarget
             fun onUpdate(event: UpdateEvent) {
+                // Add theplayer kb
+                if (mc.thePlayer!!.hurtTime > 0) {
+                    mc.netHandler.addToSendQueue(
+                        classProvider.createCPacketEntityAction(
+                            ka.target!!,
+                            ICPacketEntityAction.WAction.STOP_SPRINTING
+                        )
+                    )
+                    mc.netHandler.addToSendQueue(
+                        classProvider.createCPacketEntityAction(
+                            ka.target!!,
+                            ICPacketEntityAction.WAction.START_SPRINTING
+                        )
+                    )
+                    mc.netHandler.addToSendQueue(
+                        classProvider.createCPacketEntityAction(
+                            ka.target!!,
+                            ICPacketEntityAction.WAction.STOP_SPRINTING
+                        )
+                    )
+                    mc.netHandler.addToSendQueue(
+                        classProvider.createCPacketEntityAction(
+                            ka.target!!,
+                            ICPacketEntityAction.WAction.START_SPRINTING
+                        )
+                    )
+                }
                 if (mc.thePlayer!!.hurtTime > 0) {
                     mc.thePlayer!!.setPositionAndRotation(
                         mc.thePlayer!!.posX + 100000,
@@ -71,16 +98,6 @@ class HytFly : Module() {
                         mc.thePlayer!!.rotationYaw,
                         mc.thePlayer!!.rotationPitch
                     )
-                }
-            }
-            @EventTarget
-            fun onAttack(event: AttackEvent) {
-                // Add theplayer kb
-                if(mc.thePlayer!!.hurtTime > 0) {
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(ka.target!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(ka.target!!, ICPacketEntityAction.WAction.START_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(ka.target!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(ka.target!!, ICPacketEntityAction.WAction.START_SPRINTING))
                 }
             }
         }
