@@ -4,10 +4,8 @@ import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
-import net.minecraft.network.play.client.CPacketConfirmTransaction
-import net.minecraft.network.play.client.CPacketEntityAction
-import net.minecraft.network.play.client.CPacketHeldItemChange
-import net.minecraft.network.play.client.CPacketKeepAlive
+import net.minecraft.network.play.client.*
+import net.minecraft.network.play.server.SPacketPlayerPosLook
 
 object PacketUtils : MinecraftInstance() {
     private val packets = ArrayList<Packet<INetHandlerPlayServer>>()
@@ -47,4 +45,6 @@ object PacketUtils : MinecraftInstance() {
     fun send(cPacketKeepAlive: CPacketKeepAlive) {}
     fun send(packet: CPacketHeldItemChange){}
     fun send(cPacketConfirmTransaction: CPacketConfirmTransaction) {}
+    fun send(c06: SPacketPlayerPosLook){}
+    fun send(c07 : CPacketPlayerDigging) {}
 }

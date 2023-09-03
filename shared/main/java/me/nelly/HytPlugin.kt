@@ -33,4 +33,3 @@ var tabCompletionActive = false
             }
         }
     }
-}

@@ -65,7 +65,7 @@ import java.util.*
 import kotlin.math.*
 
 @ModuleInfo(
-    name = "KillAura", description = "Automatically attacks targets around you. ",
+    name = "Aura", description = "Automatically attacks targets around you. ",
     category = ModuleCategory.COMBAT
 )
 class KillAura : Module() {
@@ -1362,7 +1362,7 @@ class KillAura : Module() {
      * HUD Tag
      */
     override val tag: String
-        get() = (targetModeValue.get() + ", " + autoBlockValue.get() + ", Reach:" + rangeValue.get() + ", " + minCPS.get() + "-" + maxCPS.get())
+        get() = ("$maxRange")
 
     val isBlockingChestAura: Boolean
         get() = state && target != null

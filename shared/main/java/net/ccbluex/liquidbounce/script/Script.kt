@@ -53,8 +53,10 @@ class Script(val scriptFile: File) : MinecraftInstance() {
 
         // Global instances
         scriptEngine.put("mc", mc.unwrap())
+        scriptEngine.put("mc2", mc2)
 
         scriptEngine.put("moduleManager", LiquidBounce.moduleManager)
+        scriptEngine.put("eventManager", LiquidBounce.eventManager)
         scriptEngine.put("commandManager", LiquidBounce.commandManager)
         scriptEngine.put("scriptManager", LiquidBounce.scriptManager)
 
@@ -157,7 +159,8 @@ class Script(val scriptFile: File) : MinecraftInstance() {
     private fun supportLegacyScripts() {
         if (getMagicComment("api_version") != "2") {
             ClientUtils.getLogger().info("[ScriptAPI] Running script '${scriptFile.name}' with legacy support.")
-            val legacyScript = LiquidBounce::class.java.getResource("/assets/minecraft/liquidbounce/scriptapi/legacy.js").readText()
+            val legacyScript = LiquidBounce::class.java.getResource("/assets/minecraft/LiquidBounce/scriptapi/legacy.js")
+                ?.readText()
             scriptEngine.eval(legacyScript)
         }
     }

@@ -1,10 +1,12 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * ColorByte Hacked Client
+ * A free half-open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderRyF/ColorByte
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
+
+import javafx.scene.transform.Translate
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -16,12 +18,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ShadowUtils
-import net.ccbluex.liquidbounce.utils.render.AnimationUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
+import net.ccbluex.liquidbounce.utils.blur.BlurUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -31,111 +31,229 @@ import java.awt.Color
  * Shows a list of enabled modules
  */
 @ElementInfo(name = "Arraylist", single = true)
-class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
-                side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
-    private val rainbowX = FloatValue("Rainbow-X", -1000F, -2000F, 2000F)
-    private val rainbowY = FloatValue("Rainbow-Y", -1000F, -2000F, 2000F)
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow"), "Custom")
-    private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
-    private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
-    private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
-    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow"), "Rainbow")
-    private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
-    private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)
-    private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
-    private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
-    private val saturationValue = FloatValue("Random-Saturation", 0.9f, 0f, 1f)
-    private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
-    private val tags = BoolValue("Tags", true)
+class Arraylist(
+    x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
+    side: Side = Side(Horizontal.RIGHT, Vertical.UP)
+) : Element(x, y, scale, side) {
+    private val colorModeValue = ListValue(
+        "Color",
+        arrayOf("Custom", "Random", "Sky", "CRainbow", "LiquidSlowly", "Fade", "Gradinet"),
+        "Gradinet"
+    )
+
+    private val nameBreak = BoolValue("SpacedName", true)
+    private val blurValue = BoolValue("Blur", false)
+    private val blurStrength = FloatValue("Blur-Strength", 0F, 0F, 30F).displayable { blurValue.get() }
     private val shadow = BoolValue("ShadowText", true)
     private val shadowShaderValue = BoolValue("Shadow", false).displayable { shadow.get() }
+    private val shadowNoCutValue = BoolValue("Shadow-NoCut", false).displayable { shadow.get() }
     private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30).displayable { shadow.get() }
     private val shadowColorMode =
         ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background").displayable { shadow.get() }
     private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255).displayable { shadow.get() }
     private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable { shadow.get() }
     private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255).displayable { shadow.get() }
+
+    val colorRedValue = IntegerValue("Red", 0, 0, 255)
+    val colorGreenValue = IntegerValue("Green", 111, 0, 255)
+    val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
+
+    private val colorRedValue2 = IntegerValue("R2", 0, 0, 255)
+    private val colorGreenValue2 = IntegerValue("G2", 111, 0, 255)
+    private val colorBlueValue2 = IntegerValue("B2", 255, 0, 255)
+    private val gidentspeed = IntegerValue("GidentSpeed", 100, 1, 1000)
     private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255)
+    private val fadeOffset = FloatValue("Gradinet-Offset", 0.2f, 0.1f, 1f)
+
+    private val textRed = IntegerValue("Gradinet-Red", 0, 0, 255)
+    private val textGreen = IntegerValue("Gradinet-Green", 0, 0, 255)
+    private val textBlue = IntegerValue("Gradinet-Blue", 255, 0, 255)
+
+    private val textRed2 = IntegerValue("Gradinet-Red-2", 25, 0, 255)
+    private val textGreen2 = IntegerValue("Gradinet-Green-2", 45, 0, 255)
+    private val textBlue2 = IntegerValue("Gradinet-Blue-2", 150, 0, 255)
+
+    private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f)
+    private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
     private val skyDistanceValue = IntegerValue("Sky-Distance", 2, 0, 4)
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
     private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6)
     private val liquidSlowlyDistanceValue = IntegerValue("LiquidSlowly-Distance", 90, 1, 90)
     private val fadeDistanceValue = IntegerValue("Fade-Distance", 50, 1, 100)
-    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow"), "Custom")
+    private val hAnimation = ListValue("HorizontalAnimation", arrayOf("Default", "None", "Slide", "Astolfo"), "Astolfo")
+    private val vAnimation =
+        ListValue("VerticalAnimation", arrayOf("None", "LiquidSense", "Slide", "Rise", "Astolfo"), "Rise")
+    private val animationSpeed = FloatValue("Animation-Speed", 0.5F, 0.01F, 1F)
+    private val abcOrder = BoolValue("Alphabetical-Order", false)
+    private val tags = BoolValue("Tags", true)
+    private val tagsStyleValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "Default"), "[]")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 0, 0, 255)
-    private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right"), "None")
-    private val upperCaseValue = BoolValue("UpperCase", false)
+    private val rectRightValue =
+        ListValue("Rect-Right", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None")
+    private val rectLeftValue = ListValue("Rect-Left", arrayOf("None", "Left", "Right"), "None")
+    private val caseValue = ListValue("Case", arrayOf("None", "Lower", "Upper"), "None")
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val tagsArrayColor = BoolValue("TagsArrayColor", false)
-    private val fontValue = FontValue("Font", Fonts.font40)
+    private val fontValue = FontValue("Font", Fonts.minecraftFont)
+
 
     private var x2 = 0
     private var y2 = 0F
 
     private var modules = emptyList<Module>()
-    val counter = intArrayOf(0)
+    private var sortedModules = emptyList<Module>()
+
+    var fontRenderer = Fonts.font40
 
     override fun drawElement(): Border? {
         val fontRenderer = fontValue.get()
+
+        val counter = intArrayOf(0)
 
         AWTFontRenderer.assumeNonVolatile = true
 
         // Slide animation - update every render
         val delta = RenderUtils.deltaTime
 
-        for (module in LiquidBounce.moduleManager.modules) {
-            if (!module.array || (!module.state && module.slide == 0F)) continue
-
-            var displayString = if (!tags.get())
-                module.name
-            else if (tagsArrayColor.get())
-                module.colorlessTagName
-            else module.tagName
-
-            if (upperCaseValue.get())
-                displayString = displayString.toUpperCase()
-
-            val width = fontRenderer.getStringWidth(displayString)
-
-            if (module.state) {
-                if (module.slide < width) {
-                    module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
-                    module.slideStep += delta / 4F
-                }
-            } else if (module.slide > 0) {
-                module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
-                module.slideStep -= delta / 4F
-            }
-
-            module.slide = module.slide.coerceIn(0F, width.toFloat())
-            module.slideStep = module.slideStep.coerceIn(0F, width.toFloat())
-        }
-
         // Draw arraylist
         val colorMode = colorModeValue.get()
-        val rectColorMode = rectColorModeValue.get()
-        val backgroundColorMode = backgroundColorModeValue.get()
-        val customColor = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 1).rgb
-        val rectCustomColor = Color(rectColorRedValue.get(), rectColorGreenValue.get(), rectColorBlueValue.get(),
-                rectColorBlueAlpha.get()).rgb
+        val rectColorMode = colorModeValue.get()
+        val customColor =
+            Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()).rgb
+        val rectCustomColor =
+            Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()).rgb
         val space = spaceValue.get()
         val textHeight = textHeightValue.get()
         val textY = textYValue.get()
-        val rectMode = rectValue.get()
-        val backgroundCustomColor = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(),
-                backgroundColorBlueValue.get(), backgroundColorAlphaValue.get()).rgb
+        val backgroundCustomColor = Color(
+            backgroundColorRedValue.get(), backgroundColorGreenValue.get(),
+            backgroundColorBlueValue.get(), backgroundColorAlphaValue.get()
+        ).rgb
         val textShadow = shadow.get()
         val textSpacer = textHeight + space
         val saturation = saturationValue.get()
         val brightness = brightnessValue.get()
+        var inx = 0
+        for (module in sortedModules) {
+            // update slide x
+            if (module.array && (module.state || module.slide != 0F)) {
+                var displayString = getModName(module)
+
+                val width = fontRenderer.getStringWidth(displayString)
+
+                when (hAnimation.get()) {
+                    "Astolfo" -> {
+                        if (module.state) {
+                            if (module.slide < width) {
+                                module.slide += animationSpeed.get() * delta
+                                module.slideStep = delta / 1F
+                            }
+                        } else if (module.slide > 0) {
+                            module.slide -= animationSpeed.get() * delta
+                            module.slideStep = 0F
+                        }
+
+                        if (module.slide > width) module.slide = width.toFloat()
+                    }
+
+                    "Slide" -> {
+                        if (module.state) {
+                            if (module.slide < width) {
+                                module.slide = AnimationUtils.animate(
+                                    width.toDouble(),
+                                    module.slide.toDouble(),
+                                    animationSpeed.get().toDouble() * 0.025 * delta.toDouble()
+                                ).toFloat()
+                                module.slideStep = delta / 1F
+                            }
+                        } else if (module.slide > 0) {
+                            module.slide = AnimationUtils.animate(
+                                -width.toDouble(),
+                                module.slide.toDouble(),
+                                animationSpeed.get().toDouble() * 0.025 * delta.toDouble()
+                            ).toFloat()
+                            module.slideStep = 0F
+                        }
+                    }
+
+                    "Default" -> {
+                        if (module.state) {
+                            if (module.slide < width) {
+                                module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+                                module.slideStep += delta / 4F
+                            }
+                        } else if (module.slide > 0) {
+                            module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+                            module.slideStep -= delta / 4F
+                        }
+                    }
+
+                    else -> {
+                        module.slide = if (module.state) width.toFloat() else 0f
+                        module.slideStep += (if (module.state) delta else -delta).toFloat()
+                    }
+                }
+
+                module.slide = module.slide.coerceIn(0F, width.toFloat())
+                module.slideStep = module.slideStep.coerceIn(0F, width.toFloat())
+            }
+
+            // update slide y
+            var yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                    if (side.vertical == Vertical.DOWN) inx + 1 else inx
+
+            if (module.array && module.slide > 0F) {
+                if (vAnimation.get().equals("Rise", ignoreCase = true) && !module.state)
+                    yPos = -fontRenderer.fontHeight - textY
+
+                val size = modules.size * 2.0E-2f
+
+                when (vAnimation.get()) {
+                    "LiquidSense" -> {
+                        if (module.state) {
+                            if (module.higt < yPos) {
+                                module.higt += (size -
+                                        (module.higt * 0.002f).coerceAtMost(size - (module.higt * 0.0001f))) * delta
+                                module.higt = yPos.coerceAtMost(module.higt)
+                            } else {
+                                module.higt -= (size -
+                                        (module.higt * 0.002f).coerceAtMost(size - (module.higt * 0.0001f))) * delta
+                                module.higt = module.higt.coerceAtLeast(yPos)
+                            }
+                        }
+                    }
+
+                    "Slide", "Rise" -> module.higt = AnimationUtils.animate(
+                        yPos.toDouble(),
+                        module.higt.toDouble(),
+                        animationSpeed.get().toDouble() * 0.025 * delta.toDouble()
+                    ).toFloat()
+
+                    "Astolfo" -> {
+                        if (module.higt < yPos) {
+                            module.higt += animationSpeed.get() / 2F * delta
+                            module.higt = Math.min(yPos, module.higt)
+                        } else {
+                            module.higt -= animationSpeed.get() / 2F * delta
+                            module.higt = Math.max(module.higt, yPos)
+                        }
+                    }
+
+                    else -> module.higt = yPos
+                }
+                inx++
+            } else if (!vAnimation.get().equals("rise", true)) //instant update
+                module.higt = yPos
+        }
 
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
+
                 if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
@@ -145,10 +263,10 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         modules.forEachIndexed { index, module ->
                             val xPos = -module.slide - 2
                             RenderUtils.newDrawRect(
-                                xPos - 2,
-                                0F,
-                                0F,
-                                0 + textHeight,
+                                xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
+                                module.higt,
+                                if (rectRightValue.get().equals("right", true)) -1F else 0F,
+                                module.higt + textHeight,
                                 when (shadowColorMode.get().toLowerCase()) {
                                     "background" -> Color(
                                         backgroundColorRedValue.get(),
@@ -194,6 +312,15 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                             colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
                                             colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
                                             colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                                            colorMode.equals("Gradinet", true) -> RenderUtils.getGradientOffset(
+                                                Color(
+                                                    textRed.get(),
+                                                    textGreen.get(),
+                                                    textBlue.get()
+                                                ),
+                                                Color(textRed2.get(), textGreen2.get(), textBlue2.get()),
+                                                index * fadeOffset.get().toDouble()
+                                            ).rgb
 
                                             else -> customColor
                                         }
@@ -210,66 +337,201 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         GL11.glPopMatrix()
                         counter[0] = 0
                     }, {
+                        if (!shadowNoCutValue.get()) {
+                            GL11.glPushMatrix()
+                            GL11.glTranslated(renderX, renderY, 0.0)
+                            modules.forEachIndexed { index, module ->
+                                val xPos = -module.slide - 2
+                                RenderUtils.quickDrawRect(
+                                    xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
+                                    module.higt,
+                                    if (rectRightValue.get().equals("right", true)) -1F else 0F,
+                                    module.higt + textHeight
+                                )
+                            }
+                            GL11.glPopMatrix()
+                        }
                     })
                     GL11.glPopMatrix()
                     GL11.glTranslated(renderX, renderY, 0.0)
                 }
-                modules.forEachIndexed { index, module ->
-                    var displayString = if (!tags.get())
-                        module.name
-                    else if (tagsArrayColor.get())
-                        module.colorlessTagName
-                    else module.tagName
 
-                    if (upperCaseValue.get())
-                        displayString = displayString.toUpperCase()
+                if (blurValue.get()) {
+                    GL11.glTranslated(-renderX, -renderY, 0.0)
+                    GL11.glPushMatrix()
+                    val floatX = renderX.toFloat()
+                    val floatY = renderY.toFloat()
+                    var yP = 0F
+                    var xP = 0F
+                    modules.forEachIndexed { index, module ->
+                        val dString = getModName(module)
+                        val wid = fontRenderer.getStringWidth(dString) + 2F
+                        val yPos = if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer *
+                                if (side.vertical == Vertical.DOWN) index + 1 else index
+                        yP += yPos
+                        xP = Math.min(xP, -wid)
+                    }
+
+                    BlurUtils.blur(floatX, floatY, floatX + xP, floatY + yP, blurStrength.get(), false) {
+                        modules.forEachIndexed { index, module ->
+                            val xPos = -module.slide - 2
+                            RenderUtils.quickDrawRect(
+                                floatX + xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
+                                floatY + module.higt,
+                                floatX + if (rectRightValue.get().equals("right", true)) -1F else 0F,
+                                floatY + module.higt + textHeight
+                            )
+                        }
+                    }
+                    GL11.glPopMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                }
+
+                modules.forEachIndexed { index, module ->
+
+                    var displayString = getModName(module)
 
                     val xPos = -module.slide - 2
-                    val yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                            if (side.vertical == Vertical.DOWN) index + 1 else index
+
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
-                    val backgroundRectRainbow = backgroundColorMode.equals("Rainbow", ignoreCase = true)
+                    val sky: Int = RenderUtils.SkyRainbow(
+                        counter[0] * (skyDistanceValue.get() * 50),
+                        saturationValue.get(),
+                        brightnessValue.get()
+                    )
+                    val cRainbow: Int = RenderUtils.getRainbowOpaque(
+                        cRainbowSecValue.get(),
+                        saturationValue.get(),
+                        brightnessValue.get(),
+                        counter[0] * (50 * cRainbowDistValue.get())
+                    )
+                    val FadeColor: Int = ColorUtils.fade(
+                        Color(
+                            colorRedValue.get(),
+                            colorGreenValue.get(),
+                            colorBlueValue.get(),
+                            colorAlphaValue.get()
+                        ), index * fadeDistanceValue.get(), 100
+                    ).rgb
+                    counter[0] = counter[0] - 1
 
-                    RainbowShader.begin(backgroundRectRainbow, if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(), if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-                        RenderUtils.drawRect(
-                                xPos - if (rectMode.equals("right", true)) 5 else 2,
-                                yPos,
-                                if (rectMode.equals("right", true)) -3F else 0F,
-                                yPos + textHeight, when {
-                            backgroundRectRainbow -> 0xFF shl 24
-                            backgroundColorMode.equals("Random", ignoreCase = true) -> moduleColor
-                            else -> backgroundCustomColor
-                        }
-                        )
-                    }
+                    val test = ColorUtils.LiquidSlowly(
+                        System.nanoTime(),
+                        index * liquidSlowlyDistanceValue.get(),
+                        saturationValue.get(),
+                        brightnessValue.get()
+                    )?.rgb
+                    var LiquidSlowly: Int = test!!
 
-                    val rainbow = colorMode.equals("Rainbow", ignoreCase = true)
+                    RenderUtils.drawRect(
+                        xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
+                        module.higt,
+                        if (rectRightValue.get().equals("right", true)) -1F else 0F,
+                        module.higt + textHeight, backgroundCustomColor
+                    )
 
-                    classProvider.getGlStateManager().resetColor()
-                    RainbowFontShader.begin(rainbow, if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(), if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-                        fontRenderer.drawString(displayString, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY, when {
-                            rainbow -> 0
+                    fontRenderer.drawString(
+                        displayString,
+                        ((xPos - if (rectRightValue.get().equals("right", true)) 1 else 0)),
+                        ((module.higt + textY)), when {
                             colorMode.equals("Random", ignoreCase = true) -> moduleColor
+                            colorMode.equals("Sky", ignoreCase = true) -> sky
+                            colorMode.equals("CRainbow", ignoreCase = true) -> cRainbow
+                            colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
+                            colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                            colorMode.equals("Gradinet", true) -> RenderUtils.getGradientOffset(
+                                Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 1),
+                                Color(colorRedValue2.get(), colorGreenValue2.get(), colorBlueValue2.get(), 1),
+                                (Math.abs(
+                                    System.currentTimeMillis() / gidentspeed.get()
+                                        .toDouble() + (module.higt / fontRenderer.fontHeight)
+                                ) / 10)
+                            ).rgb
+
                             else -> customColor
-                        }, textShadow)
-                    }
+                        }, textShadow
+                    )
 
-                    if (!rectMode.equals("none", true)) {
-                        val rectRainbow = rectColorMode.equals("Rainbow", ignoreCase = true)
 
-                        RainbowShader.begin(rectRainbow, if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(), if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-                            val rectColor = when {
-                                rectRainbow -> 0
-                                rectColorMode.equals("Random", ignoreCase = true) -> moduleColor
-                                else -> rectCustomColor
+                    if (!rectRightValue.get().equals("none", true)) {
+                        val rectColor = when {
+                            rectColorMode.equals("Random", ignoreCase = true) -> moduleColor
+                            rectColorMode.equals("Sky", ignoreCase = true) -> sky
+                            rectColorMode.equals("CRainbow", ignoreCase = true) -> cRainbow
+                            rectColorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
+                            rectColorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                            rectColorMode.equals("Gradinet", true) -> RenderUtils.getGradientOffset(
+                                Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 1),
+                                Color(colorRedValue2.get(), colorGreenValue2.get(), colorBlueValue2.get(), 1),
+                                (Math.abs(
+                                    System.currentTimeMillis() / gidentspeed.get()
+                                        .toDouble() + (module.higt / fontRenderer.fontHeight)
+                                ) / 10)
+                            ).rgb
+
+                            else -> rectCustomColor
+                        }
+
+                        when {
+                            rectRightValue.get().equals("left", true) -> RenderUtils.drawRect(
+                                xPos - 3, module.higt, xPos - 2, module.higt + textHeight,
+                                rectColor
+                            )
+
+                            rectRightValue.get().equals("right", true) -> RenderUtils.drawRect(
+                                -1F, module.higt, 0F,
+                                module.higt + textHeight, rectColor
+                            )
+
+                            rectRightValue.get().equals("outline", true) -> {
+                                RenderUtils.drawRect(
+                                    -1F, module.higt - 1F, 0F,
+                                    module.higt + textHeight, rectColor
+                                )
+                                RenderUtils.drawRect(
+                                    xPos - 3, module.higt, xPos - 2, module.higt + textHeight,
+                                    rectColor
+                                )
+                                if (module != modules[0]) {
+                                    var displayStrings = getModName(modules[index - 1])
+
+                                    RenderUtils.drawRect(
+                                        xPos - 3 - (fontRenderer.getStringWidth(displayStrings) - fontRenderer.getStringWidth(
+                                            displayString
+                                        )), module.higt, xPos - 2, module.higt + 1,
+                                        rectColor
+                                    )
+                                    if (module == modules[modules.size - 1]) {
+                                        RenderUtils.drawRect(
+                                            xPos - 3, module.higt + textHeight, 0.0F, module.higt + textHeight + 1,
+                                            rectColor
+                                        )
+                                    }
+                                } else {
+                                    RenderUtils.drawRect(xPos - 3, module.higt, 0F, module.higt - 1, rectColor)
+                                }
                             }
 
-                            when {
-                                rectMode.equals("left", true) -> RenderUtils.drawRect(xPos - 5, yPos, xPos - 2, yPos + textHeight,
-                                        rectColor)
-                                rectMode.equals("right", true) -> RenderUtils.drawRect(-3F, yPos, 0F,
-                                        yPos + textHeight, rectColor)
+                            rectRightValue.get().equals("special", true) -> {
+                                if (module == modules[0]) {
+                                    RenderUtils.drawRect(xPos - 2, module.higt, 0F, module.higt - 1, rectColor)
+                                }
+                                if (module == modules[modules.size - 1]) {
+                                    RenderUtils.drawRect(
+                                        xPos - 2,
+                                        module.higt + textHeight,
+                                        0F,
+                                        module.higt + textHeight + 1,
+                                        rectColor
+                                    )
+                                }
+                            }
+
+                            rectRightValue.get().equals("top", true) -> {
+                                if (module == modules[0]) {
+                                    RenderUtils.drawRect(xPos - 2, module.higt, 0F, module.higt - 1, rectColor)
+                                }
                             }
                         }
                     }
@@ -277,67 +539,253 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
             }
 
             Horizontal.LEFT -> {
-                modules.forEachIndexed { index, module ->
-                    var displayString = if (!tags.get())
-                        module.name
-                    else if (tagsArrayColor.get())
-                        module.colorlessTagName
-                    else module.tagName
+                if (shadowShaderValue.get()) {
+                    GL11.glTranslated(-renderX, -renderY, 0.0)
+                    GL11.glPushMatrix()
+                    ShadowUtils.shadow(shadowStrength.get().toFloat(), {
+                        GL11.glPushMatrix()
+                        GL11.glTranslated(renderX, renderY, 0.0)
+                        modules.forEachIndexed { index, module ->
+                            var displayString = getModName(module)
+                            val width = fontRenderer.getStringWidth(displayString)
+                            val xPos = -(width - module.slide) + if (rectLeftValue.get().equals("left", true)) 3 else 2
+                            RenderUtils.drawRect(
+                                0F,
+                                module.higt,
+                                xPos + width + if (rectLeftValue.get().equals("right", true)) 3F else 2F,
+                                module.higt + textHeight,
+                                when (shadowColorMode.get().toLowerCase()) {
+                                    "background" -> Color(
+                                        backgroundColorRedValue.get(),
+                                        backgroundColorGreenValue.get(),
+                                        backgroundColorBlueValue.get()
+                                    ).rgb
 
-                    if (upperCaseValue.get())
-                        displayString = displayString.toUpperCase()
+                                    "text" -> {
+                                        val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
+
+                                        var Sky = RenderUtils.SkyRainbow(
+                                            counter[0] * (skyDistanceValue.get() * 50),
+                                            saturationValue.get(),
+                                            brightnessValue.get()
+                                        )
+                                        var CRainbow = RenderUtils.getRainbowOpaque(
+                                            cRainbowSecValue.get(),
+                                            saturationValue.get(),
+                                            brightnessValue.get(),
+                                            counter[0] * (50 * cRainbowDistValue.get())
+                                        )
+                                        var FadeColor = ColorUtils.fade(
+                                            Color(
+                                                colorRedValue.get(),
+                                                colorGreenValue.get(),
+                                                colorBlueValue.get(),
+                                                colorAlphaValue.get()
+                                            ), index * fadeDistanceValue.get(), 100
+                                        ).rgb
+                                        counter[0] = counter[0] - 1
+
+                                        val test = ColorUtils.LiquidSlowly(
+                                            System.nanoTime(),
+                                            index * liquidSlowlyDistanceValue.get(),
+                                            saturationValue.get(),
+                                            brightnessValue.get()
+                                        )?.rgb
+                                        var LiquidSlowly: Int = test!!
+
+                                        when {
+                                            colorMode.equals("Random", ignoreCase = true) -> moduleColor
+                                            colorMode.equals("Sky", ignoreCase = true) -> Sky
+                                            colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
+                                            colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
+                                            colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                                            colorMode.equals("Gradinet", true) -> RenderUtils.getGradientOffset(
+                                                Color(
+                                                    colorRedValue.get(),
+                                                    colorGreenValue.get(),
+                                                    colorBlueValue.get(),
+                                                    1
+                                                ),
+                                                Color(
+                                                    colorRedValue2.get(),
+                                                    colorGreenValue2.get(),
+                                                    colorBlueValue2.get(),
+                                                    1
+                                                ),
+                                                (Math.abs(
+                                                    System.currentTimeMillis() / gidentspeed.get()
+                                                        .toDouble() + (module.higt / fontRenderer.fontHeight)
+                                                ) / 10)
+                                            ).rgb
+
+                                            else -> customColor
+                                        }
+                                    }
+
+                                    else -> Color(
+                                        shadowColorRedValue.get(),
+                                        shadowColorGreenValue.get(),
+                                        shadowColorBlueValue.get()
+                                    ).rgb
+                                }
+                            )
+                        }
+                        GL11.glPopMatrix()
+                    }, {
+                        if (!shadowNoCutValue.get()) {
+                            GL11.glPushMatrix()
+                            GL11.glTranslated(renderX, renderY, 0.0)
+                            modules.forEachIndexed { index, module ->
+                                var displayString = getModName(module)
+                                val width = fontRenderer.getStringWidth(displayString)
+                                val xPos =
+                                    -(width - module.slide) + if (rectLeftValue.get().equals("left", true)) 3 else 2
+
+                                RenderUtils.quickDrawRect(
+                                    0F,
+                                    module.higt,
+                                    xPos + width + if (rectLeftValue.get().equals("right", true)) 3 else 2,
+                                    module.higt + textHeight
+                                )
+                            }
+                            GL11.glPopMatrix()
+                        }
+                    })
+                    GL11.glPopMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                }
+
+                if (blurValue.get()) {
+                    GL11.glTranslated(-renderX, -renderY, 0.0)
+                    GL11.glPushMatrix()
+                    val floatX = renderX.toFloat()
+                    val floatY = renderY.toFloat()
+                    var yP = 0F
+                    var xP = 0F
+                    modules.forEachIndexed { index, module ->
+                        val dString = getModName(module)
+                        val wid = fontRenderer.getStringWidth(dString) + 2F
+                        val yPos = if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer *
+                                if (side.vertical == Vertical.DOWN) index + 1 else index
+                        yP += yPos
+                        xP = Math.max(xP, wid)
+                    }
+
+                    BlurUtils.blur(floatX, floatY, floatX + xP, floatY + yP, blurStrength.get(), false) {
+                        modules.forEachIndexed { index, module ->
+                            var displayString = getModName(module)
+                            val width = fontRenderer.getStringWidth(displayString)
+                            val xPos = -(width - module.slide) + if (rectLeftValue.get().equals("left", true)) 3 else 2
+
+                            RenderUtils.quickDrawRect(
+                                floatX,
+                                floatY + module.higt,
+                                floatX + xPos + width + if (rectLeftValue.get().equals("right", true)) 3 else 2,
+                                floatY + module.higt + textHeight
+                            )
+                        }
+                    }
+                    GL11.glPopMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                }
+
+                modules.forEachIndexed { index, module ->
+                    var displayString = getModName(module)
 
                     val width = fontRenderer.getStringWidth(displayString)
-                    val xPos = -(width - module.slide) + if (rectMode.equals("left", true)) 5 else 2
-                    val yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                            if (side.vertical == Vertical.DOWN) index + 1 else index
+                    val xPos = -(width - module.slide) + if (rectLeftValue.get().equals("left", true)) 3 else 2
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
+                    var Sky: Int
+                    Sky = RenderUtils.SkyRainbow(
+                        counter[0] * (skyDistanceValue.get() * 50),
+                        saturationValue.get(),
+                        brightnessValue.get()
+                    )
+                    var CRainbow: Int
+                    CRainbow = RenderUtils.getRainbowOpaque(
+                        cRainbowSecValue.get(),
+                        saturationValue.get(),
+                        brightnessValue.get(),
+                        counter[0] * (50 * cRainbowDistValue.get())
+                    )
+                    var FadeColor: Int = ColorUtils.fade(
+                        Color(
+                            colorRedValue.get(),
+                            colorGreenValue.get(),
+                            colorBlueValue.get(),
+                            colorAlphaValue.get()
+                        ), index * fadeDistanceValue.get(), 100
+                    ).rgb
+                    counter[0] = counter[0] - 1
+                    val test = ColorUtils.LiquidSlowly(
+                        System.nanoTime(),
+                        index * liquidSlowlyDistanceValue.get(),
+                        saturationValue.get(),
+                        brightnessValue.get()
+                    )?.rgb
+                    var LiquidSlowly: Int = test!!
 
-                    val backgroundRectRainbow = backgroundColorMode.equals("Rainbow", ignoreCase = true)
 
-                    RainbowShader.begin(backgroundRectRainbow, if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(), if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-                        RenderUtils.drawRect(
-                                0F,
-                                yPos,
-                                xPos + width + if (rectMode.equals("right", true)) 5 else 2,
-                                yPos + textHeight, when {
-                            backgroundRectRainbow -> 0
-                            backgroundColorMode.equals("Random", ignoreCase = true) -> moduleColor
-                            else -> backgroundCustomColor
-                        }
-                        )
-                    }
+                    RenderUtils.drawRect(
+                        0F,
+                        module.higt,
+                        xPos + width + if (rectLeftValue.get().equals("right", true)) 3 else 2,
+                        module.higt + textHeight, backgroundCustomColor
+                    )
 
-                    val rainbow = colorMode.equals("Rainbow", ignoreCase = true)
-
-                    classProvider.getGlStateManager().resetColor()
-                    RainbowFontShader.begin(rainbow, if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(), if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-                        fontRenderer.drawString(displayString, xPos, yPos + textY, when {
-                            rainbow -> 0
+                    fontRenderer.drawString(
+                        displayString, xPos, ((module.higt + textY)), when {
                             colorMode.equals("Random", ignoreCase = true) -> moduleColor
+                            colorMode.equals("Sky", ignoreCase = true) -> Sky
+                            colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
+                            colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
+                            colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                            colorMode.equals("Gradinet", true) -> RenderUtils.getGradientOffset(
+                                Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 1),
+                                Color(colorRedValue2.get(), colorGreenValue2.get(), colorBlueValue2.get(), 1),
+                                (Math.abs(
+                                    System.currentTimeMillis() / gidentspeed.get()
+                                        .toDouble() + (module.higt / fontRenderer.fontHeight)
+                                ) / 10)
+                            ).rgb
+
                             else -> customColor
-                        }, textShadow)
-                    }
+                        }, textShadow
+                    )
 
-                    val rectColorRainbow = rectColorMode.equals("Rainbow", ignoreCase = true)
+                    if (!rectLeftValue.get().equals("none", true)) {
+                        val rectColor = when {
+                            rectColorMode.equals("Random", ignoreCase = true) -> moduleColor
+                            rectColorMode.equals("Sky", ignoreCase = true) -> Sky
+                            rectColorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
+                            rectColorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
+                            rectColorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                            rectColorMode.equals("Gradinet", true) -> RenderUtils.getGradientOffset(
+                                Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 1),
+                                Color(colorRedValue2.get(), colorGreenValue2.get(), colorBlueValue2.get(), 1),
+                                (Math.abs(
+                                    System.currentTimeMillis() / gidentspeed.get()
+                                        .toDouble() + (module.higt / fontRenderer.fontHeight)
+                                ) / 10)
+                            ).rgb
 
-                    RainbowShader.begin(rectColorRainbow, if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(), if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-                        if (!rectMode.equals("none", true)) {
-                            val rectColor = when {
-                                rectColorRainbow -> 0
-                                rectColorMode.equals("Random", ignoreCase = true) -> moduleColor
-                                else -> rectCustomColor
-                            }
+                            else -> rectCustomColor
+                        }
 
-                            when {
-                                rectMode.equals("left", true) -> RenderUtils.drawRect(0F,
-                                        yPos - 1, 3F, yPos + textHeight, rectColor)
-                                rectMode.equals("right", true) ->
-                                    RenderUtils.drawRect(xPos + width + 2, yPos, xPos + width + 2 + 3,
-                                            yPos + textHeight, rectColor)
-                            }
+                        when {
+                            rectLeftValue.get().equals("left", true) -> RenderUtils.drawRect(
+                                0F,
+                                module.higt - 1, 1F, module.higt + textHeight, rectColor
+                            )
+
+                            rectLeftValue.get().equals("right", true) ->
+                                RenderUtils.drawRect(
+                                    xPos + width + 2, module.higt, xPos + width + 2 + 1,
+                                    module.higt + textHeight, rectColor
+                                )
                         }
                     }
+
                 }
             }
         }
@@ -359,6 +807,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         val xPos = -module.slide.toInt() - 2
                         if (x2 == Int.MIN_VALUE || xPos < x2) x2 = xPos
                     }
+
                     Horizontal.LEFT -> {
                         val xPos = module.slide.toInt() + 14
                         if (x2 == Int.MIN_VALUE || xPos > x2) x2 = xPos
@@ -371,13 +820,52 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         }
 
         AWTFontRenderer.assumeNonVolatile = false
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.resetColor()
         return null
     }
 
     override fun updateElement() {
-        modules = LiquidBounce.moduleManager.modules
-                .filter { it.array && it.slide > 0 }
-                .sortedBy { -fontValue.get().getStringWidth(if (upperCaseValue.get()) (if (!tags.get()) it.name else if (tagsArrayColor.get()) it.colorlessTagName else it.tagName).toUpperCase() else if (!tags.get()) it.name else if (tagsArrayColor.get()) it.colorlessTagName else it.tagName) }
+        modules = if (abcOrder.get()) LiquidBounce.moduleManager.modules
+            .filter { it.array && (if (hAnimation.get().equals("none", ignoreCase = true)) it.state else it.slide > 0) }
+        else LiquidBounce.moduleManager.modules
+            .filter { it.array && (if (hAnimation.get().equals("none", ignoreCase = true)) it.state else it.slide > 0) }
+            .sortedBy { -fontValue.get().getStringWidth(getModName(it)) }
+        sortedModules = if (abcOrder.get()) LiquidBounce.moduleManager.modules.toList()
+        else LiquidBounce.moduleManager.modules.sortedBy { -fontValue.get().getStringWidth(getModName(it)) }.toList()
+    }
+
+    private fun getModTag(m: Module): String {
+        if (!tags.get() || m.tag == null) return ""
+
+        var returnTag = " ${if (tagsArrayColor.get()) "" else "§f"}"
+
+        // tag prefix, ignore default value
+        if (!tagsStyleValue.get().equals("default", true))
+            returnTag += tagsStyleValue.get().get(0).toString() + if (tagsStyleValue.get()
+                    .equals("-", true) || tagsStyleValue.get().equals("|", true)
+            ) " " else ""
+
+        // main tag value
+        returnTag += m.tag
+
+        // tag suffix, ignore default, -, | values
+        if (!tagsStyleValue.get().equals("default", true)
+            && !tagsStyleValue.get().equals("-", true)
+            && !tagsStyleValue.get().equals("|", true)
+        )
+            returnTag += tagsStyleValue.get().get(1).toString()
+
+        return returnTag
+    }
+
+    private fun getModName(mod: Module): String {
+        var displayName: String = (if (nameBreak.get()) mod.name else mod.name) + getModTag(mod)
+
+        when (caseValue.get().toLowerCase()) {
+            "lower" -> displayName = displayName.toLowerCase()
+            "upper" -> displayName = displayName.toUpperCase()
+        }
+
+        return displayName
     }
 }

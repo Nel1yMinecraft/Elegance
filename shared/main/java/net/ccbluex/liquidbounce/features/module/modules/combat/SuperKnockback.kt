@@ -23,7 +23,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.CPacketEntityAction
 
-@ModuleInfo(name = "SuperKnockback", category = ModuleCategory.COMBAT, description = "Superkb")
+@ModuleInfo(name = "MoreKb", category = ModuleCategory.COMBAT, description = "Superkb")
 class SuperKnockback : Module() {
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)

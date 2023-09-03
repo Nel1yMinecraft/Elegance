@@ -15,6 +15,7 @@ import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -22,7 +23,11 @@ import static org.lwjgl.opengl.GL20.glUniform1;
 
 public class GaussianBlur {
 
-    public static ShaderUtil blurShader = new ShaderUtil("shaders/gaussian.frag");
+    public static ShaderUtil blurShader;
+
+    static {
+              blurShader = new ShaderUtil("shaders/gaussian.frag");
+    }
 
     public static Framebuffer framebuffer = new Framebuffer(1, 1, false);
 

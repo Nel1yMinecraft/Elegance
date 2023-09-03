@@ -49,6 +49,8 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
+    private val fakekillCounts = BoolValue("FakeKillCounts",false)
+
     private val shadowValue = BoolValue("Shadow", false)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
 
@@ -109,7 +111,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
 
-            val name = functions.scoreboardFormatPlayerName(team, score.playerName)
+            var name = functions.scoreboardFormatPlayerName(team, score.playerName)
             val scorePoints = "${WEnumChatFormatting.RED}${score.scorePoints}"
 
             val width = 5 - if (rectValue.get()) 4 else 0
@@ -118,15 +120,23 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
 
             fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadowValue.get())
-            fontRenderer.drawString(scorePoints, (width - fontRenderer.getStringWidth(scorePoints)).toFloat(), height, textColor, shadowValue.get())
+            fontRenderer.drawString(
+                scorePoints,
+                (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                height,
+                textColor,
+                shadowValue.get()
+            )
 
             if (index == scoreCollection.size - 1) {
                 val displayName = objective.displayName
 
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
 
-                fontRenderer.drawString(displayName, (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(), (height -
-                        fontRenderer.fontHeight), textColor, shadowValue.get())
+                fontRenderer.drawString(
+                    displayName, (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(), (height -
+                            fontRenderer.fontHeight), textColor, shadowValue.get()
+                )
             }
 
             if (rectValue.get()) {
@@ -135,7 +145,20 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                     else -> rectCustomColor
                 }
 
-                RenderUtils.drawRect(2F, if (index == scoreCollection.size - 1) -2F else height, 5F, if (index == 0) fontRenderer.fontHeight.toFloat() else height + fontRenderer.fontHeight * 2F, rectColor)
+                RenderUtils.drawRect(
+                    2F,
+                    if (index == scoreCollection.size - 1) -2F else height,
+                    5F,
+                    if (index == 0) fontRenderer.fontHeight.toFloat() else height + fontRenderer.fontHeight * 2F,
+                    rectColor
+                )
+            }
+            if (fakekillCounts.get()) {
+                for (domain in "杀 ：") {
+                    if (name.contains(domain, true)) {
+                        name = "杀 ： 1"
+                    }
+                }
             }
         }
 

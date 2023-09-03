@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import me.nelly.PacketUtils
 import net.ccbluex.liquidbounce.api.enums.EnumFacingType
 import net.ccbluex.liquidbounce.api.minecraft.potion.PotionType
 import net.ccbluex.liquidbounce.api.minecraft.util.IAxisAlignedBB
@@ -14,6 +15,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.injection.backend.unwrap
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -23,6 +25,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.network.play.server.SPacketPlayerPosLook
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.math.BigDecimal
@@ -37,6 +40,8 @@ class Fly : Module() {
     val modeValue = ListValue("Mode", arrayOf(
             "Vanilla",
             "SmoothVanilla",
+
+            "Grim",
 
             // NCP
             "NCP",
@@ -593,6 +598,24 @@ class Fly : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
+        val vanillaSpeed = vanillaSpeedValue.get()
+        if (modeValue.get().equals("Grim", ignoreCase = true)) {
+            mc2.player.capabilities.isFlying = false
+            PacketUtils.send(SPacketPlayerPosLook())
+            mc2.player.motionY = 0.0
+            PacketUtils.send(SPacketPlayerPosLook())
+            mc2.player.motionX = 0.0
+            PacketUtils.send(SPacketPlayerPosLook())
+            mc2.player.motionZ = 0.0
+            PacketUtils.send(SPacketPlayerPosLook())
+            if (mc.gameSettings.keyBindJump.isKeyDown) mc2.player.motionY += vanillaSpeed
+            PacketUtils.send(SPacketPlayerPosLook())
+            if (mc.gameSettings.keyBindSneak.isKeyDown) mc2.player.motionY -= vanillaSpeed
+            PacketUtils.send(SPacketPlayerPosLook())
+            MovementUtils.strafe(vanillaSpeed)
+            PacketUtils.send(SPacketPlayerPosLook())
+            handleVanillaKickBypass()
+        }
         if (noPacketModify) return
 
         if (classProvider.isCPacketPlayer(event.packet)) {

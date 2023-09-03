@@ -67,7 +67,7 @@ class AntiFakePlayer : Module() {
     )
 
     // ?
-    private val autoModeValue = BoolValue("AutoSwitch", false)
+    private val autoModeValue = BoolValue("AutoSwitch", true)
 
     // 主功能
     // 开自动切换就别自己选了  又不会出问题

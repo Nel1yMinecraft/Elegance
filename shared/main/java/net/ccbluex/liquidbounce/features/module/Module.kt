@@ -54,6 +54,7 @@ open class Module : MinecraftInstance(), Listenable {
         canEnable = moduleInfo.canEnable
         isSupported = Backend.REPRESENTED_BACKEND_VERSION in moduleInfo.supportedVersions
     }
+    var higt = 0F
 
     // Current state of module
     var state = false

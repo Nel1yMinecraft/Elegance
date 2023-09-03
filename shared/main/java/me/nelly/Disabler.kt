@@ -23,7 +23,7 @@ class Disabler : Module() {
         val packet = event.packet.unwrap()
         when (modeValue.get().toLowerCase()) {
             "grimpost" -> {
-                val serverData = Minecraft.getMinecraft().currentServerData
+                val serverData = mc.currentServerData
                 if (serverData != null) {
                     val pingTime = serverData.pingToServer
                     if (packet is CPacketPlayer)

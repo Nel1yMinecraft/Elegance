@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
 import net.ccbluex.liquidbounce.features.module.modules.movement.LiquidWalk;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
-import net.ccbluex.liquidbounce.features.module.modules.player.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

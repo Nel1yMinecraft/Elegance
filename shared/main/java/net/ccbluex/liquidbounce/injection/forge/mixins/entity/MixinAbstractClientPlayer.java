@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.injection.backend.ResourceLocationImplKt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.client.resources.SkinManager;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -65,18 +66,6 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
             f1 = f1 > 1.0f ? 1.0f : f1 * f1;
             newFOV *= 1.0f - f1 * 0.15f;
             callbackInfoReturnable.setReturnValue(newFOV);
-        }
-    }
-
-    @Inject(method = "getLocationSkin()Lnet/minecraft/util/ResourceLocation;", at = @At("HEAD"), cancellable = true)
-    private void getSkin(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
-        final NameProtect nameProtect = (NameProtect) LiquidBounce.moduleManager.getModule(NameProtect.class);
-
-        if (Objects.requireNonNull(nameProtect).getState() && nameProtect.skinProtectValue.get()) {
-            if (!nameProtect.allPlayersValue.get() && !Objects.equals(getGameProfile().getName(), Minecraft.getMinecraft().player.getGameProfile().getName()))
-                return;
-
-            callbackInfoReturnable.setReturnValue(DefaultPlayerSkin.getDefaultSkin(getUniqueID()));
         }
     }
 }

@@ -64,4 +64,6 @@ class Teams : Module() {
         return false
     }
 
+    override val tag: String
+        get() = "Color"
 }

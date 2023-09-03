@@ -14,89 +14,61 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
     category = ModuleCategory.MOVEMENT
 )
 class HytFly : Module() {
-    val ka = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (mc.thePlayer!!.hurtTime > 0) {
-            mc.thePlayer!!.setPositionAndRotation(
-                mc.thePlayer!!.posX + 100000,
-                mc.thePlayer!!.posY,
-                mc.thePlayer!!.posZ,
-                mc.thePlayer!!.rotationYaw,
-                mc.thePlayer!!.rotationPitch
+        if ( mc2.player.hurtTime > 0) {
+             mc2.player.setPositionAndRotation(
+                 mc2.player.posX + 100000,
+                 mc2.player.posY,
+                 mc2.player.posZ,
+                 mc2.player.rotationYaw,
+                 mc2.player.rotationPitch
             )
         } else {
-            mc.thePlayer!!.setPositionAndRotation(
-                mc.thePlayer!!.posX - 100000,
-                mc.thePlayer!!.posY - 0.11,
-                mc.thePlayer!!.posZ,
-                mc.thePlayer!!.rotationYaw,
-                mc.thePlayer!!.rotationPitch
+             mc2.player.setPositionAndRotation(
+                 mc2.player.posX - 100000,
+                 mc2.player.posY + 0.11,
+                 mc2.player.posZ,
+                 mc2.player.rotationYaw,
+                 mc2.player.rotationPitch
             )
         }
         @EventTarget
         fun onMove(event: MoveEvent) {
-            if (mc.thePlayer!!.hurtTime > 0) {
-                mc.thePlayer!!.setPositionAndRotation(
-                    mc.thePlayer!!.posX + 100000,
-                    mc.thePlayer!!.posY - 0.11,
-                    mc.thePlayer!!.posZ,
-                    mc.thePlayer!!.rotationYaw,
-                    mc.thePlayer!!.rotationPitch
+            if ( mc2.player.hurtTime > 0) {
+                mc2.player.setPositionAndRotation(
+                     mc2.player.posX + 100000,
+                     mc2.player.posY - 0.11,
+                     mc2.player.posZ,
+                     mc2.player.rotationYaw,
+                     mc2.player.rotationPitch
                 )
             } else {
-                mc.thePlayer!!.setPositionAndRotation(
-                    mc.thePlayer!!.posX - 100000,
-                    mc.thePlayer!!.posY - 0.11,
-                    mc.thePlayer!!.posZ,
-                    mc.thePlayer!!.rotationYaw,
-                    mc.thePlayer!!.rotationPitch
+                 mc2.player.setPositionAndRotation(
+                     mc2.player.posX - 100000,
+                     mc2.player.posY + 0.11,
+                     mc2.player.posZ,
+                     mc2.player.rotationYaw,
+                     mc2.player.rotationPitch
                 )
             }
             @EventTarget
             fun onUpdate(event: UpdateEvent) {
-                // Add theplayer kb
-                if (mc.thePlayer!!.hurtTime > 0) {
-                    mc.netHandler.addToSendQueue(
-                        classProvider.createCPacketEntityAction(
-                            ka.target!!,
-                            ICPacketEntityAction.WAction.STOP_SPRINTING
-                        )
-                    )
-                    mc.netHandler.addToSendQueue(
-                        classProvider.createCPacketEntityAction(
-                            ka.target!!,
-                            ICPacketEntityAction.WAction.START_SPRINTING
-                        )
-                    )
-                    mc.netHandler.addToSendQueue(
-                        classProvider.createCPacketEntityAction(
-                            ka.target!!,
-                            ICPacketEntityAction.WAction.STOP_SPRINTING
-                        )
-                    )
-                    mc.netHandler.addToSendQueue(
-                        classProvider.createCPacketEntityAction(
-                            ka.target!!,
-                            ICPacketEntityAction.WAction.START_SPRINTING
-                        )
-                    )
-                }
-                if (mc.thePlayer!!.hurtTime > 0) {
-                    mc.thePlayer!!.setPositionAndRotation(
-                        mc.thePlayer!!.posX + 100000,
-                        mc.thePlayer!!.posY - 0.11,
-                        mc.thePlayer!!.posZ,
-                        mc.thePlayer!!.rotationYaw,
-                        mc.thePlayer!!.rotationPitch
+                if ( mc2.player.hurtTime > 0) {
+                     mc2.player.setPositionAndRotation(
+                         mc2.player.posX + 100000,
+                         mc2.player.posY - 0.11,
+                         mc2.player.posZ,
+                         mc2.player.rotationYaw,
+                         mc2.player.rotationPitch
                     )
                 } else {
-                    mc.thePlayer!!.setPositionAndRotation(
-                        mc.thePlayer!!.posX - 100000,
-                        mc.thePlayer!!.posY - 0.11,
-                        mc.thePlayer!!.posZ,
-                        mc.thePlayer!!.rotationYaw,
-                        mc.thePlayer!!.rotationPitch
+                     mc2.player.setPositionAndRotation(
+                         mc2.player.posX - 100000,
+                         mc2.player.posY + 0.11,
+                         mc2.player.posZ,
+                         mc2.player.rotationYaw,
+                         mc2.player.rotationPitch
                     )
                 }
             }

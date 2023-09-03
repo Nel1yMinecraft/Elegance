@@ -60,8 +60,6 @@ class Velocity2 : Module() {
             return
         }
 
-
-
         val packet = event.packet.unwrap()
 
         if(S08>0){
@@ -130,7 +128,7 @@ class Velocity2 : Module() {
                 mc2.connection!!.networkManager.sendPacket(packets.take())
             }
             while (!inBus.isEmpty()) {
-                inBus.poll()?.processPacket(mc2!!.connection)
+                inBus.poll()?.processPacket(mc2!!.connection!!)
             }
             disableLogger = false
         } catch (e: Exception) {

@@ -128,7 +128,7 @@ class AutoGG : Module() {
         if (autoscreenshots.get()) {
             val timer = MSTimer()
             val robot = Robot()
-            timer.hasTimePassed(10)
+            timer.hasTimePassed(100)
             robot.keyPress(KeyEvent.VK_F2)
             robot.keyRelease(KeyEvent.VK_F2)
         }

@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 
 public class AntiForge extends MinecraftInstance implements Listenable {
 
-    public static boolean enabled = true;
+    public static boolean enabled = false;
     public static boolean blockFML = true;
     public static boolean blockProxyPacket = true;
     public static boolean blockPayloadPackets = true;

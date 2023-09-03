@@ -217,15 +217,7 @@ class Notification(
 
         if (style.equals("Modern")) {
 
-            if (blurRadius != 0f) {
-                BlurUtils.draw(
-                    4 + (x + transX).toFloat() * scale,
-                    (y + transY).toFloat() * scale,
-                    (width * scale),
-                    (27f - 5f) * scale,
-                    blurRadius
-                )
-            }
+
             var colorRed = type.renderColor.red
             var colorGreen = type.renderColor.green
             var colorBlue = type.renderColor.blue
@@ -275,15 +267,7 @@ class Notification(
 
         if (style.equals("FDP")) {
 
-            if (blurRadius != 0f) {
-                BlurUtils.draw(
-                    4 + (x + transX).toFloat() * scale,
-                    (y + transY).toFloat() * scale,
-                    (width * scale),
-                    (27f - 5f) * scale,
-                    blurRadius
-                )
-            }
+
 
             val colors = Color(0, 0, 0, alpha / 4)
 
@@ -431,14 +415,6 @@ class Notification(
         }
 
         if (style.equals("Classic")) {
-            if (blurRadius != 0f)
-                BlurUtils.draw(
-                    (x + transX).toFloat() * scale,
-                    (y + transY).toFloat() * scale,
-                    width * scale,
-                    classicHeight * scale,
-                    blurRadius
-                )
 
             RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
             ShadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), classicHeight.toFloat(), 240f)

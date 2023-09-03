@@ -62,6 +62,7 @@ object LiquidBounce {
 
     // Update information
     var latestVersion = 0
+    var playTimeStart: Long = 0
 
     // Menu Background
     var background: IResourceLocation? = null
@@ -88,6 +89,9 @@ object LiquidBounce {
                 " |______| |_|  \\___|  \\__, |  \\__,_| |_| |_|  \\___|  \\___|\n" +
                 "                       __/ |                              \n" +
                 "                      |___/                               ")
+
+        playTimeStart = System.currentTimeMillis()
+
         // Create file manager
         fileManager = FileManager()
 

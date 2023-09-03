@@ -1,6 +1,8 @@
 
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import com.jcraft.jogg.Packet
+import me.nelly.PacketUtils
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.enums.EnumFacingType
 import net.ccbluex.liquidbounce.api.enums.WEnumHand
@@ -13,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
+import net.ccbluex.liquidbounce.injection.backend.unwrap
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.createUseItemPacket
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -21,12 +24,17 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.*
+import java.awt.MouseInfo
+import java.awt.Robot
+import java.awt.Toolkit
+import java.awt.event.InputEvent
 
-@ModuleInfo(name = "NoSlow",description = "No-Slow",
+@ModuleInfo(name = "NoSlowDown",description = "No-Slow",
     category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "AAC", "AAC5","GrimPacket","GrimVanilla"), "Vanilla")
+    private val modeValue =
+        ListValue("PacketMode", arrayOf("Vanilla", "AAC", "AAC5", "GrimPacket", "GrimVanilla"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -35,6 +43,7 @@ class NoSlow : Module() {
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val customOnGround = BoolValue("CustomOnGround", false)
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200)
+
     // Soulsand
     val soulsandValue = BoolValue("Soulsand", false)
 
@@ -55,7 +64,11 @@ class NoSlow : Module() {
         delayValue: Long,
         onGround: Boolean
     ) {
-        val digging = classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, WBlockPos(-1, -1, -1), classProvider.getEnumFacing(EnumFacingType.DOWN))
+        val digging = classProvider.createCPacketPlayerDigging(
+            ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM,
+            WBlockPos(-1, -1, -1),
+            classProvider.getEnumFacing(EnumFacingType.DOWN)
+        )
         val blockMain = createUseItemPacket(mc.thePlayer!!.inventory.getCurrentItemInHand(), WEnumHand.MAIN_HAND)
         val blockOFF = createUseItemPacket(mc.thePlayer!!.inventory.getCurrentItemInHand(), WEnumHand.OFF_HAND)
         if (onGround && !mc.thePlayer!!.onGround) {
@@ -88,8 +101,25 @@ class NoSlow : Module() {
         return mc.thePlayer!!.isBlocking || killAura.blockingStatus
     }
 
+    fun mouseState(): Boolean {
+        val toolkit = Toolkit.getDefaultToolkit()
+        val mouseState = toolkit.getSystemEventQueue().peekEvent(InputEvent.MOUSE_EVENT_MASK.toInt())
+        if (mouseState is java.awt.event.MouseEvent)
+            if (mouseState.button == java.awt.event.MouseEvent.BUTTON1) {
+                return true
+            } else {
+                return false
+            }
+        return false
+    }
+
+
+
+
+
     @EventTarget
     fun onMotion(event: MotionEvent) {
+
         if (!MovementUtils.isMoving) {
             return
         }
@@ -115,6 +145,7 @@ class NoSlow : Module() {
                 }
 
             }
+
             "aac" -> {
                 if (mc.thePlayer!!.ticksExisted % 3 == 0) {
                     sendPacket(event, true, false, false, 0, false)
@@ -149,8 +180,8 @@ class NoSlow : Module() {
             }
 
             "grimpacket" -> {
-                if(mc.thePlayer!!.isBlocking || isBlock() || blocking) {
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, WBlockPos.ORIGIN, classProvider.getEnumFacing(EnumFacingType.DOWN)))
+                if (mc.thePlayer!!.isBlocking || isBlock() || blocking) {
+                    sendPacket(event,false,true,false,0,true)
                 }
                 if (event.eventState == EventState.PRE && mc.thePlayer!!.itemInUse != null && mc.thePlayer!!.itemInUse!!.item != null) {
                     if (mc.thePlayer!!.isUsingItem && mc.thePlayer!!.itemInUseCount >= 1) {
