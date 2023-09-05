@@ -1,11 +1,8 @@
 package me.nelly
 
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils
-import net.minecraft.client.Minecraft
+import me.ccbluex.liquidbounce.utils.misc.HttpUtils
 import java.net.InetAddress
 //import java.net.InetAddress
-import java.net.InterfaceAddress
-import javax.swing.JOptionPane
 
 class Verify2 {
     companion object {

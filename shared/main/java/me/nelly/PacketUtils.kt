@@ -1,7 +1,7 @@
 package me.nelly;
 
-import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import me.ccbluex.liquidbounce.api.minecraft.network.IPacket
+import me.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*

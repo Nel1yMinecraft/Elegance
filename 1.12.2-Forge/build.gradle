@@ -124,11 +124,11 @@ jar {
             'MixinConfigs': 'liquidbounce.forge.mixins.json',
             'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
             'TweakOrder': 0,
-            'FMLCorePluginContainsFMLMod': 'net.ccbluex.liquidbounce.injection.forge.MixinLoader',
-            'FMLCorePlugin': 'net.ccbluex.liquidbounce.injection.forge.TransformerLoader',
+            'FMLCorePluginContainsFMLMod': 'me.ccbluex.liquidbounce.injection.forge.MixinLoader',
+            'FMLCorePlugin': 'me.ccbluex.liquidbounce.injection.forge.TransformerLoader',
             'FMLAT': 'liquidbounce_at.cfg',
             'Manifest-Version': 1.0,
-            'Main-Class': 'net.ccbluex.liquidinstruction.LiquidInstructionKt'
+            'Main-Class': 'me.ccbluex.liquidinstruction.LiquidInstructionKt'
     )
 }
 

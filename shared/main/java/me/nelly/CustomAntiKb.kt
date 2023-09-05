@@ -1,15 +1,14 @@
 package me.nelly
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.injection.backend.unwrap
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import me.ccbluex.liquidbounce.event.EventTarget
+import me.ccbluex.liquidbounce.event.PacketEvent
+import me.ccbluex.liquidbounce.features.module.Module
+import me.ccbluex.liquidbounce.features.module.ModuleCategory
+import me.ccbluex.liquidbounce.features.module.ModuleInfo
+import me.ccbluex.liquidbounce.injection.backend.unwrap
+import me.ccbluex.liquidbounce.utils.MovementUtils
+import me.ccbluex.liquidbounce.value.BoolValue
+import me.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketConfirmTransaction
 import net.minecraft.network.play.client.CPacketUseEntity

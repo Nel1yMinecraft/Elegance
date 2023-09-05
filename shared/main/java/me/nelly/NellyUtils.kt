@@ -1,10 +1,10 @@
 package me.nelly
 
 //LiquidBounce
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.MovementUtils
+import me.ccbluex.liquidbounce.LiquidBounce
+import me.ccbluex.liquidbounce.api.minecraft.network.IPacket
+import me.ccbluex.liquidbounce.utils.MinecraftInstance
+import me.ccbluex.liquidbounce.utils.MovementUtils
 //Minecraft
 import net.minecraft.client.Minecraft
 import net.minecraft.network.Packet

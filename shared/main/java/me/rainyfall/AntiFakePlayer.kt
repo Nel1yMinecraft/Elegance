@@ -5,22 +5,22 @@
  */
 package me.rainyfall
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.LiquidBounce.CLIENT_NAME
-import net.ccbluex.liquidbounce.event.EntityKilledEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.injection.backend.unwrap
-import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import me.ccbluex.liquidbounce.LiquidBounce
+import me.ccbluex.liquidbounce.LiquidBounce.CLIENT_NAME
+import me.ccbluex.liquidbounce.event.EntityKilledEvent
+import me.ccbluex.liquidbounce.event.EventTarget
+import me.ccbluex.liquidbounce.event.PacketEvent
+import me.ccbluex.liquidbounce.event.UpdateEvent
+import me.ccbluex.liquidbounce.features.module.Module
+import me.ccbluex.liquidbounce.features.module.ModuleCategory
+import me.ccbluex.liquidbounce.features.module.ModuleInfo
+import me.ccbluex.liquidbounce.injection.backend.unwrap
+import me.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
+import me.ccbluex.liquidbounce.utils.misc.RandomUtils
+import me.ccbluex.liquidbounce.utils.timer.MSTimer
+import me.ccbluex.liquidbounce.value.BoolValue
+import me.ccbluex.liquidbounce.value.IntegerValue
+import me.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.SPacketChat
 import java.util.regex.Pattern
 

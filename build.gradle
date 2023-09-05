@@ -1,9 +1,9 @@
 version = "DEVBUILD"
-group = "net.ccbluex"
+group = "me.ccbluex"
 
 subprojects {
     version = "DEVBUILD"
-    group = "net.ccbluex"
+    group = "me.ccbluex"
 }
 
 buildscript {

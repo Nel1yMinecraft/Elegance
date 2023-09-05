@@ -11,19 +11,19 @@ package me.caijiplayer
 //posY拉-4就是Asaka 的noclip高仿版本，模式选fly或者firework
 
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.StrafeEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.*
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import me.ccbluex.liquidbounce.LiquidBounce
+import me.ccbluex.liquidbounce.event.EventTarget
+import me.ccbluex.liquidbounce.event.StrafeEvent
+import me.ccbluex.liquidbounce.event.UpdateEvent
+import me.ccbluex.liquidbounce.features.module.Module
+import me.ccbluex.liquidbounce.features.module.ModuleCategory
+import me.ccbluex.liquidbounce.features.module.ModuleInfo
+import me.ccbluex.liquidbounce.utils.*
+import me.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import me.ccbluex.liquidbounce.value.BoolValue
+import me.ccbluex.liquidbounce.value.FloatValue
+import me.ccbluex.liquidbounce.value.IntegerValue
+import me.ccbluex.liquidbounce.value.ListValue
 
 
 @ModuleInfo(name = "AutoSkyWars", category = ModuleCategory.MOVEMENT, description = "space.bilibili.com/500398541")

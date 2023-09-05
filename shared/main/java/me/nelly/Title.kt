@@ -5,14 +5,14 @@
  */
 package me.nelly
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.TextValue
+import me.ccbluex.liquidbounce.LiquidBounce
+import me.ccbluex.liquidbounce.event.EventTarget
+import me.ccbluex.liquidbounce.event.UpdateEvent
+import me.ccbluex.liquidbounce.features.module.Module
+import me.ccbluex.liquidbounce.features.module.ModuleCategory
+import me.ccbluex.liquidbounce.features.module.ModuleInfo
+import me.ccbluex.liquidbounce.value.BoolValue
+import me.ccbluex.liquidbounce.value.TextValue
 import org.lwjgl.opengl.Display.setTitle
 
 @ModuleInfo(name = "Title", description = "Title", category = ModuleCategory.MISC)
