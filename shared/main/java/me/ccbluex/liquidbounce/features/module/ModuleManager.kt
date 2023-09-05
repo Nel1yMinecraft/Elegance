@@ -25,6 +25,8 @@ import me.ccbluex.liquidbounce.features.module.modules.render.*
 import me.ccbluex.liquidbounce.features.module.modules.world.*
 import me.ccbluex.liquidbounce.features.module.modules.world.Timer
 import me.ccbluex.liquidbounce.utils.ClientUtils
+import me.paimon.NameTags
+import me.rainyfall.AutoGG
 import java.util.*
 
 
@@ -204,7 +206,8 @@ class ModuleManager : Listenable {
             HudDesigner::class.java,
             DMGParticle::class.java,
             AutoReport::class.java,
-            TNTTime::class.java
+            TNTTime::class.java,
+            AutoL::class.java
         )
 
         registerModule(NoScoreboard)

@@ -1,9 +1,4 @@
-/*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
- */
-package me.ccbluex.liquidbounce.features.module.modules.render
+package me.paimon
 
 import me.ccbluex.liquidbounce.api.minecraft.client.entity.IEntityLivingBase
 import me.ccbluex.liquidbounce.event.EventTarget
@@ -13,12 +8,10 @@ import me.ccbluex.liquidbounce.features.module.ModuleCategory
 import me.ccbluex.liquidbounce.features.module.ModuleInfo
 import me.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import me.ccbluex.liquidbounce.injection.backend.Backend
-import me.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import me.ccbluex.liquidbounce.ui.font.Fonts
 import me.ccbluex.liquidbounce.utils.EntityUtils
-import me.ccbluex.liquidbounce.utils.extensions.getPing
 import me.ccbluex.liquidbounce.utils.render.ColorUtils
-import me.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawBorderedRect
+import me.ccbluex.liquidbounce.utils.render.RenderUtils
 import me.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawRect
 import me.ccbluex.liquidbounce.value.BoolValue
 import me.ccbluex.liquidbounce.value.FloatValue
@@ -30,15 +23,15 @@ import kotlin.math.roundToInt
 
 @ModuleInfo(name = "NameTags", description = "Changes the scale of the nametags so you can always read them.", category = ModuleCategory.RENDER)
 class NameTags : Module() {
-    private val healthValue = BoolValue("Health", true)
-    private val pingValue = BoolValue("Ping", true)
-    private val distanceValue = BoolValue("Distance", false)
     private val armorValue = BoolValue("Armor", true)
     private val clearNamesValue = BoolValue("ClearNames", false)
-    private val fontValue = FontValue("Font", Fonts.font40)
-    private val borderValue = BoolValue("Border", true)
-    private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
-    private val botValue = BoolValue("Bots", true)
+    private val Healthbar=BoolValue("HealthBar",true)
+    private val distanceValue=BoolValue("distance",true)
+    private val health=BoolValue("Health",true)
+    private val scaleValue = FloatValue("Scale", 1F, 0.7F, 4F)
+
+    private val posYValue = FloatValue("PosY", 0F, 0F, 100F)
+    private val fontValue = FontValue("Font", Fonts.minecraftFont)
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -56,14 +49,14 @@ class NameTags : Module() {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         for (entity in mc.theWorld!!.loadedEntityList) {
-            if (!EntityUtils.isSelected(entity, false)) continue
-            if (AntiBot.isBot(entity.asEntityLivingBase()) && !botValue.get()) continue
+            if (!EntityUtils.isSelected(entity, false))
+                continue
 
             renderNameTag(entity.asEntityLivingBase(),
-                    if (clearNamesValue.get())
-                        ColorUtils.stripColor(entity.displayName?.unformattedText) ?: continue
-                    else
-                        (entity.displayName ?: continue).unformattedText
+                if (clearNamesValue.get())
+                    ColorUtils.stripColor(entity.displayName?.unformattedText) ?: continue
+                else
+                    (entity.displayName ?: continue).unformattedText
             )
         }
 
@@ -76,20 +69,15 @@ class NameTags : Module() {
 
     private fun renderNameTag(entity: IEntityLivingBase, tag: String) {
         val thePlayer = mc.thePlayer ?: return
-
         val fontRenderer = fontValue.get()
-
         // Modify tag
         val bot = AntiBot.isBot(entity)
-        val nameColor = if (bot) "§3" else if (entity.invisible) "§6" else if (entity.sneaking) "§4" else "§7"
-        val ping = if (classProvider.isEntityPlayer(entity)) entity.asEntityPlayer().getPing() else 0
-
-        val distanceText = if (distanceValue.get()) "§7${thePlayer.getDistanceToEntity(entity).roundToInt()}m " else ""
-        val pingText = if (pingValue.get() && classProvider.isEntityPlayer(entity)) (if (ping > 200) "§c" else if (ping > 100) "§e" else "§a") + ping + "ms §7" else ""
-        val healthText = if (healthValue.get()) "§7§c " + entity.health.toInt() + " HP" else ""
+        val nameColor = "§7§c"
+        val healthText = if (distanceValue.get()) " §7${thePlayer.getDistanceToEntity(entity).roundToInt()}m " else ""
+        val disText = if (entity.health <entity.maxHealth/4) "§4 " + entity.health.toInt() + " HP" else if (entity.health <entity.maxHealth/2) "§6 " + entity.health.toInt() + " HP" else "§2 " + entity.health.toInt() + " HP"
         val botText = if (bot) " §c§lBot" else ""
 
-        val text = "$distanceText$pingText$nameColor$tag$healthText$botText"
+        val text = if (health.get()) "$nameColor$tag$healthText$disText$botText" else "$nameColor$tag$healthText$botText"
 
         // Push
         glPushMatrix()
@@ -100,9 +88,9 @@ class NameTags : Module() {
 
 
         glTranslated( // Translate to player position with render pos and interpolate it
-                entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
-                entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + 0.55,
-                entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + 0.55,
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
         )
 
         glRotatef(-mc.renderManager.playerViewY, 0F, 1F, 0F)
@@ -119,25 +107,33 @@ class NameTags : Module() {
 
         glScalef(-scale, -scale, scale)
 
-        AWTFontRenderer.assumeNonVolatile = true
+        //AWTFontRenderer.assumeNonVolatile = true
 
         // Draw NameTag
         val width = fontRenderer.getStringWidth(text) * 0.5f
+        RenderUtils.drawShadowWithCustomAlpha(
+            (-width - 2F).toInt().toFloat(), (-2F - posYValue.get()).toInt().toFloat(), (width + 4F+width + 2F).toInt().toFloat(),
+            (fontRenderer.fontHeight + 2F).toInt().toFloat(),255f
+        )
+        val color = if (entity.health<=entity.maxHealth)Color.GREEN else if (entity.health<entity.maxHealth/2)Color.YELLOW else if(entity.health<entity.maxHealth/4)Color.RED else Color.RED
+        if(Healthbar.get()){
+            RenderUtils.drawRect(-width - 2F, fontRenderer.fontHeight + 0F, entity.health/entity.maxHealth*(width + 4F), fontRenderer.fontHeight + 2F, color)
+        }
+
 
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
 
-        if (borderValue.get())
-            quickDrawBorderedRect(-width - 2F, -2F, width + 4F, fontRenderer.fontHeight + 2F, 2F, Color(255, 255, 255, 90).rgb, Integer.MIN_VALUE)
-        else
-            quickDrawRect(-width - 2F, -2F, width + 4F, fontRenderer.fontHeight + 2F, Integer.MIN_VALUE)
+
+        quickDrawRect(-width - 2F, -2F - posYValue.get(), width + 4F, fontRenderer.fontHeight + 4F, Color(0,0,0,70).rgb)
+
 
         glEnable(GL_TEXTURE_2D)
 
-        fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F,
-                0xFFFFFF, true)
+        fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 0F - posYValue.get() else 0.5F - posYValue.get(),
+            0xFFFFFF, true)
 
-        AWTFontRenderer.assumeNonVolatile = false
+        //AWTFontRenderer.assumeNonVolatile = false
 
         if (armorValue.get() && classProvider.isEntityPlayer(entity)) {
             mc.renderItem.zLevel = -147F

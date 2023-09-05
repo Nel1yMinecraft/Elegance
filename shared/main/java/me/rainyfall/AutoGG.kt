@@ -3,7 +3,7 @@
  * A free half-open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderRyF/ColorByte/
  */
-package me.ccbluex.liquidbounce.features.module.modules.misc
+package me.rainyfall
 
 import me.ccbluex.liquidbounce.LiquidBounce
 import me.ccbluex.liquidbounce.event.EventTarget
@@ -13,6 +13,7 @@ import me.ccbluex.liquidbounce.event.WorldEvent
 import me.ccbluex.liquidbounce.features.module.Module
 import me.ccbluex.liquidbounce.features.module.ModuleCategory
 import me.ccbluex.liquidbounce.features.module.ModuleInfo
+import me.ccbluex.liquidbounce.features.module.modules.misc.Recorder
 import me.ccbluex.liquidbounce.injection.backend.unwrap
 import me.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import me.ccbluex.liquidbounce.utils.ClientUtils2

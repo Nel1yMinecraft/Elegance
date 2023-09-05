@@ -37,10 +37,7 @@ class GuiMainMenu : WrappedGuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val sr = ScaledResolution(mc2)
-        RenderUtils.drawImage(HttpUtils.loadImage("https://bing.img.run/1920x1080_302.php"), 0, 0, sr.scaledWidth, sr.scaledHeight)
-
-      //  representedScreen.drawBackground(0)
+        representedScreen.drawBackground(0)
         RenderUtils.drawRect(representedScreen.width / 2.0f - 115, representedScreen.height / 4.0f + 35, representedScreen.width / 2.0f + 115, representedScreen.height / 4.0f + 175, Integer.MIN_VALUE)
         // drawblur
         GL11.glEnable(GL11.GL_BLEND)

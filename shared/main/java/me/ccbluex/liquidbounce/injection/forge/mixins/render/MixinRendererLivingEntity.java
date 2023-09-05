@@ -9,7 +9,7 @@ import me.ccbluex.liquidbounce.utils.OutlineUtils;
 import me.ccbluex.liquidbounce.LiquidBounce;
 import me.ccbluex.liquidbounce.features.module.modules.render.Chams;
 import me.ccbluex.liquidbounce.features.module.modules.render.ESP;
-import me.ccbluex.liquidbounce.features.module.modules.render.NameTags;
+import me.paimon.NameTags;
 import me.ccbluex.liquidbounce.features.module.modules.render.TrueSight;
 import me.ccbluex.liquidbounce.injection.backend.EntityLivingBaseImplKt;
 import me.ccbluex.liquidbounce.utils.ClientUtils;
