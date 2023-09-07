@@ -47,6 +47,7 @@ import me.ccbluex.liquidbounce.value.BoolValue
 import me.ccbluex.liquidbounce.value.FloatValue
 import me.ccbluex.liquidbounce.value.IntegerValue
 import me.ccbluex.liquidbounce.value.ListValue
+import me.paimon.StrafeFix
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemSword

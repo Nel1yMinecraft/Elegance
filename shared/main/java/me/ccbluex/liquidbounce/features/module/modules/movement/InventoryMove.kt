@@ -14,7 +14,7 @@ import me.ccbluex.liquidbounce.features.module.ModuleInfo
 import me.ccbluex.liquidbounce.utils.MovementUtils
 import me.ccbluex.liquidbounce.value.BoolValue
 
-@ModuleInfo(name = "InventoryMove", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "InvMove", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
 class InventoryMove : Module() {
 
     private val undetectable = BoolValue("Undetectable", false)

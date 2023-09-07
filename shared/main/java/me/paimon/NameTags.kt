@@ -107,14 +107,10 @@ class NameTags : Module() {
 
         glScalef(-scale, -scale, scale)
 
-        //AWTFontRenderer.assumeNonVolatile = true
 
         // Draw NameTag
         val width = fontRenderer.getStringWidth(text) * 0.5f
-        RenderUtils.drawShadowWithCustomAlpha(
-            (-width - 2F).toInt().toFloat(), (-2F - posYValue.get()).toInt().toFloat(), (width + 4F+width + 2F).toInt().toFloat(),
-            (fontRenderer.fontHeight + 2F).toInt().toFloat(),255f
-        )
+
         val color = if (entity.health<=entity.maxHealth)Color.GREEN else if (entity.health<entity.maxHealth/2)Color.YELLOW else if(entity.health<entity.maxHealth/4)Color.RED else Color.RED
         if(Healthbar.get()){
             RenderUtils.drawRect(-width - 2F, fontRenderer.fontHeight + 0F, entity.health/entity.maxHealth*(width + 4F), fontRenderer.fontHeight + 2F, color)

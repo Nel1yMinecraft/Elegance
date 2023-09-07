@@ -16,6 +16,8 @@ import me.ccbluex.liquidbounce.value.BoolValue
 import me.ccbluex.liquidbounce.value.FloatValue
 import me.ccbluex.liquidbounce.value.IntegerValue
 import me.ccbluex.liquidbounce.value.ListValue
+import me.nelly.PacketUtils
+import net.minecraft.network.play.client.CPacketPlayer
 
 @ModuleInfo(name = "FastUse", description = "Allows you to use items faster.", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
@@ -56,6 +58,22 @@ class FastUse : Module() {
 
                     mc.playerController.onStoppedUsingItem(thePlayer)
                 }
+                "hyt" -> {
+                    if (mc.thePlayer!!.sprinting) {
+                        if (mc.thePlayer!!.onGround != true) {
+                            mc.thePlayer!!.sprinting = false
+                        }
+                    }
+                    if (mc.thePlayer!!.ticksExisted % 2 === 0) {
+                        mc.thePlayer!!.sprinting = false  //开始进食取消疾跑状态
+                        mc.timer.timerSpeed = 0.33f   //开始进食进入缓速timer
+                    } else {
+                        mc.thePlayer!!.sprinting = true   //每一阶段进食后开始疾跑状态
+                        mc.timer.timerSpeed = 0.9F   //每一阶段进食后加速骗过grim
+                    }
+                    PacketUtils.sendPacketNoEvent(CPacketPlayer(true))
+                }
+
 
                 "ncp" -> if (thePlayer.itemInUseDuration > 14) {
                     repeat(20) {

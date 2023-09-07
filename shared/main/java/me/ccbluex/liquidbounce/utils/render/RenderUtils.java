@@ -1119,7 +1119,6 @@ public final class RenderUtils extends MinecraftInstance {
         glEnable(GL_DEPTH_TEST);
     }
 
-
     /**
      * Draws a textured rectangle at z = 0. Args: x, y, u, v, width, height, textureWidth, textureHeight
      */

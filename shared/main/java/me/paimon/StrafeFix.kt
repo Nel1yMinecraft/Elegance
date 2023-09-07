@@ -1,4 +1,4 @@
-package me.ccbluex.liquidbounce.features.module.modules.combat
+package me.paimon
 
 import me.ccbluex.liquidbounce.api.minecraft.util.WMathHelper
 import me.ccbluex.liquidbounce.event.EventTarget

@@ -5,6 +5,7 @@ import me.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
+import net.minecraft.network.play.server.SPacketChangeGameState
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 
 object PacketUtils : MinecraftInstance() {

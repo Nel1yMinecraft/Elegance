@@ -26,6 +26,8 @@ public class Fonts extends MinecraftInstance {
     @FontDetails(fontName = "Minecraft Font")
     public static final IFontRenderer minecraftFont = mc.getFontRendererObj();
     private static final HashMap<FontInfo, IFontRenderer> CUSTOM_FONT_RENDERERS = new HashMap<>();
+    @FontDetails(fontName = "Roboto Medium", fontSize = 18)
+    public static IFontRenderer font18;
     @FontDetails(fontName = "Roboto Medium", fontSize = 25)
     public static IFontRenderer font25;
     @FontDetails(fontName = "Roboto Medium", fontSize = 35)
@@ -42,8 +44,12 @@ public class Fonts extends MinecraftInstance {
     public static IFontRenderer C32;
     @FontDetails(fontName = "SF UI Display", fontSize = 35)
     public static IFontRenderer SF_35;
+    @FontDetails(fontName = "SF UI Display", fontSize = 16)
+    public static IFontRenderer SF_16;
     @FontDetails(fontName = "Wqy MicroHei Wqy", fontSize = 30)
     public static IFontRenderer wqy30;
+    @FontDetails(fontName = "BOLD", fontSize = 30)
+    public static IFontRenderer bold95;
     public static void loadFonts() {
         long l = System.currentTimeMillis();
 
@@ -51,6 +57,7 @@ public class Fonts extends MinecraftInstance {
 
         downloadFonts();
 
+        font18 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 18)));
         font25 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 25)));
         font35 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 35)));
         font40 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Medium.ttf", 40)));
@@ -60,9 +67,12 @@ public class Fonts extends MinecraftInstance {
         C32 = getFont2("regular.ttf",32);
         M30 = getFont2("mojangles",30);
         SF_35 = getFont2("sfuidisplay.ttf", 35);
+        SF_16 = getFont2("sfuidisplay.ttf", 16);
         wqy30 = getFont2("wqy_microhei.ttf", 30);
+        bold95 = getFont2("bold.ttf", 95);
 
         try {
+
             CUSTOM_FONT_RENDERERS.clear();
 
             final File fontsFile = new File(LiquidBounce.fileManager.fontsDir, "fonts.json");

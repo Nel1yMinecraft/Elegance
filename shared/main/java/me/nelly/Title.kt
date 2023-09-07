@@ -46,6 +46,7 @@ class Title : Module() {
             hours++
             minutes = 0
         }
+
         timeText = "$hours 时 $minutes 分 $seconds 秒 "
         setTitle(mainTitle.get() + " | " + midTitle + " | " + if (showPlayTime.get()) " $timeText" else "")
     }

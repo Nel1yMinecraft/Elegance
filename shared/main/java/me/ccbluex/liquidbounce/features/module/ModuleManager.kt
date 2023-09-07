@@ -5,7 +5,6 @@
  */
 package me.ccbluex.liquidbounce.features.module
 
-import me.caijiplayer.AutoSkyWars
 import me.caijiplayer.HytAntiVoid
 import me.nelly.*
 import me.rainyfall.AntiFakePlayer
@@ -26,6 +25,7 @@ import me.ccbluex.liquidbounce.features.module.modules.world.*
 import me.ccbluex.liquidbounce.features.module.modules.world.Timer
 import me.ccbluex.liquidbounce.utils.ClientUtils
 import me.paimon.NameTags
+import me.paimon.StrafeFix
 import me.rainyfall.AutoGG
 import java.util.*
 
@@ -199,7 +199,6 @@ class ModuleManager : Listenable {
             Disabler::class.java,
             AntiFakePlayer::class.java,
             Title::class.java,
-            AutoSkyWars::class.java,
             HytAntiVoid::class.java,
             HytPlugin::class.java,
             CustomAntiKb::class.java,
@@ -207,7 +206,8 @@ class ModuleManager : Listenable {
             DMGParticle::class.java,
             AutoReport::class.java,
             TNTTime::class.java,
-            AutoL::class.java
+            AutoL::class.java,
+            NoMCScoreboard::class.java
         )
 
         registerModule(NoScoreboard)

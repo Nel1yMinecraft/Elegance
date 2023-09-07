@@ -14,7 +14,7 @@ import me.ccbluex.liquidbounce.value.FloatValue
 import me.ccbluex.liquidbounce.value.ListValue
 
 
-@ModuleInfo(name = "Animations", description = "Powered by RyF and ColorByte", category = ModuleCategory.RENDER, canEnable = false)
+@ModuleInfo(name = "Animations", description = "Powered by RyF and ColorByte", category = ModuleCategory.RENDER)
 object Animations : Module() {
     private val modeValue = ListValue(
         "Mode",

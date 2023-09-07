@@ -35,12 +35,17 @@ import me.ccbluex.liquidbounce.utils.RotationUtils
 import me.ccbluex.liquidbounce.utils.misc.HttpUtils
 import me.ccbluex.liquidbounce.utils.sound.TipSoundManager
 import org.lwjgl.opengl.Display
+import java.awt.Image
+import java.awt.SystemTray
+import java.awt.Toolkit
+import java.awt.TrayIcon
 
 object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "Elegance"
     const val CLIENT_VERSION = 1.0
+    const val CLIENT_VERSION2 = "1.0"
     const val MINECRAFT_VERSION = Backend.MINECRAFT_VERSION
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
 
@@ -71,6 +76,32 @@ object LiquidBounce {
 
     lateinit var wrapper: Wrapper
     val yiyan: String = HttpUtils.get("https://tenapi.cn/v2/yiyan")
+
+    val UPDATE_LIST = arrayListOf(
+        "Update Logs :",
+        "< 1.0 >",
+        "[+] Module",
+        "[~] UI"
+    )
+
+    fun showNotification(message: String, title: String, messageType: TrayIcon.MessageType, iconPath: String) {
+        if (SystemTray.isSupported()) {
+            val systemTray = SystemTray.getSystemTray()
+            val image: Image = Toolkit.getDefaultToolkit().getImage(iconPath)
+
+            val trayIcon = TrayIcon(image, title)
+            trayIcon.isImageAutoSize = true
+
+            try {
+                systemTray.add(trayIcon)
+                trayIcon.displayMessage(title, message, messageType)
+                systemTray.remove(trayIcon)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     /**
      * Execute if client will be started
      */
@@ -166,8 +197,9 @@ object LiquidBounce {
         // Load generators
         GuiAltManager.loadGenerators()
 
-        if (yiyan != null) Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION | $yiyan") else Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION")
+        Display.setTitle("$CLIENT_NAME | $CLIENT_VERSION | $yiyan")
         isStarting = false
+        ClientUtils.getLogger().info(playTimeStart.toString() + "ms")
     }
 
     /**
