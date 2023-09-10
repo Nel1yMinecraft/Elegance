@@ -211,5 +211,6 @@ object LiquidBounce {
 
         // Save all available configs
         fileManager.saveAllConfigs()
+
     }
 }

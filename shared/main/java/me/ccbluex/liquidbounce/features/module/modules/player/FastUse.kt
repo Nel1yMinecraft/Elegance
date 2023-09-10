@@ -22,7 +22,7 @@ import net.minecraft.network.play.client.CPacketPlayer
 @ModuleInfo(name = "FastUse", description = "Allows you to use items faster.", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Instant", "NCP", "AAC", "Custom"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("Instant", "NCP", "AAC", "Custom","HYT"), "NCP")
 
     private val noMoveValue = BoolValue("NoMove", false)
 
@@ -32,6 +32,7 @@ class FastUse : Module() {
 
     private val msTimer = MSTimer()
     private var usedTimer = false
+    private var usedTimer2 = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -42,6 +43,10 @@ class FastUse : Module() {
             usedTimer = false
         }
 
+        if (usedTimer2) {
+            mc.timer.timerSpeed = 1F
+            usedTimer2 = false
+        }
         if (!thePlayer.isUsingItem) {
             msTimer.reset()
             return
@@ -59,19 +64,9 @@ class FastUse : Module() {
                     mc.playerController.onStoppedUsingItem(thePlayer)
                 }
                 "hyt" -> {
-                    if (mc.thePlayer!!.sprinting) {
-                        if (mc.thePlayer!!.onGround != true) {
-                            mc.thePlayer!!.sprinting = false
-                        }
-                    }
-                    if (mc.thePlayer!!.ticksExisted % 2 === 0) {
-                        mc.thePlayer!!.sprinting = false  //开始进食取消疾跑状态
-                        mc.timer.timerSpeed = 0.33f   //开始进食进入缓速timer
-                    } else {
-                        mc.thePlayer!!.sprinting = true   //每一阶段进食后开始疾跑状态
-                        mc.timer.timerSpeed = 0.9F   //每一阶段进食后加速骗过grim
-                    }
-                    PacketUtils.sendPacketNoEvent(CPacketPlayer(true))
+                    mc.timer.timerSpeed = 1.22F
+                    usedTimer2 = true
+                    mc.timer.timerSpeed = 1.00F
                 }
 
 

@@ -975,6 +975,59 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
     }
+    public static void drawRect(final float x, final float y, final float x2, final float y2, final int color, final float borderRadius) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+
+        glColor(color);
+        glBegin(GL_POLYGON);
+
+        for (float angle = 180; angle <= 270; angle += 1) {
+            float radians = (float) Math.toRadians(angle);
+            float xPos = x + borderRadius + (float) (Math.cos(radians) * borderRadius);
+            float yPos = y + borderRadius + (float) (Math.sin(radians) * borderRadius);
+            glVertex2f(xPos, yPos);
+        }
+
+        glVertex2f(x + borderRadius, y);
+        glVertex2f(x2 - borderRadius, y);
+
+        for (float angle = 270; angle <= 360; angle += 1) {
+            float radians = (float) Math.toRadians(angle);
+            float xPos = x2 - borderRadius + (float) (Math.cos(radians) * borderRadius);
+            float yPos = y + borderRadius + (float) (Math.sin(radians) * borderRadius);
+            glVertex2f(xPos, yPos);
+        }
+
+        glVertex2f(x2, y + borderRadius);
+        glVertex2f(x2, y2 - borderRadius);
+
+        for (float angle = 0; angle <= 90; angle += 1) {
+            float radians = (float) Math.toRadians(angle);
+            float xPos = x2 - borderRadius + (float) (Math.cos(radians) * borderRadius);
+            float yPos = y2 - borderRadius + (float) (Math.sin(radians) * borderRadius);
+            glVertex2f(xPos, yPos);
+        }
+
+        glVertex2f(x + borderRadius, y2);
+        glVertex2f(x2 - borderRadius, y2);
+
+        for (float angle = 90; angle <= 180; angle += 1) {
+            float radians = (float) Math.toRadians(angle);
+            float xPos = x + borderRadius + (float) (Math.cos(radians) * borderRadius);
+            float yPos = y2 - borderRadius + (float) (Math.sin(radians) * borderRadius);
+            glVertex2f(xPos, yPos);
+        }
+
+        glVertex2f(x, y + borderRadius);
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+    }
 
     /**
      * Like {@link #drawRect(float, float, float, float, int)}, but without setup

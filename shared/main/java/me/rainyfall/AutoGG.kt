@@ -15,6 +15,7 @@ import me.ccbluex.liquidbounce.features.module.ModuleCategory
 import me.ccbluex.liquidbounce.features.module.ModuleInfo
 import me.ccbluex.liquidbounce.features.module.modules.misc.Recorder
 import me.ccbluex.liquidbounce.injection.backend.unwrap
+import me.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import me.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import me.ccbluex.liquidbounce.utils.ClientUtils2
 import me.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -27,6 +28,7 @@ import java.awt.event.KeyEvent
 
 @ModuleInfo(name = "AutoGG", description = "AutoGG after you won a game.", category = ModuleCategory.MISC)
 class AutoGG : Module() {
+    private val startinfo = BoolValue("StartInfo", false)
     private val startMsgValue = BoolValue("StartChat", false)
     private val startMsg = TextValue(
         "StartMsg",
@@ -136,6 +138,9 @@ class AutoGG : Module() {
     private fun total() {
         if (this.state && startMsgValue.get()) {
             mc.thePlayer!!.sendChatMessage((startMsg.get()))
+        }
+        if(this.state && startinfo.get()) {
+            LiquidBounce.hud.addNotification(Notification("Skwars Warning","Using InvMove With Stealer/InvManager May Result In A Ban.",NotifyType.WARNING,15000))
         }
         Recorder.totalPlayed++
         stateReset()

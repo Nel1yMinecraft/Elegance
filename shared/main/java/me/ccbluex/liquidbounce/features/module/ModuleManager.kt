@@ -34,9 +34,9 @@ class ModuleManager : Listenable {
 
     val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
-    var toggleMessageMode = 0
     var toggleSoundMode = 0
     var toggleChatMode = 0
+    var toggleMessageMode = 0
 
     init {
         LiquidBounce.eventManager.registerListener(this)
@@ -207,7 +207,8 @@ class ModuleManager : Listenable {
             AutoReport::class.java,
             TNTTime::class.java,
             AutoL::class.java,
-            NoMCScoreboard::class.java
+            NoMCScoreboard::class.java,
+            Recording::class.java
         )
 
         registerModule(NoScoreboard)

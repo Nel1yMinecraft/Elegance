@@ -27,7 +27,7 @@ import net.minecraft.network.play.client.*
 class NoSlow : Module() {
     private val msTimer = MSTimer()
     private val modeValue =
-        ListValue("PacketMode", arrayOf("Vanilla", "AAC", "AAC5", "GrimPacket", "GrimVanilla"), "Vanilla")
+        ListValue("PacketMode", arrayOf("Vanilla", "AAC", "AAC5", "HytPacket"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -101,18 +101,6 @@ class NoSlow : Module() {
         }
 
         when (modeValue.get().toLowerCase()) {
-            "grimvanilla" -> {
-                mc.thePlayer!!.motionX = mc.thePlayer!!.motionX
-                mc.thePlayer!!.motionY = mc.thePlayer!!.motionY
-                mc.thePlayer!!.motionZ = mc.thePlayer!!.motionZ
-                if (event.eventState == EventState.PRE && mc.thePlayer!!.itemInUse != null && mc.thePlayer!!.itemInUse!!.item != null) {
-                    if (mc.thePlayer!!.isUsingItem && mc.thePlayer!!.itemInUseCount >= 1) {
-                        mc2.connection!!.sendPacket(CPacketHeldItemChange((mc2.player.inventory.currentItem + 1) % 9))
-                        mc2.connection!!.sendPacket(CPacketHeldItemChange(mc2.player.inventory.currentItem))
-                    }
-                }
-            }
-
             "anticheat" -> {
                 if (mc.thePlayer!!.isUsingItem || (mc.thePlayer!!.isBlocking || isBlock())) {
                     this.sendPacket(event, true, false, false, 0, false)
@@ -156,7 +144,9 @@ class NoSlow : Module() {
                 sendPacket(event, true, true, false, 0, false)
             }
 
-            "grimpacket" -> {
+            "hytpacket" -> {
+                consumeForwardMultiplier.set(0.2)
+                consumeStrafeMultiplier.set(0.2)
                 if (event.eventState == EventState.PRE &&  mc.thePlayer!!.isBlocking || isBlock() && blocking) {
                     mc.netHandler.addToSendQueue(
                         classProvider.createCPacketPlayerDigging(

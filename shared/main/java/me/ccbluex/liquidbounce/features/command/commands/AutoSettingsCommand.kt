@@ -13,7 +13,7 @@ import me.ccbluex.liquidbounce.utils.SettingsUtils
 import me.ccbluex.liquidbounce.utils.misc.HttpUtils
 import kotlin.concurrent.thread
 
-class AutoSettingsCommand : Command("autosettings", "setting", "settings", "config", "autosetting") {
+class AutoSettingsCommand : Command("autosettings", "setting", "settings", "autosetting") {
     private val loadingLock = Object()
     private var autoSettingFiles: MutableList<String>? = null
 
@@ -84,7 +84,7 @@ class AutoSettingsCommand : Command("autosettings", "setting", "settings", "conf
                 try {
                     val json = JsonParser().parse(HttpUtils.get(
                             // TODO: Add another way to get all settings
-                            "https://api.github.com/repos/CCBlueX/LiquidCloud/contents/LiquidBounce/settings"
+                            "Null"
                     ))
 
                     val autoSettings: MutableList<String> = mutableListOf()

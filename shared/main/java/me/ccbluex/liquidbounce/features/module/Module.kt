@@ -11,6 +11,7 @@ import me.ccbluex.liquidbounce.event.Listenable
 import me.ccbluex.liquidbounce.injection.backend.Backend
 import me.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import me.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import me.ccbluex.liquidbounce.utils.ClientUtils2
 import me.ccbluex.liquidbounce.utils.MinecraftInstance
 import me.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import me.ccbluex.liquidbounce.value.Value
@@ -67,7 +68,11 @@ open class Module : MinecraftInstance(), Listenable {
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
                 when (moduleManager.toggleSoundMode) {
-                    1 -> (if (value) mc.soundHandler.playSound("block.stone_pressureplate.click_on", 1F) else mc.soundHandler.playSound("block.stone_pressureplate.click_off",1F))
+                    1 -> (if (value) mc.soundHandler.playSound(
+                        "block.stone_pressureplate.click_on",
+                        1F
+                    ) else mc.soundHandler.playSound("block.stone_pressureplate.click_off", 1F))
+
                     2 -> (if (value) LiquidBounce.tipSoundManager.enableSound else LiquidBounce.tipSoundManager.disableSound).asyncPlay()
                     3 -> (if (value) LiquidBounce.tipSoundManager.sigmaenableSound else LiquidBounce.tipSoundManager.sigmadisableSound).asyncPlay()
                     4 -> (if (value) LiquidBounce.tipSoundManager.sinkaenableSound else LiquidBounce.tipSoundManager.sinkadisableSound).asyncPlay()
@@ -75,11 +80,10 @@ open class Module : MinecraftInstance(), Listenable {
                     6 -> (if (value) LiquidBounce.tipSoundManager.prideenableSound else LiquidBounce.tipSoundManager.pridedisableSound).asyncPlay()
                     7 -> (if (value) LiquidBounce.tipSoundManager.lbplusenableSound else LiquidBounce.tipSoundManager.lbplusdisableSound).asyncPlay()
                 }
-
                 when (moduleManager.toggleMessageMode) {
                     1 -> when (moduleManager.toggleChatMode) {
-                        1 -> LiquidBounce.hud.addNotification(Notification("Notification","${if (value) "§aEnabled" else "§cDisabled"} §r${name}.",NotifyType.INFO))
-                        2 -> LiquidBounce.hud.addNotification(Notification("Notification","§r${name} was ${if (value) "§aEnabled" else "§cDisabled"}.",NotifyType.INFO))
+                        0 -> ClientUtils2.displayChatMessage(true,"${if (value) "§aEnabled" else "§cDisabled"} §r${name}.")
+                        1 -> ClientUtils2.displayChatMessage(true,"§r${name} was ${if (value) "§aEnabled" else "§cDisabled"}.")
                     }
                     2 -> LiquidBounce.hud.addNotification(
                         Notification(
@@ -92,6 +96,7 @@ open class Module : MinecraftInstance(), Listenable {
                     )
                 }
             }
+
 
             // Call on enabled or disabled
             if (value) {

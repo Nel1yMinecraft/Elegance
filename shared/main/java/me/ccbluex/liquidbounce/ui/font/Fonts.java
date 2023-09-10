@@ -40,6 +40,8 @@ public class Fonts extends MinecraftInstance {
     public static IFontRenderer M30;
     @FontDetails(fontName = "comfortaaRegular", fontSize = 27)
     public static IFontRenderer C27;
+    @FontDetails(fontName = "comfortaaRegular", fontSize = 30)
+    public static IFontRenderer C30;
     @FontDetails(fontName = "comfortaaRegular", fontSize = 32)
     public static IFontRenderer C32;
     @FontDetails(fontName = "SF UI Display", fontSize = 35)
@@ -64,6 +66,7 @@ public class Fonts extends MinecraftInstance {
         fontBold180 = classProvider.wrapFontRenderer(new GameFontRenderer(getFont("Roboto-Bold.ttf", 180)));
         M30 = getFont2("mojangles",30);
         C27 = getFont2("regular.ttf",27);
+        C30 = getFont2("regular.ttf",30);
         C32 = getFont2("regular.ttf",32);
         M30 = getFont2("mojangles",30);
         SF_35 = getFont2("sfuidisplay.ttf", 35);

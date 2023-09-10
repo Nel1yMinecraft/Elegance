@@ -29,6 +29,7 @@ public class FileManager extends MinecraftInstance {
     public final File settingsDir = new File(dir, "settings");
     public final File soundsDir = new File(dir, "sounds");
     public final File recordDir = new File(dir, "record");
+    public final File configsDir = new File(dir,"configs");
 
     public final FileConfig modulesConfig = new ModulesConfig(new File(dir, "modules.json"));
     public final FileConfig valuesConfig = new ValuesConfig(new File(dir, "values.json"));
@@ -67,6 +68,9 @@ public class FileManager extends MinecraftInstance {
 
         if (!recordDir.exists())
             recordDir.mkdir();
+
+        if (!configsDir.exists())
+            configsDir.mkdir();
 
         if(!fontsDir.exists())
             fontsDir.mkdir();

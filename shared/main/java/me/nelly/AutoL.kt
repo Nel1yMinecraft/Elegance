@@ -60,7 +60,7 @@ class AutoL : Module() {
                     LiquidBounce.hud.addNotification(
                         Notification(
                             "HubChecker",
-                            "${hubautolmessage.get()} $hubname has been banned. Total bans: $hub",
+                            "${hubautolmessage.get()} $hubname is hub. Total hubs: $hub",
                             NotifyType.INFO
                         )
                     )
@@ -96,8 +96,8 @@ class AutoL : Module() {
         if(killautoL.get() && killautoLmode.get().contains("AddNotification")) {
             LiquidBounce.hud.addNotification(
                 Notification(
-                    "AutoL",
-                    "${syncEntity!!.name} has been banned. Total bans: $ban",
+                    "Kills +1",
+                    "Killed: $killCounts Players",
                     NotifyType.INFO
                 )
             )

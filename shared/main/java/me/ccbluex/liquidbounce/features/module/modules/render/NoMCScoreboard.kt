@@ -9,7 +9,7 @@ import net.minecraftforge.client.event.GuiScreenEvent
 @ModuleInfo("NoMCScoreboard","Nel1y",ModuleCategory.RENDER)
 class NoMCScoreboard : Module(){
     @EventTarget
-    fun onRender2D(event: GuiScreenEvent.DrawScreenEvent.Post) {
+    fun onUpdate(event: GuiScreenEvent.DrawScreenEvent.Post) {
         if (event.gui is GuiOverlayDebug) {
             event.isCanceled = true
         }

@@ -1,12 +1,6 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
- */
+// By Nel1y
 package me.ccbluex.liquidbounce.ui.client.mainmenu;
 
-import GuiRecording
-import me.ccbluex.liquidbounce.LiquidBounce
 import me.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiButton
 import me.ccbluex.liquidbounce.api.util.WrappedGuiScreen
 import me.ccbluex.liquidbounce.ui.client.ColorByteGuiMainMenu
@@ -19,7 +13,7 @@ class GuiMainMenu : WrappedGuiScreen() {
                     0,
                     representedScreen.width / 2 - 100,
                     representedScreen.height / 4 + 48,
-                    "ClassicGuiMainMenu"
+                    "FDPGuiMainMenu"
                 )
             )
             representedScreen.buttonList.add(
@@ -43,7 +37,7 @@ class GuiMainMenu : WrappedGuiScreen() {
                     3,
                     representedScreen.width / 2 - 100,
                     representedScreen.height / 4 + 48 + 75,
-                    "GuiRecording"
+                    "Exit"
                 )
             )
         }
@@ -52,7 +46,7 @@ class GuiMainMenu : WrappedGuiScreen() {
             0 -> mc.displayGuiScreen(classProvider.wrapGuiScreen(ClassicGuiMainMenu()))
             1 -> mc.displayGuiScreen(classProvider.wrapGuiScreen(ColorByteGuiMainMenu()))
             2 -> mc.displayGuiScreen(classProvider.wrapGuiScreen(me.ccbluex.liquidbounce.ui.client.GuiMainMenu()))
-            3 -> mc.displayGuiScreen(classProvider.wrapGuiScreen(GuiRecording()))
+            3 -> while (true) mc.shutdown()
         }
     }
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

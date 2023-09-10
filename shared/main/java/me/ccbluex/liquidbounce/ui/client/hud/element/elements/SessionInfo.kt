@@ -13,6 +13,7 @@ import me.ccbluex.liquidbounce.utils.SessionUtils
 import me.ccbluex.liquidbounce.utils.render.ColorUtils.LiquidSlowly
 import me.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import me.ccbluex.liquidbounce.utils.render.RenderUtils
+import me.ccbluex.liquidbounce.utils.render.ShadowRenderUtils
 import me.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
@@ -193,6 +194,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                     }
                 }
             }
+            ShadowRenderUtils.drawShadowWithCustomAlpha(-2f, -2f, x2.toFloat(), y2.toFloat(), 250f) // oops
             RenderUtils.drawGradientRound(-2f, -2f, x2.toFloat(), y2.toFloat(), radius.get().toFloat(), ColorUtil.applyOpacity(gradientColor4, .85f), gradientColor1, gradientColor3, gradientColor2)
             fontRenderer.drawCenteredString("GameInfo", 31.5F, 3f, Color.WHITE.rgb, true)
             fontRenderer.drawStringWithShadow("PlayTimes: ${DATE_FORMAT.format(Date(System.currentTimeMillis() - Recorder.startTime - 8000L * 3600L))}", 2, (fontRenderer.fontHeight + 8f).toInt(), Color.WHITE.rgb)
