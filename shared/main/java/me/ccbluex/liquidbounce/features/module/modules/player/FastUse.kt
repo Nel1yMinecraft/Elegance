@@ -32,7 +32,6 @@ class FastUse : Module() {
 
     private val msTimer = MSTimer()
     private var usedTimer = false
-    private var usedTimer2 = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -43,10 +42,6 @@ class FastUse : Module() {
             usedTimer = false
         }
 
-        if (usedTimer2) {
-            mc.timer.timerSpeed = 1F
-            usedTimer2 = false
-        }
         if (!thePlayer.isUsingItem) {
             msTimer.reset()
             return
@@ -63,10 +58,16 @@ class FastUse : Module() {
 
                     mc.playerController.onStoppedUsingItem(thePlayer)
                 }
+
                 "hyt" -> {
-                    mc.timer.timerSpeed = 1.22F
-                    usedTimer2 = true
-                    mc.timer.timerSpeed = 1.00F
+                    if (mc.thePlayer!!.ticksExisted % 2 == 0) {
+                        mc.thePlayer!!.sprinting = false
+                        mc.timer.timerSpeed = 0.33f
+                    } else {
+                        mc.thePlayer!!.sprinting = true
+                        mc.timer.timerSpeed = 0.9F
+                    }
+                    mc2.connection!!.networkManager.sendPacket(CPacketPlayer(true))
                 }
 
 

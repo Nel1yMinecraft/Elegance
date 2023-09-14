@@ -46,7 +46,7 @@ class Notifications(
     private val borderRadius = IntegerValue("BorderRadius", 10, 1, 50)
 
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Tenacity", "Test","FDP"), "FDP")
+        val styleValue = ListValue("Mode", arrayOf("Tenacity","FDP2","FDP"), "FDP")
     }
 
     /**
@@ -202,15 +202,43 @@ class Notification(
         // draw notify
         val style = parent.styleValue.get()
 
-        if (style.contains("Test")) {
-            val textcolor = Color(33, 33, 33)
-            RenderUtils.drawGradientRound(
-                0f, 0f, width.toFloat(), height.toFloat() - 5, 4f,
-                Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE
-            )
+        if (style.equals("FDP2")) {
 
-            Fonts.C30.drawString("$title (Wait ${time / 1000}s)", 10f, 7f, textcolor.rgb)
-            Fonts.C27.drawString(content, 10f, 17f, textcolor.rgb)
+            val colors = Color(0, 0, 0, alpha / 4)
+
+            when (fadeState) {
+                IN -> {
+                    RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+                    RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+                }
+
+                STAY -> {
+                    RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+                    RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+                }
+
+                OUT -> {
+                    RenderUtils.drawRoundedCornerRect(4F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+                    RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+                }
+
+                END -> return false
+            }
+            RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+            RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+
+            RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat(), 27f - 5f, 2f, colors.rgb)
+            ShadowRenderUtils.drawShadowWithCustomAlpha(3f, 0F, width.toFloat() - 3f, 27f - 5f, 240f)
+            RenderUtils.drawRoundedCornerRect(
+                3f,
+                0F,
+                max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F),
+                27f - 5f,
+                2f,
+                Color(0, 0, 0, 40).rgb
+            )
+            Fonts.C27.drawString(title, 5.5F, 3.5F, textColor, titleShadow)
+            font.drawString(content, 5.5F, 11.5F, textColor, contentShadow)
             return false
         }
 

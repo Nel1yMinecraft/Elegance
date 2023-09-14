@@ -11,6 +11,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import me.ccbluex.liquidbounce.LiquidBounce
 import me.ccbluex.liquidbounce.api.minecraft.client.gui.IFontRenderer
+import me.ccbluex.liquidbounce.ui.cnfont.FontDrawer
+import me.ccbluex.liquidbounce.ui.cnfont.FontLoaders
 import me.ccbluex.liquidbounce.ui.font.Fonts
 import me.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
@@ -52,7 +54,7 @@ abstract class Value<T>(val name: String, var value: T) {
         }
     }
 
-    fun get() = value
+    open fun get() = value
 
     open fun changeValue(value: T) {
         this.value = value
@@ -81,7 +83,7 @@ open class BoolValue(name: String, value: Boolean) : Value<Boolean>(name, value)
     open fun toggle(){
         this.value = !this.value
     }
-
+    
 }
 
 
@@ -126,6 +128,7 @@ open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val m
         if (element.isJsonPrimitive)
             value = element.asFloat
     }
+
 
 }
 
@@ -182,6 +185,22 @@ class FontValue(valueName: String, value: IFontRenderer) : Value<IFontRenderer>(
 }
 
 /**
+ * Font value represents a value with a font
+ */
+class CNFontValue(valueName: String, value: FontDrawer) : Value<FontDrawer>(valueName, value) {
+    override fun get(): FontDrawer {
+        return value
+    }
+    override fun toJson(): JsonElement? {
+        TODO("Not yet implemented")
+    }
+    override fun fromJson(element: JsonElement) {
+        TODO("Not yet implemented")
+    }
+
+}
+
+/**
  * Block value represents a value with a block
  */
 class BlockValue(name: String, value: Int) : IntegerValue(name, value, 1, 197)
@@ -226,4 +245,5 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive) changeValue(element.asString)
     }
+
 }

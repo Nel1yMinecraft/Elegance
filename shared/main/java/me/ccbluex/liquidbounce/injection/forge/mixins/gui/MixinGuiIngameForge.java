@@ -5,7 +5,7 @@
  */
 package me.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import me.ccbluex.liquidbounce.features.module.modules.render.Animations;
+import me.nelly.Animations;
 import me.ccbluex.liquidbounce.utils.render.AnimationUtils;
 import me.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;

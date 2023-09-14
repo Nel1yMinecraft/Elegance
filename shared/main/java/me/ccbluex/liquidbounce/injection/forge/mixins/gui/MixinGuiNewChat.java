@@ -7,7 +7,7 @@ package me.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import me.ccbluex.liquidbounce.LiquidBounce;
 import me.ccbluex.liquidbounce.features.module.modules.render.HUD;
-import me.ccbluex.liquidbounce.ui.font.Fonts;
+import me.ccbluex.liquidbounce.ui.cnfont.FontLoaders;
 import me.ccbluex.liquidbounce.utils.EaseUtils;
 import me.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -117,7 +117,7 @@ public abstract class MixinGuiNewChat {
                                     GlStateManager.enableAlpha();
 
                                     String lvt_17_1_ = lvt_10_1_.getChatComponent().getFormattedText();
-                                    Fonts.font35.drawStringWithShadow(lvt_17_1_, lvt_15_1_ + 2, (lvt_16_1_ - 14), 16777215 + (lvt_14_1_ << 24));
+                                    FontLoaders.C15.drawStringWithShadow(lvt_17_1_, lvt_15_1_ + 2, (lvt_16_1_ - 14), 16777215 + (lvt_14_1_ << 24));
                                     GL11.glColor4f(1, 1, 1, 1);
                                     GlStateManager.resetColor();
                                 }
@@ -126,7 +126,7 @@ public abstract class MixinGuiNewChat {
                     }
 
                     if (lvt_3_1_) {
-                        lvt_9_1_ = Fonts.font35.getFontHeight();
+                        lvt_9_1_ = FontLoaders.C15.getHeight();
                         GlStateManager.translate(-3.0F, 0.0F, 0.0F);
                         int lvt_10_2_ = lvt_5_1_ * lvt_9_1_ + lvt_5_1_;
                         lvt_11_1_ = lvt_4_1_ * lvt_9_1_ + lvt_4_1_;
@@ -160,15 +160,15 @@ public abstract class MixinGuiNewChat {
                 lvt_7_1_ = MathHelper.floor((float) lvt_7_1_ / lvt_5_1_);
                 if (lvt_6_1_ >= 0 && lvt_7_1_ >= 0) {
                     int lvt_8_1_ = Math.min(this.getLineCount(), this.drawnChatLines.size());
-                    if (lvt_6_1_ <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && lvt_7_1_ < Fonts.font35.getFontHeight() * lvt_8_1_ + lvt_8_1_) {
-                        int lvt_9_1_ = lvt_7_1_ / Fonts.font35.getFontHeight() + this.scrollPos;
+                    if (lvt_6_1_ <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale()) && lvt_7_1_ < FontLoaders.C15.getHeight() * lvt_8_1_ + lvt_8_1_) {
+                        int lvt_9_1_ = lvt_7_1_ / FontLoaders.C15.getHeight() + this.scrollPos;
                         if (lvt_9_1_ >= 0 && lvt_9_1_ < this.drawnChatLines.size()) {
                             ChatLine lvt_10_1_ = this.drawnChatLines.get(lvt_9_1_);
                             int lvt_11_1_ = 0;
 
                             for (ITextComponent lvt_13_1_ : lvt_10_1_.getChatComponent()) {
                                 if (lvt_13_1_ instanceof TextComponentString) {
-                                    lvt_11_1_ += Fonts.font35.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(((TextComponentString) lvt_13_1_).getText(), false));
+                                    lvt_11_1_ += FontLoaders.C15.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(((TextComponentString) lvt_13_1_).getText(), false));
                                     if (lvt_11_1_ > lvt_6_1_) {
                                         callbackInfo.setReturnValue(lvt_13_1_);
                                         return;

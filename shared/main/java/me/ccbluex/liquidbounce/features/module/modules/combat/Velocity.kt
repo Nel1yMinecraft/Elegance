@@ -25,7 +25,7 @@ import net.minecraft.network.play.server.SPacketEntityVelocity
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "Velocity", chinesename = "反击退", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
 
     /**

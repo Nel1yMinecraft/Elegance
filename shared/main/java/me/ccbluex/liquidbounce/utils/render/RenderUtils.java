@@ -17,6 +17,7 @@ import me.ccbluex.liquidbounce.api.minecraft.client.render.vertex.IVertexFormat;
 import me.ccbluex.liquidbounce.api.minecraft.renderer.entity.IRenderManager;
 import me.ccbluex.liquidbounce.api.minecraft.util.*;
 import me.ccbluex.liquidbounce.injection.backend.Backend;
+import me.ccbluex.liquidbounce.injection.backend.WorldRendererImpl;
 import me.ccbluex.liquidbounce.ui.font.Fonts;
 import me.ccbluex.liquidbounce.utils.MinecraftInstance;
 import me.ccbluex.liquidbounce.utils.block.BlockUtils;
@@ -28,9 +29,14 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Timer;
+import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -89,7 +95,26 @@ public final class RenderUtils extends MinecraftInstance {
 
         glEndList();
     }
+    private static final ShaderUtil roundedGradientShader = new ShaderUtil("roundedRectGradient");
+    public static ShaderUtil roundedShader = new ShaderUtil("roundedRect");
 
+    public static void drawRound(float x, float y, float width, float height, float radius, Color color) {
+        drawRound(x, y, width, height, radius, false, color);
+    }
+    public static void drawRound(float x, float y, float width, float height, float radius, boolean blur, Color color) {
+        resetColor();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        roundedShader.init();
+
+        setupRoundedRectUniforms(x, y, width, height, radius, roundedShader);
+        roundedShader.setUniformi("blur", blur ? 1 : 0);
+        roundedShader.setUniformf("color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+
+        ShaderUtil.drawQuads(x - 1, y - 1, width + 2, height + 2);
+        roundedShader.unload();
+        GlStateManager.disableBlend();
+    }
     public static void drawBlockBox(final WBlockPos blockPos, final Color color, final boolean outline) {
         final IRenderManager renderManager = mc.getRenderManager();
         final ITimer timer = mc.getTimer();
@@ -344,7 +369,101 @@ public final class RenderUtils extends MinecraftInstance {
                 color
         );
     }
+    public static void drawPlatform(final EntityLivingBase entity, final Color color) {
+        final IRenderManager renderManager = mc.getRenderManager();
+        final ITimer timer = mc.getTimer();
 
+        final double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.getRenderPartialTicks()
+                - renderManager.getRenderPosX();
+        final double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.getRenderPartialTicks()
+                - renderManager.getRenderPosY();
+        final double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.getRenderPartialTicks()
+                - renderManager.getRenderPosZ();
+
+        final AxisAlignedBB axisAlignedBB =  entity.getEntityBoundingBox()
+                .offset(-entity.posX, -entity.posY, -entity.posZ)
+                .offset(x, y, z);
+
+        drawAxisAlignedBB(
+                classProvider.createAxisAlignedBB(axisAlignedBB.minX, axisAlignedBB.maxY + 0.2, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY + 0.26, axisAlignedBB.maxZ),
+                color
+        );
+    }
+
+    public static void drawEntityBox(final Entity entity, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
+        final RenderManager renderManager = mc2.getRenderManager();
+        final Timer timer = mc2.timer;
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        enableGlCap(GL_BLEND);
+        disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST);
+        glDepthMask(false);
+
+        final double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks
+                - renderManager.renderPosX;
+        final double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks
+                - renderManager.renderPosY;
+        final double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
+                - renderManager.renderPosZ;
+
+        final AxisAlignedBB entityBox = entity.getEntityBoundingBox();
+        final AxisAlignedBB axisAlignedBB = new AxisAlignedBB(
+                entityBox.minX - entity.posX + x - 0.05D,
+                entityBox.minY - entity.posY + y,
+                entityBox.minZ - entity.posZ + z - 0.05D,
+                entityBox.maxX - entity.posX + x + 0.05D,
+                entityBox.maxY - entity.posY + y + 0.15D,
+                entityBox.maxZ - entity.posZ + z + 0.05D
+        );
+
+        if (outline) {
+            glLineWidth(outlineWidth);
+            enableGlCap(GL_LINE_SMOOTH);
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), box?170:255);
+            drawSelectionBoundingBox(axisAlignedBB);
+        }
+
+        if(box) {
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), outline ? 26 : 35);
+            drawFilledBox((IAxisAlignedBB) axisAlignedBB);
+        }
+
+        GlStateManager.resetColor();
+        glDepthMask(true);
+        resetCaps();
+    }
+    public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox) {
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRendererImpl worldrenderer = new WorldRendererImpl(Tessellator.getInstance().getBuffer());
+
+        worldrenderer.begin(GL_LINE_STRIP, (IVertexFormat) DefaultVertexFormats.POSITION);
+
+        // Lower Rectangle
+        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
+        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
+        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
+        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
+        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
+
+        // Upper Rectangle
+        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
+        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
+        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
+
+        // Upper Rectangle
+        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
+
+        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
+        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+
+        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
+        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
+
+        tessellator.draw();
+    }
     public static void drawFilledBox(final IAxisAlignedBB axisAlignedBB) {
         final ITessellator tessellator = classProvider.getTessellatorInstance();
         final IWorldRenderer worldRenderer = tessellator.getWorldRenderer();
@@ -703,8 +822,21 @@ public final class RenderUtils extends MinecraftInstance {
     public static void drawGradientVertical(float x, float y, float width, float height, float radius, Color top, Color bottom) {
         drawGradientRound(x, y, width, height, radius, bottom, top, bottom, top);
     }
-
-    private static final ShaderUtil roundedGradientShader = new ShaderUtil("roundedRectGradient");
+    public static double getAnimationState(double animation, double finalState, double speed) {
+        float add = (float) (0.01 * speed);
+        if (animation < finalState) {
+            if (animation + add < finalState)
+                animation += add;
+            else
+                animation = finalState;
+        } else {
+            if (animation - add > finalState)
+                animation -= add;
+            else
+                animation = finalState;
+        }
+        return animation;
+    }
     public static void quickRenderCircle(double x, double y, double start, double end, double w, double h) {
         if (start > end) {
             double temp = end;
@@ -1187,16 +1319,31 @@ public final class RenderUtils extends MinecraftInstance {
         worldrenderer.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
         tessellator.draw();
     }
-
+    public static void startDrawing() {
+        GL11.glEnable(3042);
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        GL11.glDisable(3553);
+        GL11.glDisable(2929);
+        Minecraft.getMinecraft().entityRenderer.setupCameraTransform(Minecraft.getMinecraft().timer.renderPartialTicks,
+                0);
+    }
+    public static void stopDrawing() {
+        GL11.glDisable(3042);
+        GL11.glEnable(3553);
+        GL11.glDisable(2848);
+        GL11.glDisable(3042);
+        GL11.glEnable(2929);
+    }
     public static void glColor(final int red, final int green, final int blue, final int alpha) {
         GL11.glColor4f(red / 255F, green / 255F, blue / 255F, alpha / 255F);
     }
-
     public static void glColor(final Color color) {
         glColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
 
-    private static void glColor(final int hex) {
+    public static void glColor(final int hex) {
         glColor(hex >> 16 & 0xFF, hex >> 8 & 0xFF, hex & 0xFF, hex >> 24 & 0xFF);
     }
     public static void glColor(final Color color, final Float alpha) {
@@ -1217,6 +1364,19 @@ public final class RenderUtils extends MinecraftInstance {
 
         GlStateManager.color(red, green, blue, alpha);
     }
+
+    public static void glColor(final Color color, final int alpha) {
+        glColor(color, alpha/255F);
+    }
+
+    public static void glColor(final Color color, final float alpha) {
+        final float red = color.getRed() / 255F;
+        final float green = color.getGreen() / 255F;
+        final float blue = color.getBlue() / 255F;
+
+        GlStateManager.color(red, green, blue, alpha);
+    }
+
     public static void draw2D(final IEntityLivingBase entity, final double posX, final double posY, final double posZ, final int color, final int backgroundColor) {
         GL11.glPushMatrix();
         GL11.glTranslated(posX, posY, posZ);

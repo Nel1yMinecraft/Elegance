@@ -7,6 +7,7 @@ package me.ccbluex.liquidbounce.utils;
 
 import me.ccbluex.liquidbounce.LiquidBounce;
 import me.ccbluex.liquidbounce.api.minecraft.client.entity.IEntity;
+import me.ccbluex.liquidbounce.api.minecraft.client.entity.IEntityLivingBase;
 import me.ccbluex.liquidbounce.api.minecraft.client.entity.IEntityPlayerSP;
 import me.ccbluex.liquidbounce.api.minecraft.network.IPacket;
 import me.ccbluex.liquidbounce.api.minecraft.network.play.client.ICPacketPlayer;
@@ -16,6 +17,10 @@ import me.ccbluex.liquidbounce.event.Listenable;
 import me.ccbluex.liquidbounce.event.PacketEvent;
 import me.ccbluex.liquidbounce.event.TickEvent;
 import me.ccbluex.liquidbounce.features.module.modules.combat.FastBow;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -25,6 +30,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     private static final Random random = new Random();
 
     private static int keepLength;
+    private static int revTick;
 
     public static Rotation targetRotation;
     public static Rotation serverRotation = new Rotation(0F, 0F);
@@ -35,6 +41,142 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     private static double y = random.nextDouble();
     private static double z = random.nextDouble();
 
+    //FDP
+    public static VecRotation calculateCenter(final String calMode, final String randMode, final double randomRange, final AxisAlignedBB bb, final boolean predict, final boolean throughWalls) {
+
+        //final Rotation randomRotation = toRotation(randomVec, predict);
+
+        VecRotation vecRotation = null;
+
+        double xMin;
+        double yMin;
+        double zMin;
+        double xMax;
+        double yMax;
+        double zMax;
+        double xDist;
+        double yDist;
+        double zDist;
+
+        xMin = 0.15D;
+        xMax = 0.85D;
+        xDist = 0.1D;
+        yMin = 0.15D;
+        yMax = 1.00D;
+        yDist = 0.1D;
+        zMin = 0.15D;
+        zMax = 0.85D;
+        zDist = 0.1D;
+
+
+        switch (calMode) {
+            case "LiquidBounce":
+                break;
+            case "Full":
+                xMin = 0.00D;
+                xMax = 1.00D;
+                yMin = 0.00D;
+                zMin = 0.00D;
+                zMax = 1.00D;
+                break;
+            case "HalfUp":
+                xMin = 0.10D;
+                xMax = 0.90D;
+                yMin = 0.50D;
+                yMax = 0.90D;
+                zMin = 0.10D;
+                zMax = 0.90D;
+                break;
+            case "HalfDown":
+                xMin = 0.10D;
+                xMax = 0.90D;
+                yMin = 0.10D;
+                yMax = 0.50D;
+                zMin = 0.10D;
+                zMax = 0.90D;
+                break;
+            case "CenterSimple":
+                xMin = 0.45D;
+                xMax = 0.55D;
+                xDist = 0.0125D;
+                yMin = 0.65D;
+                yMax = 0.75D;
+                yDist = 0.0125D;
+                zMin = 0.45D;
+                zMax = 0.55D;
+                zDist = 0.0125D;
+                break;
+            case "CenterLine":
+                xMin = 0.45D;
+                xMax = 0.55D;
+                xDist = 0.0125D;
+                yMin = 0.10D;
+                yMax = 0.90D;
+                zMin = 0.45D;
+                zMax = 0.55D;
+                zDist = 0.0125D;
+                break;
+        }
+
+        for (double xSearch = xMin; xSearch < xMax; xSearch += xDist) {
+            for (double ySearch = yMin; ySearch < yMax; ySearch += yDist) {
+                for (double zSearch = zMin; zSearch < zMax; zSearch += zDist) {
+                    final WVec3 vec3 = new WVec3(bb.minX + (bb.maxX - bb.minX) * xSearch, bb.minY + (bb.maxY - bb.minY) * ySearch, bb.minZ + (bb.maxZ - bb.minZ) * zSearch);
+                    final Rotation rotation = toRotation(vec3, predict);
+
+                    if (throughWalls || isVisible(vec3)) {
+                        final VecRotation currentVec = new VecRotation(vec3, rotation);
+
+                        if (vecRotation == null || (getRotationDifference(currentVec.getRotation()) < getRotationDifference(vecRotation.getRotation()))) {
+                            vecRotation = currentVec;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (vecRotation == null || randMode.equals("Off"))
+            return vecRotation;
+
+        double rand1 = random.nextDouble();
+        double rand2 = random.nextDouble();
+        double rand3 = random.nextDouble();
+
+        final double xRange = bb.maxX - bb.minX;
+        final double yRange = bb.maxY - bb.minY;
+        final double zRange = bb.maxZ - bb.minZ;
+        double minRange = 999999.0D;
+
+        if (xRange <= minRange) minRange = xRange;
+        if (yRange <= minRange) minRange = yRange;
+        if (zRange <= minRange) minRange = zRange;
+
+        rand1 = rand1 * minRange * randomRange;
+        rand2 = rand2 * minRange * randomRange;
+        rand3 = rand3 * minRange * randomRange;
+
+
+        final WVec3 vec3 = new WVec3(rand1, rand2, rand3);
+
+        final Rotation randomRotation = toRotation(vec3, predict);
+
+        vecRotation = new VecRotation(vec3, randomRotation);
+
+        return vecRotation;
+    }
+    public static Rotation getRotationFromEyeHasPrev(double x, double y, double z) {
+        double xDiff = x - (mc2.player.prevPosX + (mc2.player.posX - mc2.player.prevPosX));
+        double yDiff = y - ((mc2.player.prevPosY + (mc2.player.posY - mc2.player.prevPosY)) + (mc2.player.getEntityBoundingBox().maxY - mc2.player.getEntityBoundingBox().minY));
+        double zDiff = z - (mc2.player.prevPosZ + (mc2.player.posZ - mc2.player.prevPosZ));
+        final double dist = MathHelper.sqrt(xDiff * xDiff + zDiff * zDiff);
+        return new Rotation((float) (Math.atan2(zDiff, xDiff) * 180D / Math.PI) - 90F, (float) -(Math.atan2(yDiff, dist) * 180D / Math.PI));
+    }
+    public static Rotation getRotationFromEyeHasPrev(IEntityLivingBase target) {
+        final double x = (target.getPrevPosX() + (target.getPosX() - target.getPrevPosX()));
+        final double y = (target.getPrevPosY() + (target.getPosY() - target.getPrevPosY()));
+        final double z = (target.getPrevPosZ() + (target.getPosZ() - target.getPosZ()));
+        return getRotationFromEyeHasPrev(x, y, z);
+    }
     /**
      * Face block
      *
@@ -282,6 +424,16 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         }
 
         return vecRotation;
+    }
+    public static void setTargetRotationReverse(final Rotation rotation, int kl, int rt) {
+        if(Double.isNaN(rotation.getYaw()) || Double.isNaN(rotation.getPitch())
+                || rotation.getPitch() > 90 || rotation.getPitch() < -90)
+            return;
+
+        rotation.fixedSensitivity(mc2.gameSettings.mouseSensitivity);
+        targetRotation = rotation;
+        keepLength = kl;
+        revTick = rt + 1;
     }
     /**
      * Calculate difference between the client rotation and your entity

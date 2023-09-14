@@ -55,6 +55,7 @@ import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
@@ -138,6 +139,7 @@ class KillAura : Module() {
 
     // Bypass
     private val aacValue = BoolValue("AAC", false)
+    private val CpsReduceValue = BoolValue("CPSReduceVelocity", false)
 
     // Turn Speed
     private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f) {
@@ -160,6 +162,7 @@ class KillAura : Module() {
         arrayOf("None", "Liquidbounce", "BackTrack", "HytRotation"),
         "HytRotation"
     )
+
     private val outborderValue = BoolValue("Outborder", false)
     private val silentRotationValue = BoolValue("SilentRotation", true)
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
@@ -855,6 +858,11 @@ class KillAura : Module() {
         if (openInventory)
             mc.netHandler.addToSendQueue(classProvider.createCPacketCloseWindow())
 
+        //CPSVelocity
+        if (CpsReduceValue.get() && mc.thePlayer!!.hurtTime > 8){
+            clicks += 4
+        }
+
         // Check is not hitable or check failrate
 
         if (!hitable || failHit) {
@@ -1068,7 +1076,8 @@ class KillAura : Module() {
      */
 
     private fun updateRotations(entity: IEntity): Boolean {
-        var boundingBox = entity.entityBoundingBox
+        var boundingBox: IAxisAlignedBB
+        boundingBox = entity.entityBoundingBox
         if (rotations.get().equals("HytRotation", ignoreCase = true)) {
             if (predictValue.get())
                 boundingBox = boundingBox.offset(
@@ -1351,7 +1360,6 @@ class KillAura : Module() {
             mc.thePlayer!!.swingItem()
         }
     }
-
     /**
      * Range
      */

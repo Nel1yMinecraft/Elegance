@@ -12,15 +12,18 @@ import me.ccbluex.liquidbounce.features.module.ModuleInfo
 import me.ccbluex.liquidbounce.injection.backend.unwrap
 import me.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import me.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import me.ccbluex.liquidbounce.utils.sound.TipSoundPlayer
 import me.ccbluex.liquidbounce.value.BoolValue
 import me.ccbluex.liquidbounce.value.ListValue
 import me.ccbluex.liquidbounce.value.TextValue
 import net.minecraft.network.play.server.SPacketChat
+import java.io.File
 import java.util.regex.Pattern
 
 @ModuleInfo(name = "AutoL", description = "NELLY", category = ModuleCategory.MISC)
 class AutoL : Module() {
     private val killautoL = BoolValue("KillPlayerAutoL", true)
+    private val killmusic = BoolValue("KillPlayerPlaySound",true)
     private val killautoLmode = ListValue("KillPlayerAutoL-Mode", arrayOf("SendMessage", "AddNotification"), "AddNotification").displayable {killautoL.get()}
     private val killutolmessage = TextValue("KillPlayerAutoL-Message", "我可是${LiquidBounce.CLIENT_NAME}用户 |").displayable {killautoLmode.get().contains("SendMessage")}
     private val banAutoL = BoolValue("BanAutoL", true)
@@ -29,10 +32,16 @@ class AutoL : Module() {
     private val hubAutoL = BoolValue("HubAutoL", true)
     private val hubautoLmode = ListValue("HubAutoL-Mode", arrayOf("SendMessage", "AddNotification"), "AddNotification").displayable {banAutoL.get()}
     private val hubautolmessage = TextValue("HubAutoL-Message", "我可是${LiquidBounce.CLIENT_NAME}用户 |").displayable {banautoLmode.get().contains("SendMessage")}
+
     var syncEntity: IEntityLivingBase? = null
     var killCounts = 0
     var ban = 0
     var hub = 0
+
+    @EventTarget
+    override fun handleEvents(): Boolean {
+        return true
+    }
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
@@ -60,7 +69,7 @@ class AutoL : Module() {
                     LiquidBounce.hud.addNotification(
                         Notification(
                             "HubChecker",
-                            "${hubautolmessage.get()} $hubname is hub. Total hubs: $hub",
+                            "$hubname is hub. Total hubs: $hub",
                             NotifyType.INFO
                         )
                     )
@@ -77,13 +86,13 @@ class AutoL : Module() {
                     LiquidBounce.hud.addNotification(
                         Notification(
                             "BanChecker",
-                            "${banautolmessage.get()} $banname has been banned. Total bans: $ban",
+                            "$$banname has been banned. Total bans: $ban",
                             NotifyType.INFO
                         )
                     )
                 }
                 if(banAutoL.get()  && banautoLmode.get().contains("SendMessage")) {
-                    mc.thePlayer!!.sendChatMessage("@${killutolmessage.get()} $banname 已被封禁")
+                    mc.thePlayer!!.sendChatMessage("@${banautolmessage.get()} $banname 已被封禁")
                 }
             }
         }
@@ -92,6 +101,9 @@ class AutoL : Module() {
     fun killautoL() {
         if(killautoL.get() && killautoLmode.get().contains("SendMessage")) {
             mc.thePlayer!!.sendChatMessage("@${killutolmessage.get()} ${syncEntity!!.name} 已被封禁")
+        }
+        if(killmusic.get()){
+            TipSoundPlayer(File("assets/minecraft/liquidbounce/sound/kill1.wav"))
         }
         if(killautoL.get() && killautoLmode.get().contains("AddNotification")) {
             LiquidBounce.hud.addNotification(

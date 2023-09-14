@@ -35,7 +35,11 @@ class ItemStackImpl(val wrapped: ItemStack) : IItemStack {
 
     override val displayName: String
         get() = wrapped.displayName
+    override var maxDamage: Int
+        get() = wrapped.maxDamage
+        set(value) {
 
+        }
     override val unlocalizedName: String
         get() = wrapped.unlocalizedName
     override val maxItemUseDuration: Int

@@ -1,8 +1,9 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * ColorByte Hacked Client
+ * A free half-open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderRyF/ColorByte/
  */
+
 package me.ccbluex.liquidbounce.features.module.modules.render
 
 import me.ccbluex.liquidbounce.api.minecraft.client.entity.IEntity
@@ -12,11 +13,9 @@ import me.ccbluex.liquidbounce.event.Render3DEvent
 import me.ccbluex.liquidbounce.features.module.Module
 import me.ccbluex.liquidbounce.features.module.ModuleCategory
 import me.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import me.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import me.ccbluex.liquidbounce.utils.ClientUtils
 import me.ccbluex.liquidbounce.utils.EntityUtils
-import me.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import me.ccbluex.liquidbounce.utils.render.ColorUtils
 import me.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import me.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -30,13 +29,13 @@ import me.ccbluex.liquidbounce.value.ListValue
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
-import kotlin.math.max
-import kotlin.math.min
 
 @ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
 class ESP : Module() {
     @JvmField
-    val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "ShaderOutline", "ShaderGlow"), "Box")
+    val modeValue = ListValue("Mode", arrayOf("DaTou","Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "ShaderOutline", "ShaderGlow"), "DaTou")
+    private val daTouIMGValue = ListValue("DaTouImg", arrayOf("JiaRan","HuTao","YaoEr","CaoXiaoLong","Paimon","Paimon2","MNWorld-KaKa","MNWorld-NiNi"),"YaoEr").displayable { modeValue.get().toLowerCase().equals("datou") }
+
 
     @JvmField
     val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f)
@@ -50,7 +49,6 @@ class ESP : Module() {
     private val colorBlueValue = IntegerValue("B", 255, 0, 255)
     private val colorRainbow = BoolValue("Rainbow", false)
     private val colorTeam = BoolValue("Team", false)
-    private val botValue = BoolValue("Bots", true)
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
@@ -59,6 +57,7 @@ class ESP : Module() {
         val projectionMatrix = WorldToScreen.getMatrix(GL11.GL_PROJECTION_MATRIX)
         val real2d = mode.equals("real2d", ignoreCase = true)
 
+        //<editor-fold desc="Real2D-Setup">
         if (real2d) {
             GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
             GL11.glEnable(GL11.GL_BLEND)
@@ -77,9 +76,8 @@ class ESP : Module() {
             GL11.glDepthMask(true)
             GL11.glLineWidth(1.0f)
         }
-
+        //</editor-fold>
         for (entity in mc.theWorld!!.loadedEntityList) {
-            if (!classProvider.isEntityLivingBase(entity) || !botValue.get() && AntiBot.isBot(entity.asEntityLivingBase())) continue
             if (entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
                 val entityLiving = entity.asEntityLivingBase()
                 val color = getColor(entityLiving)
@@ -94,15 +92,71 @@ class ESP : Module() {
                         val posZ: Double = entityLiving.lastTickPosZ + (entityLiving.posZ - entityLiving.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
                         RenderUtils.draw2D(entityLiving, posX, posY, posZ, color.rgb, Color.BLACK.rgb)
                     }
+                    "datou" -> {
+
+                        var var10000 =
+                            entityLiving.lastTickPosX + (entityLiving.posX - entityLiving.lastTickPosX) * mc.timer.renderPartialTicks
+                        mc.renderManager
+                        val pX: Double = var10000 - mc.renderManager.renderPosX
+                        var10000 =
+                            entityLiving.lastTickPosY + (entityLiving.posY - entityLiving.lastTickPosY) * mc.timer.renderPartialTicks
+                        mc.renderManager
+                        val pY: Double = var10000 - mc.renderManager.renderPosY
+                        var10000 =
+                            entityLiving.lastTickPosZ + (entityLiving.posZ - entityLiving.lastTickPosZ) * mc.timer.renderPartialTicks
+                        mc.renderManager
+                        val pZ: Double = var10000 - mc.renderManager.renderPosZ
+                        GL11.glPushMatrix()
+                        GL11.glTranslatef(
+                            pX.toFloat(),
+                            pY.toFloat() + if (entityLiving.sneaking) 0.8f else 1.3f,
+                            pZ.toFloat()
+                        )
+                        GL11.glNormal3f(1.0f, 1.0f, 1.0f)
+                        GL11.glRotatef(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
+                        GL11.glRotatef(mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
+                        val scale = 0.06f
+                        GL11.glScalef(-scale, -scale, scale)
+                        GL11.glDisable(2896)
+                        GL11.glDisable(2929)
+                        GL11.glEnable(3042)
+                        GL11.glBlendFunc(770, 771)
+                        GL11.glPushMatrix()
+                        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+
+                        val datousel =
+                            when (daTouIMGValue.get().toLowerCase()) {
+                                "jiaran" -> "jiaran"
+                                "hutao" -> "hutao"
+                                "yaoer" -> "yaoer"
+                                "caoxiaolong" -> "caoxiaolong"
+                                "paimon" -> "paimon"
+                                "paimon2" -> "paimon2"
+                                "mnworld-kaka" -> "kaka"
+                                "mnworld-nini" -> "nini"
+                                else -> "wcnmnmsl"
+                            }
+                        RenderUtils.drawImage(
+                            classProvider.createResourceLocation("liquidbounce/datou/$datousel.png"),
+                            (-8.0).toInt(),
+                            (-14.0).toInt(),
+                            16,
+                            16
+                        )
+                        GL11.glPopMatrix()
+                        GL11.glPopMatrix()
+
+                    }
+
                     "real2d" -> {
                         val renderManager = mc.renderManager
                         val timer = mc.timer
                         val bb = entityLiving.entityBoundingBox
-                                .offset(-entityLiving.posX, -entityLiving.posY, -entityLiving.posZ)
-                                .offset(entityLiving.lastTickPosX + (entityLiving.posX - entityLiving.lastTickPosX) * timer.renderPartialTicks,
-                                        entityLiving.lastTickPosY + (entityLiving.posY - entityLiving.lastTickPosY) * timer.renderPartialTicks,
-                                        entityLiving.lastTickPosZ + (entityLiving.posZ - entityLiving.lastTickPosZ) * timer.renderPartialTicks)
-                                .offset(-renderManager.renderPosX, -renderManager.renderPosY, -renderManager.renderPosZ)
+                            .offset(-entityLiving.posX, -entityLiving.posY, -entityLiving.posZ)
+                            .offset(entityLiving.lastTickPosX + (entityLiving.posX - entityLiving.lastTickPosX) * timer.renderPartialTicks,
+                                entityLiving.lastTickPosY + (entityLiving.posY - entityLiving.lastTickPosY) * timer.renderPartialTicks,
+                                entityLiving.lastTickPosZ + (entityLiving.posZ - entityLiving.lastTickPosZ) * timer.renderPartialTicks)
+                            .offset(-renderManager.renderPosX, -renderManager.renderPosY, -renderManager.renderPosZ)
                         val boxVertices = arrayOf(doubleArrayOf(bb.minX, bb.minY, bb.minZ), doubleArrayOf(bb.minX, bb.maxY, bb.minZ), doubleArrayOf(bb.maxX, bb.maxY, bb.minZ), doubleArrayOf(bb.maxX, bb.minY, bb.minZ), doubleArrayOf(bb.minX, bb.minY, bb.maxZ), doubleArrayOf(bb.minX, bb.maxY, bb.maxZ), doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ), doubleArrayOf(bb.maxX, bb.minY, bb.maxZ))
                         var minX = Float.MAX_VALUE
                         var minY = Float.MAX_VALUE
@@ -110,11 +164,11 @@ class ESP : Module() {
                         var maxY = -1f
                         for (boxVertex in boxVertices) {
                             val screenPos = WorldToScreen.worldToScreen(Vector3f(boxVertex[0].toFloat(), boxVertex[1].toFloat(), boxVertex[2].toFloat()), mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight)
-                                    ?: continue
-                            minX = min(screenPos.x, minX)
-                            minY = min(screenPos.y, minY)
-                            maxX = max(screenPos.x, maxX)
-                            maxY = max(screenPos.y, maxY)
+                                ?: continue
+                            minX = Math.min(screenPos.x, minX)
+                            minY = Math.min(screenPos.y, minY)
+                            maxX = Math.max(screenPos.x, maxX)
+                            maxY = Math.max(screenPos.y, maxY)
                         }
                         if (minX > 0 || minY > 0 || maxX <= mc.displayWidth || maxY <= mc.displayWidth) {
                             GL11.glColor4f(color.red / 255.0f, color.green / 255.0f, color.blue / 255.0f, 1.0f)
@@ -129,7 +183,6 @@ class ESP : Module() {
                 }
             }
         }
-
         if (real2d) {
             GL11.glEnable(GL11.GL_DEPTH_TEST)
             GL11.glMatrixMode(GL11.GL_PROJECTION)
@@ -143,53 +196,33 @@ class ESP : Module() {
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         val mode = modeValue.get().toLowerCase()
-        val partialTicks = event.partialTicks
         val shader = (if (mode.equals("shaderoutline", ignoreCase = true)) OutlineShader.OUTLINE_SHADER else if (mode.equals("shaderglow", ignoreCase = true)) GlowShader.GLOW_SHADER else null)
-                ?: return
-        val radius = if (mode.equals("shaderoutline", ignoreCase = true)) shaderOutlineRadius.get() else if (mode.equals("shaderglow", ignoreCase = true)) shaderGlowRadius.get() else 1f
-
+            ?: return
+        shader.startDraw(event.partialTicks)
         renderNameTags = false
         try {
-            //search entities
-            val entityMap = HashMap<Color, ArrayList<IEntity>>()
             for (entity in mc.theWorld!!.loadedEntityList) {
                 if (!EntityUtils.isSelected(entity, false)) continue
-                if (AntiBot.isBot(entity.asEntityLivingBase()) && !botValue.get()) continue
-                //can draw
-                val color = getColor(entity)
-                if (!entityMap.containsKey(color)) {
-                    entityMap.put(color, ArrayList())
-                }
-                entityMap[color]!!.add(entity)
-            }
-            //then draw it
-            for ((color, arr) in entityMap) {
-                shader.startDraw(partialTicks)
-                for (entity in arr) {
-                    mc.renderManager.renderEntityStatic(entity, partialTicks, true)
-                }
-                shader.stopDraw(color, radius, 1f)
+                mc.renderManager.renderEntityStatic(entity, mc.timer.renderPartialTicks, true)
             }
         } catch (ex: Exception) {
             ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex)
         }
         renderNameTags = true
+        val radius = if (mode.equals("shaderoutline", ignoreCase = true)) shaderOutlineRadius.get() else if (mode.equals("shaderglow", ignoreCase = true)) shaderGlowRadius.get() else 1f
         shader.stopDraw(getColor(null), radius, 1f)
     }
 
     override val tag: String
-        get() = modeValue.get()
+        get() = (modeValue.get() + if (modeValue.get().toLowerCase().equals("datou")) ", ${daTouIMGValue.get()}" else "")
 
     fun getColor(entity: IEntity?): Color {
         run {
             if (entity != null && classProvider.isEntityLivingBase(entity)) {
                 val entityLivingBase = entity.asEntityLivingBase()
 
-                if (entityLivingBase.hurtTime > 0)
-                    return Color.RED
-                if (classProvider.isEntityPlayer(entityLivingBase) && entityLivingBase.asEntityPlayer().isClientFriend())
-                    return Color.BLUE
-
+                if (entityLivingBase.hurtTime > 0) return Color.RED
+                if (EntityUtils.isFriend(entityLivingBase)) return Color.BLUE
                 if (colorTeam.get()) {
                     val chars: CharArray = (entityLivingBase.displayName ?: return@run).formattedText.toCharArray()
                     var color = Int.MAX_VALUE
@@ -200,12 +233,10 @@ class ESP : Module() {
                         color = ColorUtils.hexColors[index]
                         break
                     }
-
                     return Color(color)
                 }
             }
         }
-
         return if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }
 

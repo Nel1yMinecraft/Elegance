@@ -23,6 +23,7 @@ open class Module : MinecraftInstance(), Listenable {
     // Module information
     // TODO: Remove ModuleInfo and change to constructor (#Kotlin)
     var name: String
+    var chinesename: String
     var description: String
     var category: ModuleCategory
     var keyBind = Keyboard.CHAR_NONE
@@ -47,6 +48,7 @@ open class Module : MinecraftInstance(), Listenable {
         val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
 
         name = moduleInfo.name
+        chinesename = moduleInfo.chinesename
         description = moduleInfo.description
         category = moduleInfo.category
         keyBind = moduleInfo.keyBind

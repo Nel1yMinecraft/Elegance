@@ -144,6 +144,7 @@ class NoSlow : Module() {
                 sendPacket(event, true, true, false, 0, false)
             }
 
+
             "hytpacket" -> {
                 consumeForwardMultiplier.set(0.2)
                 consumeStrafeMultiplier.set(0.2)

@@ -1,10 +1,11 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * ColorByte Hacked Client
+ * A free half-open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderRyF/ColorByte
  */
 package me.ccbluex.liquidbounce.ui.font
 
+import me.ccbluex.liquidbounce.injection.backend.WrapperImpl.classProvider
 import me.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraftforge.fml.relauncher.Side
@@ -228,10 +229,10 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, v
         for (targetChar in startChar until stopChar)
             if (fontImages[targetChar] != null && charLocations[targetChar] != null)
                 graphics2D.drawImage(fontImages[targetChar], charLocations[targetChar]!!.x, charLocations[targetChar]!!.y,
-                        null)
+                    null)
 
         textureID = TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), bufferedImage, true,
-                true)
+            true)
     }
 
     /**
@@ -277,10 +278,10 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, v
 
         for (c in text.toCharArray()) {
             val fontChar = charLocations[
-                    if (c.toInt() < charLocations.size)
-                        c.toInt()
-                    else
-                        '\u0003'.toInt()
+                if (c.toInt() < charLocations.size)
+                    c.toInt()
+                else
+                    '\u0003'.toInt()
             ] ?: continue
 
             width += fontChar.width - 8

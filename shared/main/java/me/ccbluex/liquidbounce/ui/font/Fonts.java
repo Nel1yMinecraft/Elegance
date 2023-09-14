@@ -44,14 +44,22 @@ public class Fonts extends MinecraftInstance {
     public static IFontRenderer C30;
     @FontDetails(fontName = "comfortaaRegular", fontSize = 32)
     public static IFontRenderer C32;
-    @FontDetails(fontName = "SF UI Display", fontSize = 35)
-    public static IFontRenderer SF_35;
     @FontDetails(fontName = "SF UI Display", fontSize = 16)
     public static IFontRenderer SF_16;
+    @FontDetails(fontName = "SF UI Display", fontSize = 30)
+    public static IFontRenderer SF_30;
+    @FontDetails(fontName = "SF UI Display", fontSize = 35)
+    public static IFontRenderer SF_35;
+    @FontDetails(fontName = "SF UI Display", fontSize = 40)
+    public static IFontRenderer SF_40;
     @FontDetails(fontName = "Wqy MicroHei Wqy", fontSize = 30)
     public static IFontRenderer wqy30;
-    @FontDetails(fontName = "BOLD", fontSize = 30)
+    @FontDetails(fontName = "BOLD", fontSize = 95   )
     public static IFontRenderer bold95;
+    @FontDetails(fontName = "CHINESE", fontSize = 35)
+    public static IFontRenderer chinese35;
+    @FontDetails(fontName = "CHINESE", fontSize = 35)
+    public static IFontRenderer chinese40;
     public static void loadFonts() {
         long l = System.currentTimeMillis();
 
@@ -69,10 +77,14 @@ public class Fonts extends MinecraftInstance {
         C30 = getFont2("regular.ttf",30);
         C32 = getFont2("regular.ttf",32);
         M30 = getFont2("mojangles",30);
-        SF_35 = getFont2("sfuidisplay.ttf", 35);
         SF_16 = getFont2("sfuidisplay.ttf", 16);
+        SF_30 = getFont2("sfuidisplay.ttf", 30);
+        SF_35 = getFont2("sfuidisplay.ttf", 35);
+        SF_40 = getFont2("sfuidisplay.ttf", 40);
         wqy30 = getFont2("wqy_microhei.ttf", 30);
         bold95 = getFont2("bold.ttf", 95);
+        chinese35 = getFont2("weiruanyahei.ttf", 35);
+        chinese40 = getFont2("weiruanyahei.ttf", 40);
 
         try {
 

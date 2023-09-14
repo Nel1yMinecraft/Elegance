@@ -25,6 +25,7 @@ class HUD : Module() {
         arrayOf("None", "Default", "Custom", "Sigma", "Sinka", "Fallen", "Pride", "LB+"),
         "Custom"
     )
+
     val blackHotbarValue = BoolValue("BlackHotbar", true)
     val inventoryParticle = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
@@ -99,8 +100,11 @@ class HUD : Module() {
         @JvmField
         val shadowValue = ListValue("ShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Custom"), "Outline")
         @JvmField
-        val shadowstrenge = FloatValue("ShadowStrengh", 0.1f, 0.1f, 1f)
         val blurRadius = IntegerValue("BlurRadius", 10, 1, 50)
+        @JvmField
+        val rainbowStartValue = FloatValue("RainbowStart", 0.55f, 0f, 1f)
+        @JvmField
+        val rainbowStopValue = FloatValue("RainbowStop", 0.85f, 0f, 1f)
     }
     init {
         state = true

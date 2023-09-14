@@ -1,4 +1,3 @@
-/*
 package me.nelly
 
 import javafx.application.Application
@@ -100,26 +99,11 @@ class Verify : Application() {
 
     companion object {
         @JvmStatic
-        fun asfnioasnoasfonfsanofsanoi() {
+        fun start() {
             launch(Verify::class.java)
         }
 
-        fun lilililili() {
-            val usernameField = TextField()
-            val passwordField = PasswordField()
-            val username = usernameField.text
-            val password = passwordField.text
-
-            if (username == null) {
-                Minecraft.getMinecraft().shutdown()
-            }
-            if (password == null) {
-                Minecraft.getMinecraft().shutdown()
-            }
-        }
-
-        @JvmStatic
-        fun lililili1li() {
+        fun antisb() {
             val usernameField = TextField()
             val passwordField = PasswordField()
             val username = usernameField.text
@@ -134,4 +118,3 @@ class Verify : Application() {
         }
     }
 }
-*/

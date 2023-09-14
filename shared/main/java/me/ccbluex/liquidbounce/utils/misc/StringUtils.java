@@ -1,8 +1,9 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * ColorByte Hacked Client
+ * A free half-open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderRyF/ColorByte/
  */
+
 package me.ccbluex.liquidbounce.utils.misc;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -44,5 +45,47 @@ public final class StringUtils {
         }
 
         return stringBuilder.toString();
+    }
+    private static boolean isEmojiCharacter(char codePoint) {
+        return codePoint == 0 || codePoint == '\t' || codePoint == '\n' || codePoint == '\r' || codePoint >= ' ' && codePoint <= '\ud7ff' || codePoint >= '\ue000' && codePoint <= '\ufffd' || codePoint >= 65536 && codePoint <= 1114111;
+    }
+
+    public static String filterEmoji(String source) {
+        if (isBlank(source)) {
+            return source;
+        } else {
+            StringBuilder buf = null;
+            int len = source.length();
+
+            for (int i = 0; i < len; ++i) {
+                char codePoint = source.charAt(i);
+                if (isEmojiCharacter(codePoint)) {
+                    if (buf == null) {
+                        buf = new StringBuilder(source.length());
+                    }
+
+                    buf.append(codePoint);
+                }
+            }
+
+            if (buf == null) {
+                return source;
+            } else if (buf.length() == len) {
+                return source;
+            } else {
+                return buf.toString();
+            }
+        }
+    }
+    public static boolean isBlank(String s) {
+        if (s != null) {
+            for (int i = 0; i < s.length(); ++i) {
+                if (!Character.isWhitespace(s.charAt(i))) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
     }
 }

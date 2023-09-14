@@ -122,7 +122,7 @@ public class AstolfoStyle extends Style {
                 int yPos = moduleElement.getY() + 4;
 
                 for (final Value value : moduleValues) {
-                    if (!value.getDisplayable() || HUD.Companion.getBlurRadius().getDisplayable())
+                    if (!value.getDisplayable() || HUD.blurRadius.getDisplayable())
                         continue;
 
                     if (value instanceof BoolValue) {

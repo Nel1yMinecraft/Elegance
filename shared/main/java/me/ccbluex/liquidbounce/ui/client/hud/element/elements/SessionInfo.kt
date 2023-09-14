@@ -10,6 +10,7 @@ import me.ccbluex.liquidbounce.ui.font.Fonts
 import me.ccbluex.liquidbounce.utils.ColorUtil
 import me.ccbluex.liquidbounce.utils.ServerUtils
 import me.ccbluex.liquidbounce.utils.SessionUtils
+import me.ccbluex.liquidbounce.utils.ShadowUtils
 import me.ccbluex.liquidbounce.utils.render.ColorUtils.LiquidSlowly
 import me.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import me.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -37,8 +38,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
     private val textGreen2 = IntegerValue("Gradinet-Green-2", 45, 0, 255)
     private val textBlue2 = IntegerValue("Gradinet-Blue-2", 150, 0, 255)
     private val gidentspeed = IntegerValue("GidentSpeed", 100, 1, 1000)
-    val radius = IntegerValue("4-radius",10,0,100)
-
+    val radius = IntegerValue("4-radius",10,0,100).displayable {modeValue.get().contains("4")}
     val lineValue = BoolValue("Line", true)
     private val gradientAmountValue = IntegerValue("Gradient-Amount", 25, 1, 50)
     private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f)
@@ -51,7 +51,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
     override fun drawElement(): Border {
         val target: IEntityPlayerSP? = mc.thePlayer
         val convertedTarget = target!!
-        val fontrender =fontrender.get()
+        val fontrender = fontrender.get()
         if (modeValue.get().equals("1")) {
             for (i in 0..(gradientAmountValue.get() - 1)) {
                 RenderUtils.drawCircleRect(0f, 0f, 165f, 63f, 5f, Color(0, 0, 0, 120).rgb)
@@ -167,22 +167,42 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
             }
 
             fontrender.drawStringWithShadow("Session Information", (x2.toFloat() / 4).toInt(), -10, Color.WHITE.rgb)
-            fontrender.drawStringWithShadow("Play Time: ${DATE_FORMAT.format(Date(System.currentTimeMillis() - Recorder.startTime - 8000L * 3600L))}", 2, fontRenderer.fontHeight + -6, Color.WHITE.rgb)
-            fontrender.drawStringWithShadow("Player Killed: ${Recorder.killCounts}", 2, fontRenderer.fontHeight * 2 + -4, Color.WHITE.rgb)
-            fontrender.drawStringWithShadow("GameWons: ${Recorder.win}", 2, fontRenderer.fontHeight * 3 + -2, Color.WHITE.rgb)
-            fontrender.drawStringWithShadow("Grim Bans: ${Recorder.ban}", 2, fontRenderer.fontHeight * 4 + 0, Color.WHITE.rgb)
+            fontrender.drawStringWithShadow(
+                "Play Time: ${DATE_FORMAT.format(Date(System.currentTimeMillis() - Recorder.startTime - 8000L * 3600L))}",
+                2,
+                fontRenderer.fontHeight + -6,
+                Color.WHITE.rgb
+            )
+            fontrender.drawStringWithShadow(
+                "Player Killed: ${Recorder.killCounts}",
+                2,
+                fontRenderer.fontHeight * 2 + -4,
+                Color.WHITE.rgb
+            )
+            fontrender.drawStringWithShadow(
+                "GameWons: ${Recorder.win}",
+                2,
+                fontRenderer.fontHeight * 3 + -2,
+                Color.WHITE.rgb
+            )
+            fontrender.drawStringWithShadow(
+                "Grim Bans: ${Recorder.ban}",
+                2,
+                fontRenderer.fontHeight * 4 + 0,
+                Color.WHITE.rgb
+            )
         }
-        if(modeValue.get().equals("4")) {
-            var gradientColor1 = Color(HUD.r.get(), HUD.g.get(), HUD.b.get(), HUD.a.get())
-            var gradientColor2 = Color(HUD.r.get(), HUD.g.get(), HUD.b.get(), HUD.a.get())
-            var gradientColor3 = Color(HUD.r2.get(), HUD.g2.get(), HUD.b2.get(), HUD.a2.get())
-            var gradientColor4 = Color(HUD.r2.get(), HUD.g2.get(), HUD.b2.get(), HUD.a2.get())
+        if (modeValue.get().equals("4")) {
+            val gradientColor1 = Color(HUD.r.get(), HUD.g.get(), HUD.b.get(), HUD.a.get())
+            val gradientColor2 = Color(HUD.r.get(), HUD.g.get(), HUD.b.get(), HUD.a.get())
+            val gradientColor3 = Color(HUD.r2.get(), HUD.g2.get(), HUD.b2.get(), HUD.a2.get())
+            val gradientColor4 = Color(HUD.r2.get(), HUD.g2.get(), HUD.b2.get(), HUD.a2.get())
             val fontRenderer = fontrender
             val y2 = fontRenderer.fontHeight * 5 + 11.0.toInt()
             val x2 = 140.0.toInt()
             if (lineValue.get()) {
                 val barLength = 142.toDouble()
-                for (i in 0..(gradientAmountValue.get() - 1)) {
+                for (i in 0 until gradientAmountValue.get()) {
                     val barStart = i.toDouble() / gradientAmountValue.get().toDouble() * barLength
                     val barEnd = (i + 1).toDouble() / gradientAmountValue.get().toDouble() * barLength
                     getColor()?.let {
@@ -195,16 +215,39 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 }
             }
             ShadowRenderUtils.drawShadowWithCustomAlpha(-2f, -2f, x2.toFloat(), y2.toFloat(), 250f) // oops
-            RenderUtils.drawGradientRound(-2f, -2f, x2.toFloat(), y2.toFloat(), radius.get().toFloat(), ColorUtil.applyOpacity(gradientColor4, .85f), gradientColor1, gradientColor3, gradientColor2)
+            RenderUtils.drawGradientRound(
+                -2f,
+                -2f,
+                x2.toFloat(),
+                y2.toFloat(),
+                radius.get().toFloat(),
+                ColorUtil.applyOpacity(gradientColor4, .85f),
+                gradientColor1,
+                gradientColor3,
+                gradientColor2
+            )
             fontRenderer.drawCenteredString("GameInfo", 31.5F, 3f, Color.WHITE.rgb, true)
-            fontRenderer.drawStringWithShadow("PlayTimes: ${DATE_FORMAT.format(Date(System.currentTimeMillis() - Recorder.startTime - 8000L * 3600L))}", 2, (fontRenderer.fontHeight + 8f).toInt(), Color.WHITE.rgb)
-            fontRenderer.drawStringWithShadow("killCounts: " + Recorder.killCounts, 2, (fontRenderer.fontHeight * 2 + 8f).toInt(), Color.WHITE.rgb)
-            fontRenderer.drawStringWithShadow("Wins: " + Recorder.win, 2,
-                (fontRenderer.fontHeight * 3 + 8f).toInt(), Color.WHITE.rgb)
-            fontRenderer.drawStringWithShadow("TotalPlayed: " +Recorder.totalPlayed , 2,
-                (fontRenderer.fontHeight * 4 + 8f).toInt(), Color.WHITE.rgb)
+            fontRenderer.drawStringWithShadow(
+                "PlayTimes: ${DATE_FORMAT.format(Date(System.currentTimeMillis() - Recorder.startTime - 8000L * 3600L))}",
+                2,
+                (fontRenderer.fontHeight + 8f).toInt(),
+                Color.WHITE.rgb
+            )
+            fontRenderer.drawStringWithShadow(
+                "killCounts: " + Recorder.killCounts,
+                2,
+                (fontRenderer.fontHeight * 2 + 8f).toInt(),
+                Color.WHITE.rgb
+            )
+            fontRenderer.drawStringWithShadow(
+                "Wins: " + Recorder.win, 2,
+                (fontRenderer.fontHeight * 3 + 8f).toInt(), Color.WHITE.rgb
+            )
+            fontRenderer.drawStringWithShadow(
+                "TotalPlayed: " + Recorder.totalPlayed, 2,
+                (fontRenderer.fontHeight * 4 + 8f).toInt(), Color.WHITE.rgb
+            )
         }
-        GlStateManager.popMatrix()
         return Border(14F, 0F, 165F, 63F)
     }
 

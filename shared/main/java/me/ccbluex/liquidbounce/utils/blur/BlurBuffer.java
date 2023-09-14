@@ -19,7 +19,7 @@ public class BlurBuffer {
         StencilUtil.initStencilToWrite();
         RenderUtils.drawRect(x, y, x + width, y + height, new Color(-2).getRGB());
         StencilUtil.readStencilBuffer(1);
-        GaussianBlur.renderBlur(HUD.Companion.getBlurRadius().getValue().floatValue());
+        GaussianBlur.renderBlur(HUD.blurRadius.getValue().floatValue());
 
         StencilUtil.uninitStencilBuffer();
     }
@@ -31,7 +31,7 @@ public class BlurBuffer {
         RenderUtils.drawRect(x, y, x + (x2 - x), y + (y2 - y), new Color(-2).getRGB());
 
         StencilUtil.readStencilBuffer(1);
-        GaussianBlur.renderBlur(HUD.Companion.getBlurRadius().getValue().floatValue());
+        GaussianBlur.renderBlur(HUD.blurRadius.getValue().floatValue());
         StencilUtil.uninitStencilBuffer();
     }
 

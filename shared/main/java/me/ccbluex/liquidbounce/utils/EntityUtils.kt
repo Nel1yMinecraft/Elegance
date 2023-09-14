@@ -7,12 +7,14 @@ package me.ccbluex.liquidbounce.utils
 
 import me.ccbluex.liquidbounce.LiquidBounce
 import me.ccbluex.liquidbounce.api.minecraft.client.entity.IEntity
+import me.ccbluex.liquidbounce.api.minecraft.client.entity.IEntityLivingBase
 import me.ccbluex.liquidbounce.features.module.modules.combat.NoFriends
 import me.ccbluex.liquidbounce.features.module.modules.misc.AntiBot.isBot
 import me.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import me.ccbluex.liquidbounce.utils.extensions.isAnimal
 import me.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import me.ccbluex.liquidbounce.utils.extensions.isMob
+import me.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 
 object EntityUtils : MinecraftInstance() {
 
@@ -30,6 +32,11 @@ object EntityUtils : MinecraftInstance() {
 
     @JvmField
     var targetDead = false
+
+    fun isFriend(entity: IEntityLivingBase): Boolean {
+        return classProvider.isEntityPlayer(entity) && entity.name != null &&
+                LiquidBounce.fileManager.friendsConfig.isFriend(stripColor(entity.name))
+    }
 
     @JvmStatic
     fun isSelected(entity: IEntity?, canAttackCheck: Boolean): Boolean {

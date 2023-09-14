@@ -7,7 +7,7 @@ package me.ccbluex.liquidbounce.injection.forge.mixins.item;
 
 import me.ccbluex.liquidbounce.LiquidBounce;
 import me.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import me.ccbluex.liquidbounce.features.module.modules.render.Animations;
+import me.nelly.Animations;
 import me.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import me.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.minecraft.client.Minecraft;
@@ -114,7 +114,7 @@ public abstract class MixinItemRenderer {
                         case DRINK:
                             transformEatFirstPerson(p_187457_2_, enumhandside, stack);
                             transformSideFirstPerson(enumhandside, p_187457_7_);
-                            if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemsWhenEatingOrDrinkingValue().get())
+                            if (Animations.getRotateItems() && Animations.getRotateItemsWhenEatingOrDrinkingValue().get())
                                 rotateItemAnim();
                             break;
                         case BOW:
@@ -144,58 +144,58 @@ public abstract class MixinItemRenderer {
                             break;
                     }
                 } else {
-                    if ((mc.player.getHeldItemMainhand().getItem() instanceof ItemSword || !Animations.INSTANCE.getOnlySword())
-                            && Animations.INSTANCE.getBlockValue().get()
-                            && ((Animations.INSTANCE.getRightClickBlocking().get() && mc.gameSettings.keyBindUseItem.pressed)
+                    if ((mc.player.getHeldItemMainhand().getItem() instanceof ItemSword || !Animations.getOnlySword())
+                            && Animations.getBlockValue().get()
+                            && ((Animations.getRightClickBlocking().get() && mc.gameSettings.keyBindUseItem.pressed)
                             || ((killAura.getTarget() != null && killAura.getBlockingStatus())))) {
                         translate(Animations.blockItemPosX(), Animations.blockItemPosY(), Animations.blockItemPosZ());
-                        float breakDownAnimation = (Animations.INSTANCE.getBreakDownAnimation().get() ? p_187457_7_ : 0);
-                        switch (Animations.INSTANCE.getModeValue().get().toLowerCase()) {
+                        float breakDownAnimation = (Animations.getBreakDownAnimation().get() ? p_187457_7_ : 0);
+                        switch (Animations.getModeValue().get().toLowerCase()) {
                             case "1.7": {
                                 oldAnimation(enumhandside, breakDownAnimation, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "old": {
                                 transformSideFirstPersonBlock(enumhandside, breakDownAnimation, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "push": {
                                 Push(enumhandside, breakDownAnimation, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "windmill": {
                                 WindMill(enumhandside, -0.2F + breakDownAnimation, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "flux": {
                                 flux(enumhandside, breakDownAnimation, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "sigmaold": {
                                 sigmaold(enumhandside, breakDownAnimation, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "zoom": {
                                 Zoom(enumhandside, breakDownAnimation, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "jello": {
                                 jello(enumhandside, partialTicks);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
@@ -208,33 +208,33 @@ public abstract class MixinItemRenderer {
                             }
                             case "rotate360": {
                                 rotate360();
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
 
                                 strange();
                                 GlStateManager.rotate(delay, 1.0F, 0.0F, 2.0F);
                                 if (rotateTimer.hasTimePassed(2)) {
                                     ++delay;
-                                    delay = delay + Animations.INSTANCE.getRotate360speed().get();
+                                    delay = delay + Animations.getRotate360speed().get();
                                     rotateTimer.reset();
                                 }
                                 if (delay > 360.0F) {
                                     delay = 0.0F;
                                 }
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
                             case "remix": {
                                 genCustom(f);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 strange();
                                 float f4 = MathHelper.sin(MathHelper.sqrt(f0) * 3.83f);
                                 translate(-0.5f, 0.2f, 0.2f);
                                 GlStateManager.rotate(-f4 * 0.0f, 0.0f, 0.0f, 0.0f);
                                 GlStateManager.rotate(-f4 * 43.0f, 58.0f, 23.0f, 45.0f);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
@@ -259,7 +259,7 @@ public abstract class MixinItemRenderer {
                                 translate(0, 0, -0.5);
                                 GlStateManager.rotate(mc.player.isSwingInProgress ? -alpha / 5f : 1, 1.0f, -0.0f, 1.0f);
                                 translate(0, 0, 0.5);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
@@ -271,7 +271,7 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.rotate(var12 * -5.0F, 1.0F, 0.0F, 0.0F);
                                 GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
                                 GlStateManager.rotate(var12 * 25.0F, 0.0F, 1.0F, 0.0F);
-                                if (Animations.INSTANCE.getRotateItems() && Animations.INSTANCE.getRotateItemWhenBlockingValue().get())
+                                if (Animations.getRotateItems() && Animations.getRotateItemWhenBlockingValue().get())
                                     rotateItemAnim();
                                 break;
                             }
@@ -308,21 +308,21 @@ public abstract class MixinItemRenderer {
     }
     @Unique
     private void rotateItemAnim() {
-        if (Animations.INSTANCE.getRotateItems()) {
-            if (Animations.INSTANCE.getTransformFirstPersonRotate().get().equalsIgnoreCase("RotateY")) {
+        if (Animations.getRotateItems()) {
+            if (Animations.getTransformFirstPersonRotate().get().equalsIgnoreCase("RotateY")) {
                 GlStateManager.rotate(delay, 0.0F, 1.0F, 0.0F);
             }
-            if (Animations.INSTANCE.getTransformFirstPersonRotate().get().equalsIgnoreCase("RotateXY")) {
+            if (Animations.getTransformFirstPersonRotate().get().equalsIgnoreCase("RotateXY")) {
                 GlStateManager.rotate(delay, 1.0F, 1.0F, 0.0F);
             }
 
-            if (Animations.INSTANCE.getTransformFirstPersonRotate().get().equalsIgnoreCase("Custom")) {
-                GlStateManager.rotate(delay, Animations.INSTANCE.getRotateX().get(), Animations.INSTANCE.getRotateY().get(), Animations.INSTANCE.getRotateZ().get());
+            if (Animations.getTransformFirstPersonRotate().get().equalsIgnoreCase("Custom")) {
+                GlStateManager.rotate(delay, Animations.getRotateX().get(), Animations.getRotateY().get(), Animations.getRotateZ().get());
             }
 
             if (rotateTimer.hasTimePassed(1)) {
                 ++delay;
-                delay = delay + Animations.INSTANCE.getSpeedRotate().get();
+                delay = delay + Animations.getSpeedRotate().get();
                 rotateTimer.reset();
             }
             if (delay > 360.0F) {

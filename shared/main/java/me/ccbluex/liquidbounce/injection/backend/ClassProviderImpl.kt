@@ -39,6 +39,7 @@ import me.ccbluex.liquidbounce.api.minecraft.network.play.client.*
 import me.ccbluex.liquidbounce.api.minecraft.potion.IPotion
 import me.ccbluex.liquidbounce.api.minecraft.potion.IPotionEffect
 import me.ccbluex.liquidbounce.api.minecraft.potion.PotionType
+import me.ccbluex.liquidbounce.api.minecraft.potion.PotionType.*
 import me.ccbluex.liquidbounce.api.minecraft.stats.IStatBase
 import me.ccbluex.liquidbounce.api.minecraft.util.*
 import me.ccbluex.liquidbounce.api.network.IPacketBuffer
@@ -402,19 +403,22 @@ object ClassProviderImpl : IClassProvider {
 
     override fun getPotionEnum(type: PotionType): IPotion {
         return PotionImpl(when (type) {
-            PotionType.HEAL -> MobEffects.INSTANT_HEALTH
-            PotionType.REGENERATION -> MobEffects.REGENERATION
-            PotionType.BLINDNESS -> MobEffects.BLINDNESS
-            PotionType.MOVE_SPEED -> MobEffects.SPEED
-            PotionType.HUNGER -> MobEffects.HUNGER
-            PotionType.DIG_SLOWDOWN -> MobEffects.MINING_FATIGUE
-            PotionType.CONFUSION -> MobEffects.NAUSEA
-            PotionType.WEAKNESS -> MobEffects.WEAKNESS
-            PotionType.MOVE_SLOWDOWN -> MobEffects.SLOWNESS
-            PotionType.HARM -> MobEffects.INSTANT_DAMAGE
-            PotionType.WITHER -> MobEffects.WITHER
-            PotionType.POISON -> MobEffects.POISON
-            PotionType.NIGHT_VISION -> MobEffects.NIGHT_VISION
+            HEAL -> MobEffects.INSTANT_HEALTH
+            REGENERATION -> MobEffects.REGENERATION
+            BLINDNESS -> MobEffects.BLINDNESS
+            MOVE_SPEED -> MobEffects.SPEED
+            HUNGER -> MobEffects.HUNGER
+            DIG_SLOWDOWN -> MobEffects.MINING_FATIGUE
+            CONFUSION -> MobEffects.NAUSEA
+            WEAKNESS -> MobEffects.WEAKNESS
+            MOVE_SLOWDOWN -> MobEffects.SLOWNESS
+            HARM -> MobEffects.INSTANT_DAMAGE
+            WITHER -> MobEffects.WITHER
+            POISON -> MobEffects.POISON
+            NIGHT_VISION -> MobEffects.NIGHT_VISION
+            JUMP -> MobEffects.JUMP_BOOST
+            DIG_SPEED -> MobEffects.HASTE
+            STRENGTH -> MobEffects.STRENGTH
         })
     }
 

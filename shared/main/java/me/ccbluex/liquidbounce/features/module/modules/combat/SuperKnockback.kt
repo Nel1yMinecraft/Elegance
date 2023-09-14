@@ -24,7 +24,7 @@ import net.minecraft.network.play.client.CPacketEntityAction
 
 @ModuleInfo(name = "MoreKb", category = ModuleCategory.COMBAT, description = "Superkb")
 class SuperKnockback : Module() {
-
+    private val onlyplayer = BoolValue("OnlyPlayer", true)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("Wtap", "Legit", "Silent", "SprintReset", "SneakPacket"), "Silent")
     private val onlyMoveValue = BoolValue("OnlyMove", true)
@@ -38,19 +38,73 @@ class SuperKnockback : Module() {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        if (event.targetEntity is IEntityLivingBase) {
+        if (event.targetEntity is IEntityLivingBase && !onlyplayer.get()) {
             if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) ||
-                (!MovementUtils.isMoving && onlyMoveValue.get()) || (!mc.thePlayer!!.onGround && onlyGroundValue.get())) {
+                (!MovementUtils.isMoving && onlyMoveValue.get()) || (!mc.thePlayer!!.onGround && onlyGroundValue.get())
+            ) {
                 return
             }
 
-            if (onlyMoveForwardValue.get() && RotationUtils.getRotationDifference(Rotation(MovementUtils.movingYaw, mc.thePlayer!!.rotationPitch), Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)) > 35) {
+            if (onlyMoveForwardValue.get() && RotationUtils.getRotationDifference(
+                    Rotation(
+                        MovementUtils.movingYaw,
+                        mc.thePlayer!!.rotationPitch
+                    ), Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)
+                ) > 35
+            ) {
                 return
             }
 
             when (modeValue.get().toLowerCase()) {
 
-                "wtap" ->  ticks = 2
+                "wtap" -> ticks = 2
+
+
+                "legit" -> {
+                    ticks = 2
+                }
+
+                "silent" -> {
+                    ticks = 1
+                }
+
+                "sprintreset" -> {
+                    PacketUtils.send(CPacketEntityAction(mc2.player, CPacketEntityAction.Action.STOP_SPRINTING))
+                }
+
+                "sneakpacket" -> {
+                    if (mc.thePlayer!!.sprinting) {
+                        mc.thePlayer!!.sprinting = true
+                    }
+                    PacketUtils.send(CPacketEntityAction(mc2.player, CPacketEntityAction.Action.STOP_SPRINTING))
+                    PacketUtils.send(CPacketEntityAction(mc2.player, CPacketEntityAction.Action.START_SNEAKING))
+                    PacketUtils.send(CPacketEntityAction(mc2.player, CPacketEntityAction.Action.START_SPRINTING))
+                    PacketUtils.send(CPacketEntityAction(mc2.player, CPacketEntityAction.Action.STOP_SNEAKING))
+                    mc.thePlayer!!.serverSprintState = true
+                }
+            }
+            timer.reset()
+        }
+        if (event.targetEntity is IEntityLivingBase) {
+            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) ||
+                (!MovementUtils.isMoving && onlyMoveValue.get()) || (!mc.thePlayer!!.onGround && onlyGroundValue.get())
+            ) {
+                return
+            }
+
+            if (onlyMoveForwardValue.get() && RotationUtils.getRotationDifference(
+                    Rotation(
+                        MovementUtils.movingYaw,
+                        mc.thePlayer!!.rotationPitch
+                    ), Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)
+                ) > 35
+            ) {
+                return
+            }
+
+            when (modeValue.get().toLowerCase()) {
+
+                "wtap" -> ticks = 2
 
 
                 "legit" -> {

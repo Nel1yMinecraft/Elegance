@@ -11,7 +11,7 @@ import me.ccbluex.liquidbounce.event.StrafeEvent;
 import me.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
 import me.ccbluex.liquidbounce.features.module.modules.movement.LiquidWalk;
 import me.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
-import me.ccbluex.liquidbounce.features.module.modules.render.Animations;
+import me.nelly.Animations;
 import me.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -124,7 +124,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     private int getArmSwingAnimationEnd() {
         int speed = this.isPotionActive(MobEffects.HASTE) ? 6 - (1 + this.getActivePotionEffect(MobEffects.HASTE).getAmplifier()) : (this.isPotionActive(MobEffects.MINING_FATIGUE) ? 6 + (1 + this.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6);
         if (this.equals(mc2.player)) {
-            speed = (int) (speed * Animations.INSTANCE.getSpeedSwing().get());
+            speed = (int) (speed * Animations.getSpeedSwing().get());
         }
         return speed;
 

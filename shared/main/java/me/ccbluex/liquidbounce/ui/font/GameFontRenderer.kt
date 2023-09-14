@@ -1,16 +1,17 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * ColorByte Hacked Client
+ * A free half-open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderRyF/ColorByte/
  */
+
 package me.ccbluex.liquidbounce.ui.font
 
+import me.ccbluex.liquidbounce.utils.render.ColorUtils
 import me.ccbluex.liquidbounce.LiquidBounce
 import me.ccbluex.liquidbounce.api.util.IWrappedFontRenderer
 import me.ccbluex.liquidbounce.event.TextEvent
 import me.ccbluex.liquidbounce.features.module.modules.render.HUD
 import me.ccbluex.liquidbounce.injection.backend.WrapperImpl.classProvider
-import me.ccbluex.liquidbounce.utils.render.ColorUtils
 import me.ccbluex.liquidbounce.utils.render.RenderUtils
 import me.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import org.lwjgl.opengl.GL11
@@ -36,6 +37,11 @@ class GameFontRenderer(font: Font) : IWrappedFontRenderer {
         fontHeight = height
     }
 
+    fun drawStringWithShadow2(text: String, x: Float, y: Float, color: Int): Int {
+        drawString(text, x + 0.5f, y + 0.5f, -16777216)
+        return drawString(text, x, y, color)
+    }
+
     override fun drawString(s: String?, x: Float, y: Float, color: Int) = drawString(s, x, y, color, false)
 
     override fun drawStringWithShadow(text: String?, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
@@ -43,7 +49,7 @@ class GameFontRenderer(font: Font) : IWrappedFontRenderer {
     override fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) = drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)
 
     override fun drawCenteredString(s: String, x: Float, y: Float, color: Int) =
-            drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
+        drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
 
     override fun drawString(text: String?, x: Float, y: Float, color: Int, shadow: Boolean): Int {
         var currentText = text
@@ -57,23 +63,54 @@ class GameFontRenderer(font: Font) : IWrappedFontRenderer {
         val rainbow = RainbowFontShader.isInUse
 
         if (shadow) {
-            if (HUD.shadowValue.get().equals("LiquidBounce")) {
-                drawText(currentText, x + 1.0f, currY + 1.0f, Color(0, 0, 0, 150).rgb, true)
-            } else if (HUD.shadowValue.get().equals("Default")) {
-                drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-            } else if (HUD.shadowValue.get().equals("Custom")) {
-                drawText(
-                    currentText,
-                    x + HUD.shadowstrenge.get(),
-                    currY + HUD.shadowstrenge.get(),
-                    Color(20, 20, 20, 200).rgb,
-                    true
-                )
-            } else if (HUD.shadowValue.get().equals("Outline")) {
-                drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
-                drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
-                drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+            glUseProgram(0)
+            when {
+                HUD.shadowValue.get().equals("Test", ignoreCase = true) -> {
+
+                    drawText(currentText, x + 0.5f, currY + 0.5f, Color(200, 200, 200, 70).rgb, true)
+                    drawText(currentText, x - 0.5f, currY - 0.5f, Color(200, 200, 200, 70).rgb, true)
+                    drawText(currentText, x + 0.5f, currY - 0.5f, Color(200, 200, 200, 70).rgb, true)
+                    drawText(currentText, x - 0.5f, currY + 0.5f, Color(200, 200, 200, 70).rgb, true)
+                }
+                HUD.shadowValue.get().equals("LiquidBounce", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+                HUD.shadowValue.get().equals("Default", ignoreCase = true) -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                HUD.shadowValue.get().equals("blue", ignoreCase = true) -> {
+                    drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 120, 225, 130).rgb, true)
+                    drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 120, 225, 130).rgb, true)
+                    drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 120, 225, 130).rgb, true)
+                    drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 120, 225, 130).rgb, true)
+                }
+                HUD.shadowValue.get().equals("happy", ignoreCase = true) -> {
+                    drawText(currentText, x + 0.25f, currY + 0.25f, Color(30, 30, 30, 160).rgb, true)
+                    drawText(currentText, x - 0.25f, currY - 0.25f, Color(20, 20, 20, 130).rgb, true)
+                    drawText(currentText, x + 0.25f, currY - 0.25f, Color(30, 30, 30, 160).rgb, true)
+                    drawText(currentText, x - 0.25f, currY + 0.25f, Color(20, 20, 20, 130).rgb, true)
+                    drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                    drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                    drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                    drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                }
+                HUD.shadowValue.get().equals("happy2", ignoreCase = true) -> {
+                    drawText(currentText, x + 0.25f, currY + 0.25f, Color(60, 60, 60, 160).rgb, true)
+                    drawText(currentText, x - 0.25f, currY - 0.25f, Color(60, 60, 60, 130).rgb, true)
+                    drawText(currentText, x + 0.25f, currY - 0.25f, Color(60, 60, 60, 160).rgb, true)
+                    drawText(currentText, x - 0.25f, currY + 0.25f, Color(60, 60, 60, 130).rgb, true)
+                    drawText(currentText, x + 0.5f, currY + 0.5f, Color(60, 60, 60, 160).rgb, true)
+                    drawText(currentText, x - 0.5f, currY - 0.5f, Color(60, 60, 60, 130).rgb, true)
+                    drawText(currentText, x + 0.5f, currY - 0.5f, Color(60, 60, 60, 160).rgb, true)
+                    drawText(currentText, x - 0.5f, currY + 0.5f, Color(60, 60, 60, 130).rgb, true)
+                    drawText(currentText, x + 1f, currY + 1f, Color(60, 60, 60, 160).rgb, true)
+                    drawText(currentText, x - 1f, currY - 1f, Color(60, 60, 60, 130).rgb, true)
+                    drawText(currentText, x + 1f, currY - 1f, Color(60, 60, 60, 160).rgb, true)
+                    drawText(currentText, x - 1f, currY + 1f, Color(60, 60, 60, 130).rgb, true)
+                }
+                HUD.shadowValue.get().equals("Autumn", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
+                HUD.shadowValue.get().equals("Outline", ignoreCase = true) -> {
+                    drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                    drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                    drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                    drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                }
             }
         }
 
@@ -181,13 +218,13 @@ class GameFontRenderer(font: Font) : IWrappedFontRenderer {
 
                     if (strikeThrough)
                         RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 3.0,
-                                (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
-                                fontHeight / 16F)
+                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
+                            fontHeight / 16F)
 
                     if (underline)
                         RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 2.0,
-                                (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
-                                fontHeight / 16F)
+                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
+                            fontHeight / 16F)
 
                     width += currentFont.getStringWidth(words)
                 }
@@ -205,7 +242,7 @@ class GameFontRenderer(font: Font) : IWrappedFontRenderer {
     }
 
     override fun getColorCode(charCode: Char) =
-            ColorUtils.hexColors[getColorIndex(charCode)]
+        ColorUtils.hexColors[getColorIndex(charCode)]
 
     override fun getStringWidth(text: String?): Int {
         var currentText = text

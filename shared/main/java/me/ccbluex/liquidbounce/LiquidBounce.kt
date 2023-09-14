@@ -27,10 +27,12 @@ import me.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import me.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import me.ccbluex.liquidbounce.ui.client.hud.HUD
 import me.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
+import me.ccbluex.liquidbounce.ui.cnfont.FontLoaders
 import me.ccbluex.liquidbounce.ui.font.Fonts
 import me.ccbluex.liquidbounce.utils.ClassUtils.hasForge
 import me.ccbluex.liquidbounce.utils.ClientUtils
 import me.ccbluex.liquidbounce.utils.InventoryUtils
+import me.ccbluex.liquidbounce.utils.MinecraftInstance
 import me.ccbluex.liquidbounce.utils.RotationUtils
 import me.ccbluex.liquidbounce.utils.misc.HttpUtils
 import me.ccbluex.liquidbounce.utils.sound.TipSoundManager
@@ -39,13 +41,15 @@ import java.awt.Image
 import java.awt.SystemTray
 import java.awt.Toolkit
 import java.awt.TrayIcon
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 
 object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "Elegance"
-    const val CLIENT_VERSION = 1.0
-    const val CLIENT_VERSION2 = "1.0"
+    const val CLIENT_VERSION = 1.1
     const val MINECRAFT_VERSION = Backend.MINECRAFT_VERSION
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
 
@@ -79,29 +83,30 @@ object LiquidBounce {
 
     val UPDATE_LIST = arrayListOf(
         "Update Logs :",
-        "< 1.0 >",
-        "[+] Module",
-        "[~] UI"
+        "< 1.1 >",
+        "[+] Aura",
+        "[~] HUD",
+        "[~] ....."
     )
-
-    fun showNotification(message: String, title: String, messageType: TrayIcon.MessageType, iconPath: String) {
-        if (SystemTray.isSupported()) {
-            val systemTray = SystemTray.getSystemTray()
-            val image: Image = Toolkit.getDefaultToolkit().getImage(iconPath)
-
-            val trayIcon = TrayIcon(image, title)
-            trayIcon.isImageAutoSize = true
-
-            try {
-                systemTray.add(trayIcon)
-                trayIcon.displayMessage(title, message, messageType)
-                systemTray.remove(trayIcon)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    fun showNotification(Title: String, Text: String, type: TrayIcon.MessageType?) {
+        val tray = SystemTray.getSystemTray()
+        val image = Toolkit.getDefaultToolkit().createImage("icon.png")
+        val trayIcon = TrayIcon(image, "Tray Demo")
+        trayIcon.isImageAutoSize = true
+        trayIcon.toolTip = "System tray icon demo"
+        tray.add(trayIcon)
+        trayIcon.displayMessage(Title, Text, type)
+    }
+    fun isNetworkConnected(): Boolean {
+        return try {
+            val socket = Socket()
+            socket.connect(InetSocketAddress("8.8.8.8", 53), 1500)
+            socket.close()
+            true
+        } catch (e: IOException) {
+            false
         }
     }
-
     /**
      * Execute if client will be started
      */
@@ -110,6 +115,11 @@ object LiquidBounce {
         //   Verify.lilililili()
         isStarting = true
         //Verify2.veirfy()
+        if(isNetworkConnected()) {
+            showNotification("Verify-Ok!", CLIENT_NAME,TrayIcon.MessageType.INFO)
+        } else {
+            showNotification("Verify-ERROR!", CLIENT_NAME, TrayIcon.MessageType.ERROR)
+        }
         ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION")
         ClientUtils.getLogger().info("  ______   _                                              \n" +
                 " |  ____| | |                                             \n" +
@@ -144,7 +154,7 @@ object LiquidBounce {
 
         // Load client fonts
         Fonts.loadFonts()
-
+        FontLoaders.initFonts()
         // Setup module manager and register modules
         moduleManager = ModuleManager()
         moduleManager.registerModules()
