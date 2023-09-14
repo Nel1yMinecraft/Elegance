@@ -896,28 +896,7 @@ public final class RenderUtils extends MinecraftInstance {
         tessellator.draw();
     }
     public static void drawShadowWithCustomAlpha(float x, float y, float width, float height, float alpha) {
-        drawTexturedRectWithCustomAlpha(x - 9, y - 9, 9, 9, "paneltopleft", alpha);
-        drawTexturedRectWithCustomAlpha(x - 9, y + height, 9, 9, "panelbottomleft", alpha);
-        drawTexturedRectWithCustomAlpha(x + width, y + height, 9, 9, "panelbottomright", alpha);
-        drawTexturedRectWithCustomAlpha(x + width, y - 9, 9, 9, "paneltopright", alpha);
-        drawTexturedRectWithCustomAlpha(x - 9, y, 9, height, "panelleft", alpha);
-        drawTexturedRectWithCustomAlpha(x + width, y, 9, height, "panelright", alpha);
-        drawTexturedRectWithCustomAlpha(x, y - 9, width, 9, "paneltop", alpha);
-        drawTexturedRectWithCustomAlpha(x, y + height, width, 9, "panelbottom", alpha);
-    }
-    public static void drawTexturedRectWithCustomAlpha(float x, float y, float width, float height, String image, float alpha) {
-        glPushMatrix();
-        final boolean enableBlend = glIsEnabled(GL_BLEND);
-        final boolean disableAlpha = !glIsEnabled(GL_ALPHA_TEST);
-        if (!enableBlend) glEnable(GL_BLEND);
-        if (!disableAlpha) glDisable(GL_ALPHA_TEST);
-        GlStateManager.color(1F, 1F, 1F, alpha);
-        mc.getTextureManager().bindTexture2(new ResourceLocation("liquidbounce/shadow/" + image + ".png"));
-        drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
-        if (!enableBlend) glDisable(GL_BLEND);
-        if (!disableAlpha) glEnable(GL_ALPHA_TEST);
-        GlStateManager.resetColor();
-        glPopMatrix();
+        ShadowRenderUtils.drawShadowWithCustomAlpha(x,y,width,height,alpha);
     }
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
         float f = (col1 >> 24 & 0xFF) / 255.0F;

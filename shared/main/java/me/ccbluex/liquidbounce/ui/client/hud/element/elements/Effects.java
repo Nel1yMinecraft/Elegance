@@ -12,6 +12,7 @@ import me.ccbluex.liquidbounce.utils.blur.BlurBuffer;
 import me.ccbluex.liquidbounce.utils.render.PotionData;
 import me.ccbluex.liquidbounce.utils.render.RenderUtils;
 import me.ccbluex.liquidbounce.utils.Translate;
+import me.ccbluex.liquidbounce.utils.render.ShadowRenderUtils;
 import me.ccbluex.liquidbounce.value.BoolValue;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -66,7 +67,7 @@ public class Effects extends Element {
             potionData.animationX = (float) RenderUtils.getAnimationState(potionData.getAnimationX(), 1.2F * state, Math.max(10.0F, Math.abs(potionData.animationX - 1.2F * state) * 15.0F) * 0.3F);
             RenderUtils.drawRectPotion(0, potionData.translate.getY(), 120, potionData.translate.getY() + 30F, ClientUtils.reAlpha(HanaBiColors.GREY.c, 0.1F));
             RenderUtils.drawRectPotion(0, potionData.translate.getY(), potionData.animationX, potionData.translate.getY() + 30F, ClientUtils.reAlpha((new Color(34, 24, 20)).brighter().getRGB(), 0.3F));
-            RenderUtils.drawShadowWithCustomAlpha(0, Math.round(potionData.translate.getY()), 120, 30, 200);
+            ShadowRenderUtils.drawShadowWithCustomAlpha(0, Math.round(potionData.translate.getY()), 120, 30, 200);
 
             float posY = potionData.translate.getY() + 13F;
             Fonts.font35.drawString(name + " " + intToRomanByGreedy(potionEffect.getAmplifier() + 1), 29F, posY - mc.getFontRendererObj().getFontHeight(), ClientUtils.reAlpha(HanaBiColors.WHITE.c, 0.8F));
