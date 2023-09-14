@@ -94,6 +94,21 @@ object ColorUtils {
         return range
     }
 
+    fun reAlpha(color: Color, alpha: Int): Color {
+        return Color(color.red, color.green, color.blue, alpha)
+    }
+
+    @JvmStatic
+    fun rainbow(index: Int, alpha: Int) = reAlpha(hslRainbow(index), alpha)
+
+    @JvmStatic
+    fun rainbow(index: Int, alpha: Float) = reAlpha(hslRainbow(index), alpha)
+
+    @JvmStatic
+    fun reAlpha(color: Color, alpha: Float): Color {
+        return Color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha)
+    }
+
     fun blend(color1: Color, color2: Color, ratio: Double): Color? {
         val r = ratio.toFloat()
         val ir = 1.0f - r

@@ -26,7 +26,7 @@ import java.util.*
 class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Element(x, y, scale) {
     private val colorModeValue =
         ListValue("Color", arrayOf("Custom", "Sky", "CRainbow", "LiquidSlowly", "Fade","Gradinet"), "Custom")
-    private val modeValue = ListValue("Mode", arrayOf("1", "2", "3","4"), "1")
+    private val modeValue = ListValue("Mode", arrayOf("1", "2", "3","4","5"), "1")
     val colorRedValue = IntegerValue("Red", 255, 0, 255)
     val colorGreenValue = IntegerValue("Green", 255, 0, 255)
     val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
@@ -46,7 +46,10 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
     val fontrender = FontValue("Font",Fonts.SF_35)
     val DATE_FORMAT = SimpleDateFormat("HH:mm:ss")
-
+    val r = IntegerValue("Red", 0, 0, 255).displayable {modeValue.get().contains("5")}
+    val g = IntegerValue("Green", 0, 0, 255).displayable {modeValue.get().contains("5")}
+    val b = IntegerValue("Blue", 0, 0, 255).displayable {modeValue.get().contains("5")}
+    val alpha = IntegerValue("BG-Alpha", 100, 0, 255).displayable {modeValue.get().contains("5")}
 
     override fun drawElement(): Border {
         val target: IEntityPlayerSP? = mc.thePlayer
@@ -226,7 +229,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 gradientColor3,
                 gradientColor2
             )
-            fontRenderer.drawCenteredString("GameInfo", 31.5F, 3f, Color.WHITE.rgb, true)
+            fontRenderer.drawCenteredString("SessionInfo", 31.5F, 3f, Color.WHITE.rgb, true)
             fontRenderer.drawStringWithShadow(
                 "PlayTimes: ${DATE_FORMAT.format(Date(System.currentTimeMillis() - Recorder.startTime - 8000L * 3600L))}",
                 2,
@@ -247,6 +250,47 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 "TotalPlayed: " + Recorder.totalPlayed, 2,
                 (fontRenderer.fontHeight * 4 + 8f).toInt(), Color.WHITE.rgb
             )
+        }
+        if(modeValue.get().equals("5")) {
+            val y2 = fontrender.fontHeight * 5 + 11.0.toInt()
+
+
+            val DATE_FORMAT = SimpleDateFormat("HH:mm:ss")
+            // RenderUtils.drawRect(2f, 11f,145f,11.8f,Color(80,80,80,210))
+
+            RenderUtils.drawRound(-1.75f, -2f, 149f, y2.toFloat() + 5.5f,
+                radius.get().toFloat(), Color(r.get(), g.get(), b.get(), alpha.get()))
+
+            RenderUtils.drawRound(-2.2f, -2f, 150.21f, y2.toFloat() + -45f,
+                radius.get().toFloat(), Color(250, 250, 250, 255))
+
+            fontrender.drawString("Session Info", 45f, 1.5f, Color(0, 0, 0).rgb, false)
+
+            fontrender.drawString(
+                "Play Time: ${DATE_FORMAT.format(Date(System.currentTimeMillis() - Recorder.startTime - 8000L * 3600L))}",
+                2,
+                (fontrender.fontHeight + 6f).toInt(),
+                Color(250, 250, 250, 255).rgb
+            )
+            fontrender.drawString(
+                "Win/Total/Ban: " + Recorder.win + "/" + Recorder.totalPlayed + "/" + Recorder.ban,
+                2,
+                (fontrender.fontHeight * 2 + 8f).toInt(),
+                Color(250, 250, 250, 255).rgb
+            )
+            fontrender.drawString(
+                "Players Killed:" + Recorder.killCounts,
+                2,
+                (fontrender.fontHeight * 3 + 10f).toInt(),
+                Color(250, 250, 250, 255).rgb
+            )
+            //  fontRenderer.drawString("Win/Total/Ban: " + AutoPlay.win +"/"+ AutoPlay.totalPlayed, 2, (fontRenderer.fontHeight * 3 + 10f).toInt(), Color(250, 250, 250, 255).rgb)
+            fontrender.drawString(
+                "ServerIP:" + ServerUtils.getRemoteIp(), 2,
+                (fontrender.fontHeight * 4 + 12f).toInt(), Color(250, 250, 250, 255).rgb
+            )
+
+            return Border(-2f, -2f, 150f, y2.toFloat() + 6f)
         }
         return Border(14F, 0F, 165F, 63F)
     }
