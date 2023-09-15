@@ -36,7 +36,6 @@ class AutoReport : Module() {
     private val bypasshytbox = BoolValue("BypassHytBox", false) // 绕过花雨庭 /report举报弹出菜单(箱子)
     private val reported = mutableListOf<String>()
     private val delayTimer = MSTimer()
-    private val friendsConfig = LiquidBounce.fileManager.friendsConfig
 
     override fun onEnable() {
         reported.clear()
@@ -55,7 +54,7 @@ class AutoReport : Module() {
         if (modeValue.equals("All") && delayTimer.hasTimePassed(allDelayValue.get().toLong())) {
             mc.netHandler.playerInfoMap.forEach {
                 val name = it.gameProfile.name
-                if(name != mc.session.username && !friendsConfig.isFriend(name)) {
+                if (name != mc.session.username && !isFriend(name)) {
                     if (doReport(name) && allDelayValue.get() != 0) {
                         return@forEach
                     }
@@ -116,7 +115,7 @@ class AutoReport : Module() {
                 return false
             }
 
-            if (friendsConfig.isFriend(entity.name)) {
+            if (isFriend(entity.name)) {
                 return false
             }
 
@@ -129,6 +128,10 @@ class AutoReport : Module() {
         }
 
         return false
+    }
+
+    private fun isFriend(name: String?): Boolean {
+        return LiquidBounce.fileManager.friendsConfig.isFriend(name)
     }
 
     override val tag: String

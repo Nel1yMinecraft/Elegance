@@ -79,7 +79,7 @@ object LiquidBounce {
     lateinit var clientRichPresence: ClientRichPresence
 
     lateinit var wrapper: Wrapper
-    val yiyan: String = HttpUtils.get("https://tenapi.cn/v2/yiyan")
+    private val yiyan: String = HttpUtils.get("https://tenapi.cn/v2/yiyan")
 
     val UPDATE_LIST = arrayListOf(
         "Update Logs :",
@@ -88,7 +88,7 @@ object LiquidBounce {
         "[~] HUD",
         "[~] ....."
     )
-    fun showNotification(Title: String, Text: String, type: TrayIcon.MessageType?) {
+    private fun showNotification(Title: String, Text: String, type: TrayIcon.MessageType?) {
         val tray = SystemTray.getSystemTray()
         val image = Toolkit.getDefaultToolkit().createImage("icon.png")
         val trayIcon = TrayIcon(image, "Tray Demo")
@@ -97,7 +97,7 @@ object LiquidBounce {
         tray.add(trayIcon)
         trayIcon.displayMessage(Title, Text, type)
     }
-    fun isNetworkConnected(): Boolean {
+    private fun isNetworkConnected(): Boolean {
         return try {
             val socket = Socket()
             socket.connect(InetSocketAddress("8.8.8.8", 53), 1500)
@@ -111,10 +111,7 @@ object LiquidBounce {
      * Execute if client will be started
      */
     fun startClient() {
-        //    Verify.asfnioasnoasfonfsanofsanoi()
-        //   Verify.lilililili()
         isStarting = true
-        //Verify2.veirfy()
         if(isNetworkConnected()) {
             showNotification("Verify-Ok!", CLIENT_NAME,TrayIcon.MessageType.INFO)
         } else {
