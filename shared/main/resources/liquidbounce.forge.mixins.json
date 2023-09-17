@@ -54,7 +54,7 @@
     "render.MixinModelBiped",
     "render.MixinRender",
     "render.MixinRenderEntityItem",
-    "render.MixinRendererLivingEntity",
+    "render.MixinRenderLivingEntityBase",
     "render.MixinTileEntityChestRenderer",
     "render.MixinTileEntityItemStackRenderer",
     "render.MixinTileEntityMobSpawnerRenderer",

@@ -33,7 +33,7 @@ import java.awt.Color
 @ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
 class ESP : Module() {
     @JvmField
-    val modeValue = ListValue("Mode", arrayOf("DaTou","Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "ShaderOutline", "ShaderGlow"), "DaTou")
+    val modeValue = ListValue("Mode", arrayOf("DaTou","Box", "OtherBox", "WireFrame", "2D", "Real2D", "ShaderOutline", "ShaderGlow"), "DaTou")
     private val daTouIMGValue = ListValue("DaTouImg", arrayOf("JiaRan","HuTao","YaoEr","CaoXiaoLong","Paimon","Paimon2","MNWorld-KaKa","MNWorld-NiNi"),"YaoEr").displayable { modeValue.get().toLowerCase().equals("datou") }
 
 

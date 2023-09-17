@@ -32,12 +32,10 @@ import me.ccbluex.liquidbounce.ui.font.Fonts
 import me.ccbluex.liquidbounce.utils.ClassUtils.hasForge
 import me.ccbluex.liquidbounce.utils.ClientUtils
 import me.ccbluex.liquidbounce.utils.InventoryUtils
-import me.ccbluex.liquidbounce.utils.MinecraftInstance
 import me.ccbluex.liquidbounce.utils.RotationUtils
 import me.ccbluex.liquidbounce.utils.misc.HttpUtils
 import me.ccbluex.liquidbounce.utils.sound.TipSoundManager
 import org.lwjgl.opengl.Display
-import java.awt.Image
 import java.awt.SystemTray
 import java.awt.Toolkit
 import java.awt.TrayIcon
@@ -88,15 +86,17 @@ object LiquidBounce {
         "[~] HUD",
         "[~] ....."
     )
-    private fun showNotification(Title: String, Text: String, type: TrayIcon.MessageType?) {
+
+    fun showNotification(title: String, text: String, type: TrayIcon.MessageType?) {
         val tray = SystemTray.getSystemTray()
         val image = Toolkit.getDefaultToolkit().createImage("icon.png")
         val trayIcon = TrayIcon(image, "Tray Demo")
         trayIcon.isImageAutoSize = true
         trayIcon.toolTip = "System tray icon demo"
         tray.add(trayIcon)
-        trayIcon.displayMessage(Title, Text, type)
+        trayIcon.displayMessage(title, text, type)
     }
+
     private fun isNetworkConnected(): Boolean {
         return try {
             val socket = Socket()
